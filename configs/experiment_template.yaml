@@ -1,0 +1,42 @@
+# Experiment run card — fill in for every result entry.
+# Never delete fields; add new keys freely.
+experiment:
+  id: "YYYY-MM-DD-NN"
+  hypothesis: "Can approach X outperform A0 baseline on independent real storm events?"
+  repo_commit: "git sha"
+  dataset_source:
+    licenses: []            # e.g. ["CC-BY-4.0", "NOAA Public"]
+    download_manifest: ""   # data/manifest.json sha256
+  split_manifest: ""        # data/splits.json sha256
+  seeds: [0, 1, 2]
+  total_train_steps: 0      # matched to control
+  total_input_examples: 0   # matched to control
+
+models:
+  name: ""                 # A0 real-only | A1 oversample | ... A5
+  capacity: ""             # params | hidden_size | GRU/TCN/etc.
+  train_script: ""
+
+conditions:
+  covariates_forecast_time: ["gauge_history", "calendar"]  # at issuance
+  covariates_observed_future: []                            # NEVER allowed
+  de_tide: false
+  gauge_count: 1
+
+metrics:
+  mae: null
+  rmse: null
+  q95_mae_real_only: null
+  q99_mae_real_only: null
+  peak_magnitude_error: null
+  peak_timing_error: null
+  precision_threshold_train_q95: null
+  recall_threshold_train_q95: null
+  event_level_ci_n_bootstrap: 200
+  event_level_ci_bounds_95: null
+
+result:
+  positive_findings: []
+  negative_findings: []
+  run_logs_path: ""
+  paper_figure_candidate: ""

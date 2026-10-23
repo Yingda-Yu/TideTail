@@ -1,8 +1,15 @@
-# Evidence-linked claims ledger
+# TideTail Claims Ledger — v0
 
-| ID | Claim | Status | Artifact / commands | Commit | Qualification |
-|---|---|---|---|---|---|
-| H1 | Extreme-aware diffusion improves held-out real extreme-event accuracy vs strong augmentation baselines | UNTESTED HYPOTHESIS | none | none | Needs event-level independent CI |
-| H2 | Physical and multi-gauge coherence improves synthesis usefulness | UNTESTED HYPOTHESIS | none | none | Optional extension |
+> Every positive claim in any draft paper must have an evidence row here.
+> Evidence = run logs, commit SHA, test artifact, figure number.
+> Negative findings are also recorded (required).
 
-Status changes require reproducible artifacts, unambiguous split IDs and review. Negative and inconclusive results remain visible.
+| ID | Claim | Status | Evidence | License / Constraints |
+|----|-------|--------|----------|----------------------|
+| C001 | Persistence baseline MAE ≤ 0.5 m on real events | PENDING | — | Train-only thresholds |
+| C002 | Seasonal baseline beats persistence | PENDING | — | — |
+| C003 | A3 standard diffusion equals A0 on real events | PENDING | — | No synthetic val/test |
+| C004 | A4 tail-aware diffusion beats A0 on real storms | PENDING | — | Matched budget |
+| C005 | A4 tail-aware diffusion beats A3 on real storms | PENDING | — | Matched budget |
+| C006 | No leakage present in split protocol | PENDING | `tidetail.splits.partition_chronological` + 5 passing leakage tests | |
+| N001 | (Negative finding: to be recorded after runs) | — | — | — |
