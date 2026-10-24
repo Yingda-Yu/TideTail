@@ -1,0 +1,119 @@
+{
+  "observed_date": "2026-10-24",
+  "repository": "Yingda-Yu/TideTail",
+  "issues": [
+    {
+      "number": 12,
+      "title": "[Spartina] G1 Data integrity: split utils + eval metrics + synthetic fixtures",
+      "body": "## Task\n\nImplement **G1 Data integrity milestone** from the TideTail roadmap as a self-contained, CPU-only, tested Python module.\n\n## Exact scope (do NOT exceed)\n\n1. **Input schema and validation** -- Define ObservationRecord dataclass and validate_records() that enforces: required columns (station_id, timestamp, water_level), UTC timezone, monotonic timestamps per station, non-null water_levels, reasonable physical bounds (water_level in [-10, 30] meters).\n\n2. **Chronological train/val/test split** -- chronological_split(records, train_frac, val_frac, test_frac, embargo_days=7) that partitions records by timestamp (NOT random), applies an embargo gap between partitions, and preserves the G1 leakage constraints from docs/RESEARCH_PROTOCOL.md. Must raise ValueError on non-monotonic inputs or fractional mismatch.\n\n3. **Missing-data and gap utilities** -- gauge_gaps(records, max_gap_hours=24) to detect and flag gaps larger than threshold. impute_linear(records) as a simple CPU-only linear interpolator over timestamps per station.\n\n4. **Evaluation metric utilities** -- CPU-only numpy-backed rmse(), mae(), tail_rmse(y_true, y_pred, q=0.95), and event_peak_error(y_true, y_pred, threshold=...).\n\n5. **Synthetic fixture helpers** -- make_synthetic_records(n_stations=3, days=30, freq_min=60) generating deterministic numpy-random records. Used by tests.\n\n6. **CPU-only regression tests** -- at least 10 new pytest cases covering: valid inputs, invalid inputs, split monotonicity plus embargo enforcement, gap detection, imputation correctness, metric math, and event-together preservation.\n\n## Constraints\n\n- **CPU only** -- no GPU, no torch, no CUDA.\n- **Numpy and pytest are the ONLY allowed deps** -- use numpy (already declared in pyproject.toml) and pytest (dev dep). Do NOT add pandas, scipy, or any new dependency.\n- **Read TideTail files** -- docs/ROADMAP.md, docs/RESEARCH_PROTOCOL.md, src/tidetail/protocol.py, tests/test_protocol.py. Build on existing assert_disjoint_groups rather than replacing it.\n- **No dataset downloads** -- generate synthetic fixtures only.\n- **No scientific fabrication** -- report test results honestly in your Issue comment.\n- **No GPU training** -- this milestone is pre-training.\n- **Do NOT modify docs/RESEARCH_PROTOCOL.md or docs/ROADMAP.md** -- those are research specifications, not implementation targets.\n- **Do NOT commit large binary datasets**.\n\n## What to deliver\n\n- New Python module(s) under src/tidetail/ for G1 utilities.\n- New test file(s) under tests/.\n- Running pytest tests/ -q must pass all tests (existing + new).\n- Push to branch spartina/<taskid> on Yingda-Yu/TideTail.\n- Create **Draft PR** (never auto-merge) targeting main.\n- Post summary comment to THIS Issue with test results.\n\n## Verification checklist\n\n- [ ] No new dependencies beyond numpy + pytest.\n- [ ] No GPU code.\n- [ ] No network downloads.\n- [ ] All tests pass (run pytest tests/ -q).\n- [ ] No fabricated results.\n- [ ] Draft PR created (WIP = true).\n",
+      "updated_at": "2026-10-24T06:50:03Z"
+    },
+    {
+      "number": 10,
+      "title": "[Spartina] READ-ONLY repository structure audit (real Codex execution)",
+      "body": "## Task\n\nPerform a **read-only** inspection of the TideTail repository: major modules, data pipeline, model entry points, testing setup.\n\n## Constraints\n\n- **Do NOT modify any files** — pure inspection.\n- **Do NOT run training or GPU experiments**.\n- **Do NOT install dependencies**.\n- Do NOT create branches, commits, or PRs (read-only audit).\n- Report findings back as a GitHub comment.\n\n## What to cover\n\n1. Repository layout.\n2. Data processing pipeline.\n3. Model entry points.\n4. Testing setup.\n5. Research documentation.\n6. CI/CD workflows.\n\n## Verification\n\n- [ ] No files modified.\n- [ ] Summary posted as GitHub comment.\n- [ ] No dependencies installed.\n- [ ] No GPU runs.\n- [ ] Branch unchanged.\n",
+      "updated_at": "2026-10-24T06:53:46Z"
+    },
+    {
+      "number": 9,
+      "title": "[Spartina] Read-only repository structure audit (Phase 1 E2E test)",
+      "body": "## Task\n\nInspect the TideTail repository structure and summarize its major modules, data processing pipeline, model entry points, and testing setup.\n\n## Constraints\n\n- **Do not modify any files** (read-only).\n- **Do not run training or GPU experiments**.\n- **Do not install dependencies**.\n- Answer from static file inspection only — read , , , , , , .\n- Report findings in structured markdown.\n\n## What to cover\n\n1. **Repository layout** — major directories and their purpose.\n2. **Data processing pipeline** — where data flows through, key classes.\n3. **Model entry points** — any models defined, where they are invoked.\n4. **Testing setup** — test framework, key test files.\n5. **Research documentation** — roadmaps, literature, protocols.\n6. **CI/CD** — workflows configured.\n\n## Verification\n\n- [ ] No files modified.\n- [ ] Summary posted as GitHub comment.\n- [ ] No dependencies installed.\n- [ ] No GPU/training runs.\n",
+      "updated_at": "2026-10-24T06:57:33Z"
+    },
+    {
+      "number": 8,
+      "title": "G0-G5: Verified literature matrix, paper scaffold and figure provenance",
+      "body": "Start immediately in parallel with data audit. Verify three Rong/Tong 2026 papers' actual methods/datasets and relevant storm-surge diffusion/physics-augmentation prior art. Build citation-backed novelty matrix, BibTeX with verified metadata, LaTeX paper skeleton using an appropriate template once venue is selected, reproducible figure scripts and claim-to-artifact mapping.\n\n**Acceptance:** no fabricated citations or invented result tables, clearly marked empty Results section until runs are verified; every numerical claim links to tracked run configs, data/split checksum and commit. Independent integrity checklist and draft PR.",
+      "updated_at": "2026-10-20T07:14:06Z"
+    },
+    {
+      "number": 7,
+      "title": "G3-G4: Tail-aware diffusion augmentation and physics/spatial ablations",
+      "body": "**Depends on:** standard diffusion pilot and independent evaluator. Design and test extreme-aware weighting/conditioning/guidance without conditioning on unavailable future targets. Ablate augmentation ratio, objective and tail thresholds; optional de-tiding/recomposition, inter-gauge lag and atmospheric consistency. Separate realism from downstream forecast value.\n\n**Acceptance:** A4 vs A0/A1/A2/A3, optional A5; matched compute, multiple seeds, event-level CIs, per-station effects, tail fidelity and failure cases. Update claims ledger only after actual runs. Draft PR.",
+      "updated_at": "2026-10-20T07:14:05Z"
+    },
+    {
+      "number": 6,
+      "title": "G3: Standard conditional diffusion pilot with train-only data",
+      "body": "**Depends on:** frozen Gate 1 and A0-A2 baselines. Implement minimal conditional diffusion on explicitly defined coastal-water residual windows and covariates available at forecast issue. Start with CPU smoke and tiny training; select GPU only after nvidia-smi and device memory check, explicit CUDA_VISIBLE_DEVICES, no paid API/large weight downloads. Log model, split, data, training seed, scenario conditioning and generated-sample provenance.\n\n**Acceptance:** trained A3 baseline on approved data (when available), deterministic smoke, generator diagnostics, memorization/nearest-neighbor tests and first downstream REAL-held-out-event comparison. Report null/negative results. Draft PR.",
+      "updated_at": "2026-10-20T07:14:02Z"
+    },
+    {
+      "number": 5,
+      "title": "G2: Independent evaluator for extreme events, peak timing and confidence intervals",
+      "body": "Build reusable metrics without depending on generator implementation. Implement train-derived q95/q99 thresholds, event peak amplitude/timing, exceedance precision/recall/false alarms, lead-time and station-wise metrics, and event-group paired bootstrap confidence intervals. Define missing events/undefined metrics and statistical independence.\n\n**Acceptance:** hand-computable fixtures, synthetic adversarial tests, leak-safe cutoffs, reproducible output schema and plot data sources. Draft PR; no synthetic test samples.",
+      "updated_at": "2026-10-20T07:14:00Z"
+    },
+    {
+      "number": 4,
+      "title": "G2: Reproduce real-only forecast baselines and traditional augmentation",
+      "body": "**Depends on:** locked Gate 1 split. Implement persistence/climatology where sensible, GRU and TCN (or justified alternate), real-only A0, balanced batches/oversampling A1 and a defensible perturbation/interpolation A2. Match optimizer, random seeds, training updates and tuning budgets; never optimize on test.\n\n**Acceptance:** versioned configs, actual per-seed artifacts, exact CLI commands, overall MAE/RMSE and event-tail metrics with honest uncertainty. Record runtime and negative outcomes. No claimed performance until tests run. Draft PR.",
+      "updated_at": "2026-10-20T07:13:58Z"
+    },
+    {
+      "number": 3,
+      "title": "G1: Implement event-grouped chronological splits and leakage audit",
+      "body": "**Depends on:** audited real-data schema. Build canonical storm/event IDs, purged chronological split and optional held-out-station regime, embargo accounting for input history and target horizon. Freeze a manifest with event/station/time hashes before preprocessing or threshold fitting. Fit scalers and q95/q99 thresholds on train only.\n\n**Acceptance:** metamorphic and regression tests detecting temporal/window/event overlap, label leakage, station duplication and future-information leakage, with actual split statistics and manifest. No training until owner reviews split protocol. Draft PR.",
+      "updated_at": "2026-10-20T07:13:56Z"
+    },
+    {
+      "number": 2,
+      "title": "G1: Audit coastal-gauge and atmospheric data sources, access and licenses",
+      "body": "**Phase:** Gate 1 | **Scope:** data-source audit without assuming access to private datasets.\n\nIdentify GESLA/NOAA gauge observations and ERA5 or equivalent forcing, station/date overlap, units/datum, QC flags, cadence and allowed redistribution. Ask repository owner for the three prior Rong/Tong projects' actual data provenance/paths; avoid copying restricted raw data. Create DATA_SOURCES.md plus machine-readable inventory templates, download/checksum protocol and source citation matrix.\n\n**Acceptance:** verifiable URLs and license citations, chosen initial gauge coverage, missing-data plan and a written GO/NO-GO for ingestion; no raw data committed. Draft PR.",
+      "updated_at": "2026-10-20T07:13:54Z"
+    },
+    {
+      "number": 1,
+      "title": "G0: Harden Python package, CI and scientific-integrity test suite",
+      "body": "**Phase:** Gate 0 | **Deliverable:** working CPU-only foundation PR.\n\nImplement deterministic validation of event splits, embargo between time windows, issue-time availability of covariates, run config schemas and tiny synthetic fixtures. Extend setup/CLI documentation; use TDD for each critical invariant. Verify pytest, Ruff and GitHub Actions green. Keep sample/test data clearly synthetic.\n\n**Acceptance:** reproducible local install; green CI; tests reject overlapping storm/event IDs, overlapping temporal windows, invalid units, missing covariate-availability timestamps and future-target leakage. Document exact commands and results. Do not train real models, merge or claim scientific findings.\n\n**Branch suggestion:** feat/1-foundation; draft PR only.",
+      "updated_at": "2026-10-20T07:13:52Z"
+    }
+  ],
+  "draft_prs": [
+    {
+      "number": 17,
+      "title": "Draft: G2 real-data baselines — 6 Rongjia Prime regions, leakage zero",
+      "head_sha": "584094cffd94bb7d806ca25d889c955dd483c0af",
+      "head_branch": "feature/g2-real-data-baselines",
+      "base_sha": "554dfc2929ef221094ae52d251ac467611a42189",
+      "body": "Workstream B + S4 — Forecasting baselines on real Rongjia Prime 2015-2024 data.\n\n## Data\n- Migrated from /data/rongjia/sea-level-shared-database (sudo -n authorized copy)\n- Destination: /data/yingda/tidetail-data/prime-formal-2015-2024 (451 MB, 350 files)\n- Provenance + SHA-256 per file in MIGRATION_MANIFEST.json\n- 6 regions × 87,000 hourly rows, 2015-2024\n- Train/val/test: chronological 80/10/10\n\n## Results (24-hour horizon, 72-hour input)\n| Region | q95(m) | MAE(pers) | MAE(seas) | Recall(p) | Recall(s) | Tail(p) | Tail(s) |\n|--------|--------|-----------|-----------|-----------|-----------|---------|---------|\n| ny_bight | 0.933 | 0.574 | **0.215** | 0.166 | 0.558 | 0.809 | 0.202 |\n| pearl_river_hk | 2.280 | 0.555 | **0.156** | 0.159 | 0.679 | 0.885 | 0.156 |\n| south_atlantic | 1.039 | 0.650 | **0.223** | 0.119 | 0.546 | 0.887 | 0.163 |\n| southeast_aus | 1.644 | 0.451 | **0.138** | 0.103 | 0.647 | 0.767 | 0.122 |\n| thames_ns | 5.519 | 1.749 | **0.598** | 0.098 | 0.462 | 2.638 | 0.433 |\n| us_gulf_coast | 0.554 | 0.193 | **0.112** | 0.431 | 0.579 | 0.213 | 0.138 |\n\n## Tests (24 real-data tests, all pass)\n- Chronological split order — every region\n- Train-only q95/q99 thresholds verified by recomputation\n- Disjoint event groups across partitions\n- Seasonal beats persistence on every region\n\n## Integrity\n- NO synthetic data in val/test\n- Train-only thresholds only\n- Event-group atomicity verified\n- 24 new tests + 26 existing = 50 total CPU tests\n\n## Next\n- Add ERA5 forcing (u10/v10/mslp) as conditional input\n- Run GRU/TCN baselines\n- G3/G4 diffusion after baseline frozen",
+      "updated_at": "2026-10-23T20:29:11Z"
+    },
+    {
+      "number": 16,
+      "title": "Draft: Workstream D — data inventory, claims ledger, experiment card",
+      "head_sha": "b100649ed3219b688db330d4f4847f41c6e7603c",
+      "head_branch": "feature/research-docs-d",
+      "base_sha": "554dfc2929ef221094ae52d251ac467611a42189",
+      "body": "Workstream D — research integrity documentation.\n\n## New files\n- docs/DATA_INVENTORY.md — provenance fields, integrity gates, source inventory (GESLA/NOAA/ERA5 pending, Rongjia ACL blocked)\n- paper/CLAIMS_LEDGER.md — positive/negative claim tracking, evidence ledger, paper-claim gate\n- configs/experiment_template.yaml — per-run card with train-only thresholds and matched-budget locks\n\n## Integrity gates (from RESEARCH_PROTOCOL.md)\n1. Dataset licensed/checksummed BEFORE QC\n2. Station datum audited\n3. Train-only q95/q99 thresholds AFTER event-group splits\n4. Synthetic never in val/test\n5. Matched training budget for A0..A5 comparisons\n\nPaper claims must be traceable through CLAIMS_LEDGER.md evidence rows.",
+      "updated_at": "2026-10-23T20:16:09Z"
+    },
+    {
+      "number": 15,
+      "title": "Draft: Workstreams B+C — forecasting baselines, evaluation API, CPU diffusion",
+      "head_sha": "584094cffd94bb7d806ca25d889c955dd483c0af",
+      "head_branch": "feature/baselines-evaluation",
+      "base_sha": "554dfc2929ef221094ae52d251ac467611a42189",
+      "body": "Workstreams B and C together on feature/baselines-evaluation.\n\nIncludes Workstream A (data integrity modules) merged in.\n\n## B — Forecasting baselines + evaluate API\n- baselines.py: persistence, seasonal, oversampled persistence, SimpleGRU (NumPy toy)\n- evaluate.py: MAE, RMSE, tail/q95/q99, peak magnitude/timing, threshold prec/recall/FAR, event bootstrap CI\n- Locked-in shared metric interface for fair-matching budgets A0..A5\n\n## C — CPU diffusion scaffolding\n- diffusion.py: cosine schedule, ConditionalDenoiser (per-step bias), memorization_check, quality_summary\n- CPU smoke-test — no torch dependency\n- Memorization guardrail flags exact-copy synthetic windows\n\n## Test evidence\n26 passing CPU tests across all scopes\n\n## Constraints\n- train-only thresholds only\n- matched-budget fairness enforced by shared interface\n- NO GPU / real-data training",
+      "updated_at": "2026-10-23T20:28:54Z"
+    },
+    {
+      "number": 14,
+      "title": "Draft: Workstream A — QC pipeline, event-grouped splits, leakage tests",
+      "head_sha": "5b790e559a7b2e99c77d5cb91b892cbf8c325a32",
+      "head_branch": "feature/data-integrity-split-leakage",
+      "base_sha": "554dfc2929ef221094ae52d251ac467611a42189",
+      "body": "Workstream A — G1 Data Integrity scaffolding.\n\n- data.py, qc.py, splits.py, synthetic.py new modules\n- 21 passing CPU tests\n- Leakage gates: train-only quantiles, atomic event groups, chronological ordering\n- NO GPU, NO real data, NO weights\n\nNext: run on real gauge data once Rongjia ACL is resolved.",
+      "updated_at": "2026-10-23T20:15:35Z"
+    },
+    {
+      "number": 13,
+      "title": "G1: add CPU data integrity utilities and synthetic regression tests",
+      "head_sha": "d810264eeff229ab795adf7f9c5be085a7f312d0",
+      "head_branch": "spartina/be5522e2",
+      "base_sha": "554dfc2929ef221094ae52d251ac467611a42189",
+      "body": "Implements the bounded CPU-only utility scope in #12. Adds UTC observation validation, shared-time chronological splits with embargo accounting and whole-event purges, per-gauge gap detection and retrospective linear interpolation, NumPy metrics, and deterministic synthetic fixtures. Builds on the existing assert_disjoint_groups without changing research specifications.\n\nTail RMSE requires train_values or a frozen training threshold so held-out targets never select the cutoff. Splits expose every excluded row. Events crossing a cut or touching an embargo are purged in full across gauges. Unknown event IDs allow temporal checks only. Interpolation must run separately within partitions and cannot construct operational inputs using unavailable future anchors. docs/G1_UTILITIES.md documents API contracts, empty-fold behavior, and metric denominators.\n\nCloses #12.\n\nValidation on commit d810264eeff229ab795adf7f9c5be085a7f312d0 (tree 6c93b2814192470e29653b39c86efb8a426a3168):\n- `PYTHONPATH=src pytest tests/ -q`: **86 passed in 0.65s**, including 81 new parameterized cases and all 5 existing cases.\n- `PYTHONPATH=src /usr/bin/python3 -m pytest tests/ -q`: **86 passed in 0.79s**.\n- `ruff check src tests`: **All checks passed**.\n- `git diff --check`: passed.\n- Environment: Python 3.10.12, NumPy 2.0.2, pytest 9.1.1, Ruff 0.16.9. No dependencies installed or added.\n- Coverage includes invalid observations, duplicate/decreasing timestamps, exact embargo boundaries, multi-gauge shared cuts, crossing-event exclusion, complete row accounting, irregular-time interpolation, deterministic RNG behavior, hand-computed metrics, and zero-event cases.\n\nSynthetic provenance and split evidence (in-memory fixture only, no licensed source):\n- Source: make_synthetic_records(n_stations=3, days=60, freq_min=60), local NumPy RNG seed 0; chronological_split fractions (.6, .2, .2), embargo_days=7.\n- Station IDs: synthetic-0, synthetic-1, synthetic-2.\n- Source: 4,320 rows; synthetic-day-0 through synthetic-day-59.\n- Train: 2,592 rows, 36 fixture groups (days 0–35), 2020-01-01 00:00 through 2020-02-05 23:00 UTC.\n- Validation: 360 rows, 5 fixture groups (days 43–47), 2020-02-13 00:00 through 2020-02-17 23:00 UTC.\n- Test: 360 rows, 5 fixture groups (days 55–59), 2020-02-25 00:00 through 2020-02-29 23:00 UTC.\n- Excluded: 1,008 rows, 14 fixture groups (days 36–42 and 48–54).\n- These daily groups are testing labels, not evidence of independent real storms or forecasting performance.\n\nSHA256 digests below use the function's returned row order and UTF-8 JSON of `[[r.station_id, r.timestamp.isoformat(), r.water_level, r.event_id] for r in rows]`, with `json.dumps(..., separators=(',', ':'))`:\n- Source: `33f94d13ace5c621d3455beccd4320ac4fd7b5060d8b8a1ad266c9375dd6d6f5`\n- Train: `821cc5e4deff322a564df6c50266f17d99d8b4fe154797ebf5b1492adba9aa06`\n- Validation: `2980e2d23d31e01d8e3c414d62983696c520252bb7620e831b1abd6776d1d0a8`\n- Test: `604ec2d9f7ca88a82735602109607a63c7b16e02dd7b8b742b1147716f4127a3`\n- Excluded: `8c995318cb4c171eab82b0a99206984f2fa2990155e4cbad6cbe442c9f90bafa`\n\nNo GPU use, training, dataset downloads, paid APIs, raw data, checkpoints, publication claims, or changes to dependencies/RESEARCH_PROTOCOL/ROADMAP. The full G1 real-source audit and real-data split sign-off remain outside this issue. CI status is not claimed here; results above are local CPU checks. Draft only; do not auto-merge.",
+      "updated_at": "2026-10-21T07:44:09Z"
+    }
+  ]
+}
