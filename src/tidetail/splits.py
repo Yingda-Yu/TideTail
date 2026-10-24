@@ -76,6 +76,17 @@ def partition_chronological(groups: Sequence[EventGroup],
     if not groups:
         raise ValueError("No event groups to split")
     events = sorted(groups, key=lambda g: g.start_idx)
+    seen = set()
+    previous_end = -1
+    for event in events:
+        if event.start_idx < 0 or event.end_idx < event.start_idx:
+            raise ValueError("Invalid event interval")
+        if event.event_id in seen:
+            raise ValueError("Duplicate event ID; consolidate the event before splitting")
+        if event.start_idx <= previous_end:
+            raise ValueError("Event intervals overlap; consolidate events before splitting")
+        seen.add(event.event_id)
+        previous_end = event.end_idx
     n = len(events)
     n_train = max(min_events_per_split, int(round(n * train_frac)))
     n_val = max(min_events_per_split, int(round(n * val_frac)))
