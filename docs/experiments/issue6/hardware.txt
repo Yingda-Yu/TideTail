@@ -1,0 +1,44 @@
+2026-10-25T11:09:56.186667+00:00
+$ nvidia-smi --query-gpu=index,uuid,name,memory.total,memory.used,utilization.gpu,temperature.gpu --format=csv
+index, uuid, name, memory.total [MiB], memory.used [MiB], utilization.gpu [%], temperature.gpu
+0, GPU-b26ce733-b690-f5d3-e79d-2b76f62b921c, NVIDIA GeForce RTX 3090, 24576 MiB, 22 MiB, 0 %, 24
+1, GPU-b007c532-2333-6da4-df73-2bca549a369a, NVIDIA GeForce RTX 3090, 24576 MiB, 18549 MiB, 0 %, 24
+2, GPU-5b231897-2fd2-da16-ed58-78970f72e32b, NVIDIA GeForce RTX 3090, 24576 MiB, 22351 MiB, 0 %, 26
+3, GPU-9cd80b3c-6b00-5a65-ae55-e79b351594d5, NVIDIA GeForce RTX 3090, 24576 MiB, 24 MiB, 0 %, 27
+4, GPU-6be030f8-625e-c4e7-a2fb-1309a673664b, NVIDIA GeForce RTX 3090, 24576 MiB, 18 MiB, 0 %, 26
+5, GPU-9df8f39a-88e1-957c-5ea2-900527dda698, NVIDIA GeForce RTX 3090, 24576 MiB, 1680 MiB, 72 %, 60
+6, GPU-3035ddcc-2dff-442f-9625-a18bc6553c2e, NVIDIA GeForce RTX 3090, 24576 MiB, 2539 MiB, 4 %, 53
+7, GPU-25c090c7-dad1-4d09-ab01-a5d181c0a346, NVIDIA GeForce RTX 3090, 24576 MiB, 1131 MiB, 73 %, 62
+8, GPU-89634698-8bff-35f2-68b9-54838cc11d2c, NVIDIA GeForce RTX 3090, 24576 MiB, 20308 MiB, 99 %, 66
+9, GPU-36f8dc5d-bfb6-1cde-cc9b-f45ad251367d, NVIDIA GeForce RTX 3090, 24576 MiB, 1049 MiB, 61 %, 67
+
+$ nvidia-smi --query-compute-apps=gpu_uuid,pid,process_name,used_gpu_memory --format=csv
+gpu_uuid, pid, process_name, used_gpu_memory [MiB]
+GPU-b007c532-2333-6da4-df73-2bca549a369a, 3050255, python, 256 MiB
+GPU-b007c532-2333-6da4-df73-2bca549a369a, 1067908, /data/yingda/llama.cpp/build/bin/llama-server, 18264 MiB
+GPU-5b231897-2fd2-da16-ed58-78970f72e32b, 3557986, /data/yingda/software/miniconda3/envs/comfy-h3/bin/python3.12, 22226 MiB
+GPU-9df8f39a-88e1-957c-5ea2-900527dda698, 1230852, /data/rongjia/coastal-observation-value/.venv/bin/python, 542 MiB
+GPU-9df8f39a-88e1-957c-5ea2-900527dda698, 1742511, python3, 1104 MiB
+GPU-3035ddcc-2dff-442f-9625-a18bc6553c2e, 737888, /data/rongjia/coastregime-paper3/.venv/bin/python, 1640 MiB
+GPU-3035ddcc-2dff-442f-9625-a18bc6553c2e, 1671390, /data/rongjia/georesponse-coast/.venv/bin/python, 604 MiB
+GPU-3035ddcc-2dff-442f-9625-a18bc6553c2e, 1756397, python3, 258 MiB
+GPU-25c090c7-dad1-4d09-ab01-a5d181c0a346, 1743216, python3, 1104 MiB
+GPU-89634698-8bff-35f2-68b9-54838cc11d2c, 969444, /usr/bin/python3, 19256 MiB
+GPU-89634698-8bff-35f2-68b9-54838cc11d2c, 1737749, python3, 1018 MiB
+GPU-36f8dc5d-bfb6-1cde-cc9b-f45ad251367d, 1737747, python3, 1018 MiB
+
+USER         PID COMMAND
+rongjia   737888 python
+rongjia   969444 python3
+yingda   1067908 llama-server
+rongjia  1230852 python
+rongjia  1671390 python
+rongjia  1737747 python3
+rongjia  1737749 python3
+rongjia  1742511 python3
+rongjia  1743216 python3
+rongjia  1756397 python3
+yingda   3050255 python
+yingda   3557986 python3.12
+
+Snapshot only. GPUs 3/4 have no compute process; reservation status UNKNOWN. No GPU selected.

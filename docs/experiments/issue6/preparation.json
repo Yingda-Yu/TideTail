@@ -1,0 +1,48 @@
+{
+  "mode": "train_only_engineering_smoke",
+  "region": "ny_bight",
+  "station_ids": [
+    "NOAA_8518750_The_Battery"
+  ],
+  "target": "water_level_m: observed total minus release deterministic FES2022 tide; metres",
+  "context_hours": 72,
+  "horizon_hours": 24,
+  "stride_hours": 1,
+  "release_contract": "96/72; this pilot deliberately uses 72/24",
+  "train_rows": 70041,
+  "train_row_interval": [
+    0,
+    70041
+  ],
+  "chronological_cut": 70137,
+  "embargo_hours": 96,
+  "validation_windows": 0,
+  "test_windows": 0,
+  "unused_row_interval": [
+    70041,
+    87672
+  ],
+  "train_windows": 69946,
+  "unique_target_hours": 69969,
+  "independent_storm_count": null,
+  "threshold_run_count": 1449,
+  "mean": 0.10825236834468384,
+  "std": 0.21461185616828657,
+  "normalization_fit_rows": 70041,
+  "total_water_q95_q99": [
+    0.9333,
+    1.1562600000000005
+  ],
+  "thresholds_used_for_training": false,
+  "future_covariates": false,
+  "source_hashes": {
+    "file_inventory_sha256.json": "e45364d77cd2d813fc36186b931a15b33aa82e7a0d3a8766f2af01b01b75d9c0",
+    "../MIGRATION_MANIFEST.json": "1be7c46960cbe622b8abbc699335623e485e2dfc143e54011a835c057f44de9c",
+    "region_availability.json": "87144ebeeebcf94aec18b4fd4e71bdb1d297f92ae81cef0447ae94ab3daedeb8",
+    "derived/prime_coast/ny_bight/region_manifest_v1.json": "dfaa9324105468c43de95f44fe954711d5d9e8214dbb6498ce02717becc06999",
+    "derived/prime_coast/ny_bight/target_timeline_v1.csv": "498a9c79d280fb91d3a84421e6d58219b0b6cb992a65d2971692f8748eeb59e7",
+    "derived/prime_coast/ny_bight/event_table_v1.csv": "bc9db6a4cc29cbaa849c63a141e61fab1fcc5932031fca97d04bf101199b3fcb"
+  },
+  "license_status": "Owner authorized local engineering use; source license/redistribution and station datum sign-off remain incomplete per PR19; no redistribution",
+  "generalization_evaluation_authorized": false
+}

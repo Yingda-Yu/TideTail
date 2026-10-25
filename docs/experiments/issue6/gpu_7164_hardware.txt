@@ -1,0 +1,89 @@
+2026-10-25T12:59:28.364745+00:00
+Sun Oct 25 20:59:28 2026
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.03             Driver Version: 580.159.03     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3090        Off |   00000000:1A:00.0 Off |                  N/A |
+| 32%   24C    P8             23W /  350W |      22MiB /  24576MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA GeForce RTX 3090        Off |   00000000:1B:00.0 Off |                  N/A |
+| 32%   25C    P8             25W /  350W |   18549MiB /  24576MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA GeForce RTX 3090        Off |   00000000:1C:00.0 Off |                  N/A |
+| 32%   25C    P8             21W /  350W |   22351MiB /  24576MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA GeForce RTX 3090        Off |   00000000:1D:00.0 Off |                  N/A |
+| 32%   27C    P8             24W /  350W |      24MiB /  24576MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   4  NVIDIA GeForce RTX 3090        Off |   00000000:1E:00.0 Off |                  N/A |
+| 32%   26C    P8             18W /  350W |      18MiB /  24576MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   5  NVIDIA GeForce RTX 3090        Off |   00000000:3D:00.0 Off |                  N/A |
+| 32%   43C    P2            106W /  350W |     834MiB /  24576MiB |     14%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   6  NVIDIA GeForce RTX 3090        Off |   00000000:3E:00.0 Off |                  N/A |
+| 45%   47C    P2            105W /  350W |     894MiB /  24576MiB |     20%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   7  NVIDIA GeForce RTX 3090        Off |   00000000:3F:00.0 Off |                  N/A |
+| 77%   65C    P2            332W /  350W |    1131MiB /  24576MiB |     87%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   8  NVIDIA GeForce RTX 3090        Off |   00000000:40:00.0 Off |                  N/A |
+| 87%   66C    P2            343W /  350W |   20394MiB /  24576MiB |     99%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   9  NVIDIA GeForce RTX 3090        Off |   00000000:41:00.0 Off |                  N/A |
+| 48%   62C    P2            322W /  350W |    1135MiB /  24576MiB |     85%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
+|    1   N/A  N/A         1067908      C   ...ma.cpp/build/bin/llama-server      18264MiB |
+|    1   N/A  N/A         3050255      C   python                                  256MiB |
+|    1   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
+|    2   N/A  N/A         3557986      C   .../envs/comfy-h3/bin/python3.12      22226MiB |
+|    2   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
+|    3   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
+|    4   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
+|    5   N/A  N/A         1230852      C   ...vation-value/.venv/bin/python        542MiB |
+|    5   N/A  N/A         1938667      C   python3                                 258MiB |
+|    5   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
+|    6   N/A  N/A         1896748      C   ...sponse-coast/.venv/bin/python        604MiB |
+|    6   N/A  N/A         1938668      C   python3                                 258MiB |
+|    6   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
+|    7   N/A  N/A         1936810      C   python3                                1104MiB |
+|    7   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
+|    8   N/A  N/A          969444      C   /usr/bin/python3                      19256MiB |
+|    8   N/A  N/A         1935831      C   python3                                1104MiB |
+|    8   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
+|    9   N/A  N/A         1937809      C   python3                                1104MiB |
+|    9   N/A  N/A         3589950      G   /usr/lib/xorg/Xorg                        4MiB |
++-----------------------------------------------------------------------------------------+
+gpu_uuid, pid, process_name, used_gpu_memory [MiB]
+GPU-b007c532-2333-6da4-df73-2bca549a369a, 3050255, python, 256 MiB
+GPU-b007c532-2333-6da4-df73-2bca549a369a, 1067908, /data/yingda/llama.cpp/build/bin/llama-server, 18264 MiB
+GPU-5b231897-2fd2-da16-ed58-78970f72e32b, 3557986, /data/yingda/software/miniconda3/envs/comfy-h3/bin/python3.12, 22226 MiB
+GPU-9df8f39a-88e1-957c-5ea2-900527dda698, 1230852, /data/rongjia/coastal-observation-value/.venv/bin/python, 542 MiB
+GPU-9df8f39a-88e1-957c-5ea2-900527dda698, 1938667, python3, 258 MiB
+GPU-3035ddcc-2dff-442f-9625-a18bc6553c2e, 1896748, /data/rongjia/georesponse-coast/.venv/bin/python, 604 MiB
+GPU-3035ddcc-2dff-442f-9625-a18bc6553c2e, 1938668, python3, 258 MiB
+GPU-25c090c7-dad1-4d09-ab01-a5d181c0a346, 1936810, python3, 1104 MiB
+GPU-89634698-8bff-35f2-68b9-54838cc11d2c, 969444, /usr/bin/python3, 19256 MiB
+GPU-89634698-8bff-35f2-68b9-54838cc11d2c, 1935831, python3, 1104 MiB
+GPU-36f8dc5d-bfb6-1cde-cc9b-f45ad251367d, 1937809, python3, 1104 MiB
