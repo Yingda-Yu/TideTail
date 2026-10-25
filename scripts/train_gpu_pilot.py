@@ -9,7 +9,9 @@ import resource
 import subprocess
 import time
 from contextlib import ExitStack
+from datetime import datetime, timezone
 from pathlib import Path
+from uuid import UUID
 
 for variable in (
     "OMP_NUM_THREADS",
@@ -69,6 +71,10 @@ def gpu_status(index, own_pid=None):
     }
 
 
+def canonical_uuid(value):
+    return str(UUID(str(value).removeprefix("GPU-")))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
@@ -82,7 +88,11 @@ def main():
     parser.add_argument("--epochs", type=int, default=3, choices=(1, 2, 3))
     parser.add_argument("--batch", type=int, default=128)
     parser.add_argument("--max-seconds", type=int, default=1200)
+    parser.add_argument("--max-steps", type=int, help="Optional total optimizer-step limit")
+    parser.add_argument("--resume", type=Path, help="Trusted local pilot checkpoint")
     args = parser.parse_args()
+    if args.max_steps is not None and args.max_steps < 3:
+        parser.error("max-steps must be at least 3")
     if not 1 <= args.batch <= 128 or not 1 <= args.max_seconds <= 1800:
         parser.error("batch <=128 and time budget <=1800 seconds required")
     args.output.mkdir(parents=True, exist_ok=False)
@@ -120,7 +130,7 @@ def main():
             raise RuntimeError("exactly one visible CUDA device required; no CPU fallback")
         properties = torch.cuda.get_device_properties(0)
         mapped_uuid = str(properties.uuid)
-        if mapped_uuid != initial["uuid"]:
+        if canonical_uuid(mapped_uuid) != canonical_uuid(initial["uuid"]):
             raise RuntimeError(f"physical CUDA mapping mismatch: {mapped_uuid}, {initial}")
         torch.cuda.set_per_process_memory_fraction(0.30, 0)
         torch.manual_seed(20261025)
@@ -134,10 +144,13 @@ def main():
         y = torch.from_numpy(target[:, None]).to(device)
         amp = torch.cuda.is_bf16_supported()
         config = {
+            "started_utc": datetime.now(timezone.utc).isoformat(),
             "seed": 20261025,
             "epochs": args.epochs,
             "batch": args.batch,
             "max_seconds": args.max_seconds,
+            "max_steps": args.max_steps,
+            "resume": str(args.resume) if args.resume else None,
             "physical_gpu": initial,
             "cuda_visible_devices": os.environ["CUDA_VISIBLE_DEVICES"],
             "mapped_uuid": mapped_uuid,
@@ -166,6 +179,36 @@ def main():
         (args.output / "config.json").write_text(json.dumps(config, indent=2) + "\n")
         started, cpu_start = time.monotonic(), time.process_time()
         step, examples, stopped = 0, 0, False
+        next_epoch, next_offset = 0, 0
+        if args.resume:
+            state = torch.load(args.resume, map_location=device, weights_only=False)
+            if state["data_card"] != card:
+                raise RuntimeError("resume data card mismatch")
+            for key in ("batch", "seed", "diffusion_steps", "amp"):
+                if state["config"][key] != config[key]:
+                    raise RuntimeError(f"resume config mismatch: {key}")
+            if state["config"]["source_code_hashes"] != config["source_code_hashes"]:
+                raise RuntimeError("resume source mismatch")
+            model.load_state_dict(state["model"])
+            optimizer.load_state_dict(state["optimizer"])
+            step, examples = state["steps"], state["examples"]
+            next_epoch, next_offset = state["next_epoch"], state["next_offset"]
+            torch.set_rng_state(state["torch_rng_state"].cpu())
+            torch.cuda.set_rng_state(state["cuda_rng_state"].cpu())
+        initial_step = step
+
+        def checkpoint():
+            temporary = args.output / "checkpoint.tmp"
+            torch.save(
+                {
+                    "model": model.state_dict(), "optimizer": optimizer.state_dict(),
+                    "config": config, "data_card": card, "steps": step, "examples": examples,
+                    "next_epoch": next_epoch, "next_offset": next_offset,
+                    "torch_rng_state": torch.get_rng_state(),
+                    "cuda_rng_state": torch.cuda.get_rng_state(),
+                }, temporary,
+            )
+            temporary.replace(args.output / "checkpoint.pt")
         monitor = stack.enter_context(open(args.output / "resources.jsonl", "w", buffering=1))
         loss_file = stack.enter_context(open(args.output / "loss.csv", "w", buffering=1))
         writer = csv.writer(loss_file)
@@ -186,10 +229,14 @@ def main():
 
         measure()
         try:
-            for epoch in range(args.epochs):
-                order = torch.randperm(len(y), device=device)
-                for indices in order.split(args.batch):
-                    if time.monotonic() - started >= args.max_seconds:
+            for epoch in range(next_epoch, args.epochs):
+                rng = torch.Generator(device=device).manual_seed(20261025 + epoch)
+                order = torch.randperm(len(y), device=device, generator=rng)
+                offset = next_offset if epoch == next_epoch else 0
+                for indices in order[offset:].split(args.batch):
+                    if time.monotonic() - started >= args.max_seconds or (
+                        args.max_steps is not None and step >= args.max_steps
+                    ):
                         stopped = True
                         break
                     if step % 20 == 0:
@@ -211,9 +258,14 @@ def main():
                     optimizer.step()
                     step += 1
                     examples += len(indices)
+                    offset += len(indices)
+                    next_epoch = epoch + int(offset == len(y))
+                    next_offset = 0 if offset == len(y) else offset
                     writer.writerow(
                         [step, epoch + 1, examples, loss.item(), time.monotonic() - started]
                     )
+                    if step % 100 == 0:
+                        checkpoint()
                 if stopped:
                     break
             torch.cuda.synchronize()
@@ -235,18 +287,7 @@ def main():
                 generated, y[:, 0], p=2, compute_mode="donot_use_mm_for_euclid_dist"
             )
             nearest = distances.min(dim=1).values / (24**0.5)
-            torch.save(
-                {
-                    "model": model.state_dict(),
-                    "optimizer": optimizer.state_dict(),
-                    "config": config,
-                    "data_card": card,
-                    "steps": step,
-                    "torch_rng_state": torch.get_rng_state(),
-                    "cuda_rng_state": torch.cuda.get_rng_state(),
-                },
-                args.output / "checkpoint.pt",
-            )
+            checkpoint()
             np.savez(
                 args.output / "samples.npz",
                 residual_m=generated.cpu().numpy() * card["std"] + card["mean"],
@@ -255,8 +296,11 @@ def main():
             wall, cpu = time.monotonic() - started, time.process_time() - cpu_start
             summary = {
                 "steps": step,
+                "session_steps": step - initial_step,
+                "finished_utc": datetime.now(timezone.utc).isoformat(),
                 "examples_seen": examples,
-                "complete_epochs": epoch + int(not stopped),
+                "complete_epochs": next_epoch,
+                "next_offset": next_offset,
                 "timebox_reached": stopped,
                 "wall_seconds": wall,
                 "process_cpu_seconds": cpu,
@@ -272,6 +316,8 @@ def main():
             (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
             print(json.dumps(summary), flush=True)
         except Exception as error:
+            if step > initial_step:
+                checkpoint()
             (args.output / "failure.json").write_text(
                 json.dumps({"step": step, "error": str(error)}) + "\n"
             )

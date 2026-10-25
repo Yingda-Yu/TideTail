@@ -73,6 +73,11 @@ def test_gpu_guard_rejects_conflicting_process(monkeypatch):
     )
     cli = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cli)
+    uuid = "6be030f8-625e-c4e7-a2fb-1309a673664b"
+    assert cli.canonical_uuid(uuid) == cli.canonical_uuid("GPU-" + uuid)
+    assert cli.canonical_uuid(uuid) != cli.canonical_uuid("9cd80b3c-6b00-5a65-ae55-e79b351594d5")
+    with pytest.raises(ValueError):
+        cli.canonical_uuid("invalid")
     gpu = "4, GPU-example, NVIDIA GeForce RTX 3090, 24576, 18, 0, 27\n"
     monkeypatch.setattr(cli, "query", lambda args: gpu if "--query-gpu" in args[0] else "")
     assert cli.gpu_status(4)["physical_index"] == 4
