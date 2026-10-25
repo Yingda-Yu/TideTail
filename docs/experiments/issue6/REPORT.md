@@ -1,3 +1,5 @@
+> Historical preparation report. The allocation blocker below was superseded by owner authorization and [actual GPU execution](GPU_RUN_7164.md) on 2026-10-25. Original evidence is preserved.
+
 # Issue #6 GPU conditional diffusion pilot — prepared, training blocked
 
 Task f1cff330, 2026-10-25. Isolated branch `spartina/f1cff330`, based on
