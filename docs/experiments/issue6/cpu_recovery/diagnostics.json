@@ -1,6 +1,11 @@
 {
   "training_source_sha": "5bc646676a08191a77e5d424f2cf52bb1af00c04",
-  "diagnostic_source_sha": "e2d93fba65f670f9750aeae117ee9345c3ae1b47",
+  "diagnostic_source_sha": "fd0fbc12bf6c3c5a78113c0d40508530f861401a",
+  "diagnostic_working_file_hashes": {
+    "scripts/diagnose_ddpm_cpu.py": "077f97ef0dd4f02c14143770e66f87116f4acc76bc2228e941b0383804159c83",
+    "src/tidetail/torch_diffusion.py": "5f0d40b114dc202593d8af35477a25a9c5acbca27bb88e6bcb9fcd1a0e5c4c6c",
+    "src/tidetail/pilot_data.py": "d485ba0bb19bb5203ba1406bf1601384aeae4adcbccc0c053f30f2439eeaa2c7"
+  },
   "checkpoint_sha256": "dee516cf74b50a0ca8aff8ab05815c7ed36a32ea6c49b9dc81d5b532d39ebb68",
   "source_hashes_verified": {
     "scripts/train_gpu_pilot.py": "957f5971c2d245f8c454e90c25a6ba678129637317d93abae01bf3296198a416",
