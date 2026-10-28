@@ -122,7 +122,7 @@ def main():
         gpu_status(args.gpu)
         import torch
 
-        from tidetail.torch_diffusion import Diffusion, TemporalDenoiser
+        from tidetail.torch_diffusion import Diffusion, TemporalDenoiser, sample_diagnostics
 
         torch.set_num_threads(2)
         torch.set_num_interop_threads(2)
@@ -295,6 +295,9 @@ def main():
             measure()
             wall, cpu = time.monotonic() - started, time.process_time() - cpu_start
             summary = {
+                "sample_scale": sample_diagnostics(
+                    generated.cpu().numpy(), target
+                ),
                 "steps": step,
                 "session_steps": step - initial_step,
                 "finished_utc": datetime.now(timezone.utc).isoformat(),
