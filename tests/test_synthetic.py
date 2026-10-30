@@ -13,7 +13,7 @@ def test_toy_series_deterministic():
 
 
 def test_toy_series_has_extreme_events():
-    t, clean, _ = make_toy_tide_series(n_days=60, seed=0, include_storm=True)
+    _, clean, _ = make_toy_tide_series(n_days=60, seed=0, include_storm=True)
     # storm bumps push surge far above M2 amplitude
     assert np.nanmax(clean) > 3.0  # 1.2 M2 + K1 + storm bump
 

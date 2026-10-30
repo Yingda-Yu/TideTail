@@ -7,10 +7,13 @@ from __future__ import annotations
 
 import csv
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 import pytest
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 DATA_ROOT = Path("/data/yingda/tidetail-data/prime-formal-2015-2024/derived/prime_coast")
 HAS_DATA = DATA_ROOT.is_dir()
@@ -20,16 +23,20 @@ pytestmark = pytest.mark.skipif(not HAS_DATA, reason="Prime dataset not migrated
 
 
 def _f(v):
-    try: return float(v)
-    except (ValueError, TypeError): return np.nan
+    try:
+        return float(v)
+    except (ValueError, TypeError):
+        return np.nan
 
 
 class TestRealPrimeData:
     @pytest.mark.parametrize("region", REGIONS)
     def test_chronological_splits(self, region):
         base = DATA_ROOT / region
-        meta = json.load(open(base / "train_only_metadata_v1.json"))
-        rows = list(csv.DictReader(open(base / "target_timeline_v1.csv")))
+        with open(base / "train_only_metadata_v1.json") as fh:
+            meta = json.load(fh)
+        with open(base / "target_timeline_v1.csv") as fh:
+            rows = list(csv.DictReader(fh))
         train_end = int(meta["train_end_index"])
         val_end = int(meta["validation_end_index"])
         assert train_end < val_end < len(rows)
@@ -39,8 +46,10 @@ class TestRealPrimeData:
     @pytest.mark.parametrize("region", REGIONS)
     def test_train_only_thresholds(self, region):
         base = DATA_ROOT / region
-        meta = json.load(open(base / "train_only_metadata_v1.json"))
-        rows = list(csv.DictReader(open(base / "target_timeline_v1.csv")))
+        with open(base / "train_only_metadata_v1.json") as fh:
+            meta = json.load(fh)
+        with open(base / "target_timeline_v1.csv") as fh:
+            rows = list(csv.DictReader(fh))
         train_end = int(meta["train_end_index"])
         all_obs = np.array([_f(r.get("observed_total_water_level_m", "")) for r in rows])
         train_q95 = float(np.nanquantile(all_obs[:train_end], 0.95))
@@ -51,7 +60,8 @@ class TestRealPrimeData:
     @pytest.mark.parametrize("region", REGIONS)
     def test_disjoint_event_groups(self, region):
         base = DATA_ROOT / region
-        events = list(csv.DictReader(open(base / "event_table_v1.csv")))
+        with open(base / "event_table_v1.csv") as fh:
+            events = list(csv.DictReader(fh))
         t = {e["event_id"] for e in events if e["split"] == "train"}
         v = {e["event_id"] for e in events if e["split"] == "validation"}
         te = {e["event_id"] for e in events if e["split"] == "test"}
@@ -63,11 +73,14 @@ class TestRealPrimeBaselines:
     @pytest.mark.parametrize("region", REGIONS)
     def test_seasonal_beats_persistence(self, region):
         """Seasonal MAE should beat raw persistence on real tide data."""
-        import sys; sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
         from tidetail.baselines import persistence, seasonal_baseline
+        from tidetail.evaluate import mae
+
         base = DATA_ROOT / region
-        meta = json.load(open(base / "train_only_metadata_v1.json"))
-        rows = list(csv.DictReader(open(base / "target_timeline_v1.csv")))
+        with open(base / "train_only_metadata_v1.json") as fh:
+            meta = json.load(fh)
+        with open(base / "target_timeline_v1.csv") as fh:
+            rows = list(csv.DictReader(fh))
         all_obs = np.array([_f(r.get("observed_total_water_level_m", "")) for r in rows])
         test = all_obs[int(meta["validation_end_index"]):]
         horizon, input_len = 24, 72
@@ -77,7 +90,6 @@ class TestRealPrimeBaselines:
             if np.isfinite(x).all() and np.isfinite(y).all():
                 windows.append((x, y))
         assert len(windows) >= 100, f"{region}: too-few windows {len(windows)}"
-        from tidetail.evaluate import mae
         pers_mae = np.mean([mae(y, persistence(x, horizon)) for x, y in windows])
         seas_mae = np.mean([mae(y, seasonal_baseline(x, horizon, period=24)) for x, y in windows])
         assert seas_mae < pers_mae, f"{region}: seasonal ({seas_mae:.4f}) did not beat persistence ({pers_mae:.4f})"

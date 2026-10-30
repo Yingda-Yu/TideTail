@@ -85,8 +85,8 @@ def partition_chronological(groups: Sequence[EventGroup],
         seen.add(event.event_id)
         previous_end = event.end_idx
     n = len(events)
-    n_train = max(min_events_per_split, int(round(n * train_frac)))
-    n_val = max(min_events_per_split, int(round(n * val_frac)))
+    n_train = max(min_events_per_split, round(n * train_frac))
+    n_val = max(min_events_per_split, round(n * val_frac))
     n_test = n - n_train - n_val
     if n_test < min_events_per_split:
         deficit = min_events_per_split - n_test
