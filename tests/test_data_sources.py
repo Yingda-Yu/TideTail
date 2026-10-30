@@ -4,7 +4,6 @@ All tests are CPU-only, no network, no real downloads.
 """
 from __future__ import annotations
 
-import csv
 import hashlib
 import json
 from pathlib import Path
@@ -23,7 +22,6 @@ from tidetail.data_sources import (
     save_registry,
 )
 from tidetail.data_sources.noaa_coops import KNOWN_STATIONS, build_url, parse_csv
-
 
 # ==========================================================================
 # Registry tests
