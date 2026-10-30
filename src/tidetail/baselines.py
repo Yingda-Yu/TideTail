@@ -28,15 +28,22 @@ def persistence(history, horizon):
     return np.full(horizon, float(np.asarray(history)[-1]), dtype=float)
 
 
-def seasonal_baseline(history, horizon, period=144):
+def seasonal_baseline(history, horizon, period=24):
     """Repeat the most recent seasonal period.
 
-    period=144 = 6 days at hourly cadence (typical semi-diurnal tide).
+    Default period=24 = 1 day (solar diurnal), well-matched to 96h history.
+    For longer histories or multi-day cycles, pass period=144 (6 days,
+    semi-diurnal tide). Falls back to persistence when history < period
+    AND a halved period is also too short.
     """
-    if np.asarray(history).size < period:
-        return persistence(history, horizon)
+    arr = np.asarray(history)
+    if arr.size < period and period > 24:
+        # Retry with 24-hour period (always fits in 96h history)
+        period = 24
+    if arr.size < period:
+        return persistence(arr, horizon)
     out = np.empty(horizon, dtype=float)
-    base = np.asarray(history)[-period:]
+    base = arr[-period:]
     for k in range(horizon):
         out[k] = base[k % period]
     return out

@@ -66,11 +66,16 @@ reconstruction is amplified relative to the epsilon prediction by:
     \label{eq:amplify}
 \end{equation}
 On the first eight fixed training windows with seed 20261028, terminal epsilon MSE
-was approximately 0.005746, which would correspond to clean reconstruction RMSE
-of approximately $0.005746 \times 1298.8 / \sqrt{1} \approx 21.1$~metres. This
-terminal-step sensitivity is a necessary contributing factor to the magnitude
-failure, though not sufficient alone: changing only the terminal schedule without
-retraining does not establish a fix.
+was approximately 0.005746 (epsilon $\sigma \approx \sqrt{0.005746} \approx 0.076$).
+The clean reconstruction error scales as $\sigma_{\text{clean}} \approx
+\sigma_\epsilon / \sqrt{\bar{\alpha}_{63}}$ (equation~\ref{eq:amplify}), giving
+$0.076 \times 1298.8 \approx 99$~metres of implied clean RMSE. The observed implied
+clean $\sigma$ at step 63 was 18.6~m (Table~\ref{tab:reverse-trace}), somewhat
+smaller than this worst-case bound because the terminal-step amplification
+applies only to the latest step's epsilon error accumulation, not an independent
+worst case on every step. Regardless, the implication is unambiguous:
+\emph{terminal alpha bar of order $10^{-7}$ amplifies any non-negligible epsilon
+prediction error to catastrophic scale.}
 
 \subsection{Oracle schedule comparison}
 To isolate whether terminal schedule shape is a sufficient cause of the
