@@ -8,8 +8,7 @@ until the user installs it.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Tuple
+from datetime import timedelta
 
 import numpy as np
 
@@ -21,22 +20,22 @@ class GaugeRecord:
     station_id: str
     units: str = "m"          # metres relative to gauge datum
     sampling_period: timedelta = field(default_factory=lambda: timedelta(minutes=10))
-    lat: Optional[float] = None
-    lon: Optional[float] = None
+    lat: float | None = None
+    lon: float | None = None
     time: np.ndarray = field(default_factory=lambda: np.array([], dtype="datetime64[s]"))
     water_level: np.ndarray = field(default_factory=lambda: np.array([], dtype=float))
-    metadata: Dict[str, str] = field(default_factory=dict)
+    metadata: dict[str, str] = field(default_factory=dict)
 
     @property
     def n(self) -> int:
         return int(self.water_level.size)
 
     @property
-    def start(self) -> Optional[np.datetime64]:
+    def start(self) -> np.datetime64 | None:
         return self.time[0] if self.n else None
 
     @property
-    def end(self) -> Optional[np.datetime64]:
+    def end(self) -> np.datetime64 | None:
         return self.time[-1] if self.n else None
 
 
@@ -89,7 +88,7 @@ def outlier_iqr(values: np.ndarray, k: float = 5.0) -> np.ndarray:
 
 
 def linear_interpolate(values: np.ndarray, max_gap_s: float = 3600,
-                       time_s: Optional[np.ndarray] = None) -> np.ndarray:
+                       time_s: np.ndarray | None = None) -> np.ndarray:
     """Linear interpolate NaNs / outliers, only gaps <= max_gap_s.
 
     If time_s is None, assumes uniform gaps and interpolates up to
@@ -127,10 +126,10 @@ def linear_interpolate(values: np.ndarray, max_gap_s: float = 3600,
 
 
 def detide_harmonic(values: np.ndarray, time_s: np.ndarray,
-                    constituents: Tuple[float, ...] = (2 * np.pi / 43200.0,  # M2
+                    constituents: tuple[float, ...] = (2 * np.pi / 43200.0,  # M2
                                                        2 * np.pi / 86400.0,  # K1
                                                        2 * np.pi / 18050.0,  # S2
-                                                       )) -> Tuple[np.ndarray, np.ndarray]:
+                                                       )) -> tuple[np.ndarray, np.ndarray]:
     """Linear regression fit of tidal harmonics → (tide_fit, surge_residual).
 
     constituents: angular frequencies (rad/s) of major tidal components.

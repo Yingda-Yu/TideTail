@@ -1,7 +1,7 @@
 """Synthetic-data deterministic behaviour."""
 import numpy as np
 
-from tidetail.synthetic import make_toy_tide_series, make_toy_gauge
+from tidetail.synthetic import make_toy_gauge, make_toy_tide_series
 
 
 def test_toy_series_deterministic():

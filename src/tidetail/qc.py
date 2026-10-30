@@ -12,14 +12,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import timedelta
-from typing import Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from .data import GaugeRecord, gap_mask, missing_ratio, outlier_iqr, outlier_3sigma
+from .data import GaugeRecord, missing_ratio, outlier_3sigma, outlier_iqr
 
-
-PHYSICAL_BOUNDS: Dict[str, Tuple[float, float]] = {
+PHYSICAL_BOUNDS: dict[str, tuple[float, float]] = {
     # site_code -> (lo, hi) in metres; defaults covered by DEFAULT
     "_default": (-5.0, 15.0),
 }
@@ -36,23 +34,23 @@ class QCSummary:
     n_outliers_3sigma: int = 0
     n_outliers_iqr: int = 0
     n_bounds_clamped: int = 0
-    bounds_applied: Tuple[float, float] = (0.0, 0.0)
-    notes: List[str] = field(default_factory=list)
+    bounds_applied: tuple[float, float] = (0.0, 0.0)
+    notes: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {k: (list(v) if isinstance(v, tuple) else v)
                 for k, v in self.__dict__.items()}
 
 
-def _bounds_for(station_id: str) -> Tuple[float, float]:
+def _bounds_for(station_id: str) -> tuple[float, float]:
     return PHYSICAL_BOUNDS.get(station_id, PHYSICAL_BOUNDS["_default"])
 
 
 def qc_pipeline(rec: GaugeRecord,
-                expected_period: Optional[timedelta] = None,
-                bounds: Optional[Tuple[float, float]] = None,
+                expected_period: timedelta | None = None,
+                bounds: tuple[float, float] | None = None,
                 max_interp_gap_s: float = 3600.0,
-                ) -> Tuple[GaugeRecord, QCSummary]:
+                ) -> tuple[GaugeRecord, QCSummary]:
     """Run full QC on a GaugeRecord. Returns cleaned copy + summary.
 
     Pipeline steps run in order — earlier masks aren't re-used by later steps,

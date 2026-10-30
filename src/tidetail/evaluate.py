@@ -1,7 +1,7 @@
 """Shared forecasting evaluation — real-only, no synthetic in val/test."""
 from __future__ import annotations
 
-from typing import Dict, Optional, Sequence
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -49,7 +49,7 @@ def peak_timing_error(y: np.ndarray, yhat: np.ndarray) -> float:
 
 
 def threshold_metrics(y: np.ndarray, yhat: np.ndarray,
-                      threshold: float) -> Dict[str, float]:
+                      threshold: float) -> dict[str, float]:
     """Precision/recall/false_alarm at a threshold (train-only by protocol)."""
     pred_event = yhat >= threshold
     true_event = y >= threshold
@@ -67,7 +67,7 @@ def threshold_metrics(y: np.ndarray, yhat: np.ndarray,
 
 
 def bootstrap_ci(values: Sequence[float], n_boot: int = 200,
-                 alpha: float = 0.05, seed: int = 0) -> Dict[str, float]:
+                 alpha: float = 0.05, seed: int = 0) -> dict[str, float]:
     """95% bootstrap CI for the mean of `values`."""
     arr = np.array([v for v in values if np.isfinite(v)], dtype=float)
     if arr.size < 3:

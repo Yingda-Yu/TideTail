@@ -1,10 +1,11 @@
 """Event-grouped chronological split tests."""
-import pytest
 import numpy as np
 
 from tidetail.splits import (
-    EventGroup, group_by_boolean_flags, partition_chronological,
+    EventGroup,
+    group_by_boolean_flags,
     indices_from_groups,
+    partition_chronological,
 )
 
 

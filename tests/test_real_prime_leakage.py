@@ -4,8 +4,13 @@ This test runs only when the dataset is present at /data/yingda/tidetail-data/.
 Skipped automatically on CI machines without the data copy.
 """
 from __future__ import annotations
-import csv, json, numpy as np, pytest
+
+import csv
+import json
 from pathlib import Path
+
+import numpy as np
+import pytest
 
 DATA_ROOT = Path("/data/yingda/tidetail-data/prime-formal-2015-2024/derived/prime_coast")
 HAS_DATA = DATA_ROOT.is_dir()
@@ -67,7 +72,7 @@ class TestRealPrimeBaselines:
         test = all_obs[int(meta["validation_end_index"]):]
         horizon, input_len = 24, 72
         windows = []
-        for s in range(0, len(test) - horizon - input_len + 1):
+        for s in range(len(test) - horizon - input_len + 1):
             x = test[s:s + input_len]; y = test[s + input_len:s + input_len + horizon]
             if np.isfinite(x).all() and np.isfinite(y).all():
                 windows.append((x, y))

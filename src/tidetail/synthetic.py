@@ -9,8 +9,7 @@ Everything deterministic when seeded.
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Tuple
+from datetime import timedelta
 
 import numpy as np
 
@@ -21,7 +20,7 @@ def make_toy_tide_series(n_days: int = 30, period_minutes: int = 10,
                          seed: int = 0, include_storm: bool = True,
                          include_gaps: bool = True, include_outliers: bool = True,
                          include_nans: bool = True,
-                         ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+                         ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Return (time, clean_water_level, contaminated_water_level).
 
     Clean = deterministic tide + AR(2) surge noise + optional storm bumps.

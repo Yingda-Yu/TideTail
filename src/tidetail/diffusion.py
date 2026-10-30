@@ -9,8 +9,6 @@ produce plausible samples BEFORE committing GPU budget.
 """
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 
@@ -126,7 +124,7 @@ def memorization_check(real: np.ndarray, gen: np.ndarray,
     arr = np.array(results, dtype=float)
     memorized = int((arr >= threshold).sum())
     return {
-        "n_windows": int(len(arr)),
+        "n_windows": len(arr),
         "memorized": memorized,
         "memorized_rate": float(memorized) / max(1, len(arr)),
         "mean_corr": float(np.mean(arr)),

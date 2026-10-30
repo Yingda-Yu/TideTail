@@ -1,6 +1,5 @@
 """QC pipeline regression tests on synthetic gauge data."""
 import numpy as np
-import pytest
 
 from tidetail.data import GaugeRecord
 from tidetail.qc import qc_pipeline

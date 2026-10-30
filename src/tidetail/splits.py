@@ -7,13 +7,10 @@ The protocol enforces three hard gates:
 """
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from datetime import timedelta
-from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
-
-from .data import GaugeRecord
 
 
 @dataclass
@@ -23,15 +20,15 @@ class EventGroup:
     event_id: str
     start_idx: int
     end_idx: int          # inclusive
-    label: Optional[str] = None
-    metadata: Dict[str, str] = field(default_factory=dict)
+    label: str | None = None
+    metadata: dict[str, str] = field(default_factory=dict)
 
     @property
     def size(self) -> int:
         return self.end_idx - self.start_idx + 1
 
 
-def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> List[Tuple[int, int]]:
+def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> list[tuple[int, int]]:
     """Return (start_idx, end_idx_inclusive) runs where flags==True.
 
     Runs whose False-valued gap is <= gap_tolerance are merged.
@@ -39,7 +36,7 @@ def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> List[Tu
     """
     flags = np.asarray(flags, dtype=bool)
     n = flags.size
-    runs: List[Tuple[int, int]] = []
+    runs: list[tuple[int, int]] = []
     i = 0
     while i < n:
         if flags[i]:
@@ -67,7 +64,7 @@ def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> List[Tu
 
 def partition_chronological(groups: Sequence[EventGroup],
                             train_frac: float, val_frac: float,
-                            min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+                            min_events_per_split: int = 1) -> tuple[list[EventGroup], list[EventGroup], list[EventGroup]]:
     """Split events by chronological start, ensuring each partition has ≥min_events_per_split.
 
     If the requested fracs would leave any partition below min_events_per_split,
@@ -112,7 +109,7 @@ def partition_chronological(groups: Sequence[EventGroup],
     return train, val, test
 
 
-def train_only_thresholds(train: np.ndarray, quantiles: Sequence[float] = (0.95, 0.99)) -> Dict[float, float]:
+def train_only_thresholds(train: np.ndarray, quantiles: Sequence[float] = (0.95, 0.99)) -> dict[float, float]:
     """Compute extreme-event thresholds from TRAIN ONLY.
 
     Returns {q: value} for each requested quantile.
@@ -125,7 +122,7 @@ def train_only_thresholds(train: np.ndarray, quantiles: Sequence[float] = (0.95,
 
 def indices_from_groups(groups: Sequence[EventGroup]) -> np.ndarray:
     """Return flat integer indices covered by all event groups."""
-    idx: List[int] = []
+    idx: list[int] = []
     for g in groups:
         idx.extend(range(g.start_idx, g.end_idx + 1))
     return np.array(idx, dtype=int)

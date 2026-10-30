@@ -2,14 +2,15 @@
 
 These MUST catch any accidental cross-partition contamination.
 """
-import pytest
 import numpy as np
+import pytest
 
 from tidetail.protocol import assert_disjoint_groups
 from tidetail.splits import (
-    EventGroup, partition_chronological, train_only_thresholds,
+    EventGroup,
+    partition_chronological,
+    train_only_thresholds,
 )
-
 
 # ── Test 1: Thresholds from train only ────────────────────────────────
 
