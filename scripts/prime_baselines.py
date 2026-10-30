@@ -34,19 +34,16 @@ def load_region(region: str):
     """Load target/events/train_metadata for a region."""
     base = DATA_ROOT / region
     # Target timeline — anchor_id, observed_total_water_level_m
-    rows = []
     with open(base / "target_timeline_v1.csv") as f:
         rd = csv.DictReader(f)
-        for r in rd:
-            rows.append(r)
+        rows = list(rd)
     # event table
-    events = []
     with open(base / "event_table_v1.csv") as f:
         rd = csv.DictReader(f)
-        for r in rd:
-            events.append(r)
+        events = list(rd)
     # train-only metadata
-    meta = json.load(open(base / "train_only_metadata_v1.json"))
+    with open(base / "train_only_metadata_v1.json") as f:
+        meta = json.load(f)
     def _fval(v):
         try: return float(v)
         except (ValueError, TypeError): return np.nan
