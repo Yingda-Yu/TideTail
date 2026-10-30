@@ -6,7 +6,9 @@ on held-out test events. Real numbers only — no synthetic data in val/test.
 """
 from __future__ import annotations
 
-import csv, json, os, sys
+import csv
+import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -14,8 +16,15 @@ import numpy as np
 # Ensure package importable
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from tidetail.baselines import persistence, seasonal_baseline, oversampled_persistence
-from tidetail.evaluate import mae, rmse, tail_error, peak_magnitude_error, peak_timing_error, threshold_metrics
+from tidetail.baselines import oversampled_persistence, persistence, seasonal_baseline
+from tidetail.evaluate import (
+    mae,
+    peak_magnitude_error,
+    peak_timing_error,
+    rmse,
+    tail_error,
+    threshold_metrics,
+)
 
 DATA_ROOT = Path("/data/yingda/tidetail-data/prime-formal-2015-2024/derived/prime_coast")
 REGIONS = sorted([p.name for p in DATA_ROOT.iterdir() if p.is_dir()])
@@ -118,7 +127,7 @@ def evaluate_baselines(region_data, horizon=24, input_len=72):
 
 
 if __name__ == "__main__":
-    print(f"=== TideTail G2 Baselines on Prime 2015-2024 ===")
+    print("=== TideTail G2 Baselines on Prime 2015-2024 ===")
     print(f"Data root: {DATA_ROOT}")
     print(f"Regions: {REGIONS}")
     print()
