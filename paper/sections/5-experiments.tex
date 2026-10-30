@@ -1,0 +1,46 @@
+\section{Experiments}
+\label{sec:exp}
+
+\subsection{Comparison groups}
+Following the pre-registered protocol, the five comparison groups are:
+
+\begin{itemize}
+    \item \textbf{A0}: Real-only training, no augmentation.
+    \item \textbf{A1}: Oversampled or balanced-loss training on real data (not
+    prediction-noise augmentation).
+    \item \textbf{A2}: Physically justified perturbation or interpolation.
+    \item \textbf{A3}: Standard conditional diffusion (no tail-awareness).
+    \item \textbf{A4}: Tail-aware conditional diffusion (the primary H1 hypothesis).
+\end{itemize}
+
+All groups share the same downstream predictor architecture, total optimizer steps,
+training sample budget, hyperparameter tuning budget, and random seeds. All test
+evaluations use \emph{only independent held-out real storm events}. A proposed A5
+(A4 + physical/spatial constraints) is conditional on positive A4 evidence.
+
+\subsection{Pilot experiment (Issue \#6)}
+The pilot investigates the \emph{generative model itself}, without downstream
+forecaster evaluation. It uses a frozen 72-hour $\rightarrow$ 24-hour window
+contract on New York Bight gauge NOAA\_8518750\_The\_Battery, training on 69,946
+overlapping windows from 70,041 finite training residuals. The normalization mean
+is 0.108~m and SD is 0.215~m, fitted before window creation on train rows only.
+
+\subsection{Evaluation metrics}
+The pilot records engineering diagnostics rather than forecast utility:
+\begin{itemize}
+    \item Per-step epsilon MSE, first and final step loss, first/final 100-step means.
+    \item Generated sample magnitude (min, max, SD) after inverse normalization.
+    \item Sample scale screen outcome (finite, std ratio, mean offset).
+    \item Terminal-step alpha\_bar and epsilon-to-clean amplification factor.
+    \item Condition sensitivity (standardized 72-hour history shift) and
+    nearest-training-window RMSE (eight probes, not a full memorization audit).
+\end{itemize}
+
+\subsection{Hardware and run environment}
+The GPU pilot executed on RTX3090 GPU index 4 (UUID
+\texttt{GPU-6be030f8-625e-c4e7-a2fb-1309a673664b}) with
+\texttt{CUDA\_VISIBLE\_DEVICES=4} and explicit BLAS/OpenMP thread caps at 2. The
+checkpoint (444,971 bytes, SHA256 \texttt{dee516cf...}) is preserved locally but
+not committed to Git. Independent CPU reproduction confirmed the magnitude failure
+using the same checkpoint loaded with \texttt{map\_location="cpu"} and the same
+forward/reverse code.

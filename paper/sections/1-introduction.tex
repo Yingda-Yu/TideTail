@@ -1,0 +1,68 @@
+\section{Introduction}
+
+Coastal flooding causes approximately \$1 trillion in global damages annually and
+displaces hundreds of thousands of people~\citep{yang2023storm}. Reliable forecasting
+of extreme water levels during storm events is therefore an urgent public safety
+problem. The core challenge is \emph{data imbalance}: the most operationally
+critical storm surges are also the rarest. Training standard neural forecasters on
+historically recorded water levels allocates most model capacity to predicting the
+frequent benign conditions rather than the infrequent but catastrophic extremes.
+
+Data augmentation has emerged as a promising approach to rebalance training
+distributions. For time-series forecasting, augmentation traditionally takes the
+form of oversampling, bootstrapping, noise perturbation, or interpolation. These
+methods are well-established for image data but have received less scrutiny for
+coastal water-level prediction, where physical laws (tidal cycles, wave dynamics,
+storm surge propagation) impose strong constraints on what constitutes a plausible
+augmented sample.
+
+Conditional diffusion models~\citep{ho2020denoising} offer a generative framework
+that could produce physically realistic extreme events by learning the conditional
+distribution of water-level residuals given historical gauge observations. The
+hypothesis driving this work is:
+
+\begin{quote}
+\textbf{H1}: Tail-aware conditional diffusion augmentation, applied under a matched
+forecaster training budget, improves prediction accuracy on \emph{independent held-out
+real storm events} relative to real-only training, standard oversampling, perturbation
+augmentation, and standard conditional diffusion.
+\end{quote}
+
+A secondary hypothesis (H2) investigates whether adding physical consistency or
+multi-gauge spatial coherence further improves synthesis usefulness. Both are
+\emph{unverified hypotheses} at this writing. This paper reports the frozen
+research protocol, the engineering implementation, and the first controlled
+empirical evidence — which is, at this stage, a \emph{negative result}: our
+pilot DDPM produces samples of physically implausible magnitude. We argue that
+this finding, its diagnosis, and the methodological infrastructure built to obtain
+it are themselves a contribution to the study of diffusion models for extreme-event
+time-series generation.
+
+\subsection{Contributions}
+\begin{enumerate}
+    \item We present a fully documented, leakage-safe research protocol for
+    coastal water-level forecasting with diffusion augmentation, including
+    event-grouped chronological splits, full-support embargo, train-only thresholds,
+    and a six-region data manifest frozen at license-admission boundaries.
+    \item We implement and audit a conditional denoising diffusion probabilistic
+    model (DDPM) for residual water-level generation, with 27,169 parameters, a
+    cosine noise schedule, and 64 reverse diffusion steps.
+    \item We report a \emph{reproduced negative result}: independently verified on
+    both CUDA and CPU, the model's 24-hour generated residuals span $-16.91$ to
+    $+7.94$ metres (SD 4.47m), approximately $22.95\times$ the training target
+    standard deviation of 0.215m. We diagnose terminal-step amplification and
+    imperfect epsilon prediction as contributing factors.
+    \item We present engineering validation guards (nonfinite rejection,
+    train-reference scale screen) that prevent absurdly bad samples from being
+    misclassified as successful generation. These guards are validation
+    infrastructure, not model repairs.
+\end{enumerate}
+
+\subsection{Paper structure}
+Section~\ref{sec:related} surveys related work. Section~\ref{sec:protocol} details
+our frozen research protocol and data admission. Section~\ref{sec:method} describes
+the conditional DDPM architecture and training setup. Section~\ref{sec:exp}
+describes our experimental plan and implementation.
+Section~\ref{sec:results} reports our empirical findings, including the negative
+result of the pilot. Section~\ref{sec:discussion} discusses implications, limitations,
+and ongoing work. Section~\ref{sec:conclusion} concludes.

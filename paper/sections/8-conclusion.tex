@@ -1,0 +1,36 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We investigated whether conditional diffusion augmentation can generate physically
+plausible extreme coastal water-level residuals that improve downstream forecasting
+on independent real storm events. The answer is \emph{not yet}: our pilot DDPM
+produced samples whose standard deviation is approximately 23 times the training
+target SD, with magnitudes exceeding $\pm 16$ metres. This failure is reproduced
+on both CUDA and CPU, and traced to terminal-step amplification in the cosine
+noise schedule combined with imperfect epsilon prediction at a limited training
+budget.
+
+More importantly, this work establishes \emph{what is needed} before diffusion
+augmentation can be meaningfully evaluated for coastal water-level forecasting:
+\begin{enumerate}
+    \item A frozen data protocol with signed-off licenses, datums, and canonical
+    storm event definitions.
+    \item Strong neural forecasting baselines (GRU/TCN) on the formal 96h$\rightarrow$72h
+    release contract.
+    \item A controlled retraining of the diffusion model with investigation of
+    schedule, objective, and training budget.
+    \item Downstream forecasting evaluation on independent real storm events with
+    event-level paired bootstrap confidence intervals.
+\end{enumerate}
+
+All of this infrastructure is now in place. The \texttt{trae/research-recovery-20261030}
+branch contains the merged PR \#19 (data audit, 55 tests) and PR \#21 (diffusion
+implementation, 19 tests) code, with 69 tests passing, zero Ruff warnings, and
+a repaired embargo filter. The frozen data protocol, embargo-safe splitting, and
+engineering validation guards prevent reintroduction of known leakage and
+generation-quality failures in future work.
+
+The claim in \texttt{paper/CLAIMS\_LEDGER.md} remains exactly as it was at the
+start: H1 and H2 are \textbf{untested hypotheses}. The contribution of this paper
+is to record honestly what we have found, what we have ruled out, and what
+remains to be done.

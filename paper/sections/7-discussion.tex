@@ -1,0 +1,67 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Diagnosis of the pilot failure}
+Our investigation confirms:
+
+\begin{enumerate}
+    \item \textbf{The forward and reverse diffusion equations are mathematically
+    correct.} Independent CPU reproduction with fixed noise and deterministic probes
+    confirmed endpoint algebra, posterior variance formula, and reverse-step
+    indexing. No off-by-one, variance, or inverse-scale bug was found.
+
+    \item \textbf{Terminal-step sensitivity amplifies epsilon errors catastrophically.}
+    At $\bar{\alpha}_{63} \approx 5.93 \times 10^{-7}$, the clean reconstruction
+    amplifies epsilon prediction error by $\approx 1299\times$. A small epsilon MSE
+    of 0.0057 therefore produces a 21-metre clean reconstruction RMSE.
+
+    \item \textbf{The training budget may be insufficient for this architecture.}
+    Three epochs may not be enough to learn the high-variance tail of the residual
+    distribution, where the model would most need correct epsilon predictions.
+
+    \item \textbf{The epsilon prediction objective may be mismatched.} Alternative
+    parameterizations (x0 prediction, v-prediction) or importance-sampled timestep
+    weighting may reduce terminal-step sensitivity.
+\end{enumerate}
+
+None of these individually explains the full failure, and we have not established
+which (if any) is the dominant root cause. A schedule/objective change requires
+new controlled experiments, not just inference-time schedule substitution.
+
+\subsection{Data and protocol limitations}
+\begin{itemize}
+    \item \textbf{Unified target not yet decided}: residual (\texttt{water\_level\_m})
+    vs.~total water level (\texttt{observed\_total\_water\_level\_m}). The release
+    contract specifies 96h$\rightarrow$72h; the pilot used 72h$\rightarrow$24h.
+    Direct metric comparison across contracts is invalid.
+
+    \item \textbf{Era5 forcing is hindcast, not operational}. Future observed ERA5
+    values leaked into a forecast experiment would constitute leakage. Our gauge-only
+    diffusion model does not consume forcing, but this limits the amount of
+    predictive signal available to the generative model.
+
+    \item \textbf{Canonical independent storm grouping is not yet signed}. Current
+    threshold-run event intervals are not meteorologically independent storms. The
+    HK boundary-crossing event is unresolved.
+
+    \item \textbf{License and vertical datum sign-off are incomplete} for the Hong
+    Kong region and upstream data provenance of other regions.
+\end{itemize}
+
+\subsection{Augmentation utility not yet evaluated}
+The most important scientific question — whether properly trained diffusion
+augmentation improves downstream forecasting (H1) — remains unanswered. The pilot
+was an engineering feasibility check, not a forecasting evaluation. Before H1 can
+be tested, the data protocol must be frozen, forecasting baselines must run, and
+the diffusion generation quality gates must pass.
+
+\subsection{What this \emph{is}}
+Despite being a negative result, this work provides:
+\begin{enumerate}
+    \item A fully documented and leakage-safe research protocol.
+    \item An empirically validated diagnosis of terminal-step scale explosion in
+    a concrete coastal water-level diffusion model.
+    \item Engineering infrastructure that prevents misclassification of bad
+    samples as successful generation.
+    \item A reproducible checkpoint and CPU diagnostic pipeline for future work.
+\end{enumerate}

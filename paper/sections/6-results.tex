@@ -1,0 +1,80 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Pilot training outcome (engineering success)}
+The GPU pilot completed 1,641 optimizer steps across three full epochs. Epsilon
+MSE declined monotonically:
+
+\begin{table}[htbp]
+\centering
+\caption{Epoch-average epsilon MSE (GPU pilot, 27,169 parameters)}
+\begin{tabular}{c c c}
+\toprule
+Epoch & Steps & Mean $\epsilon$ MSE \\
+\midrule
+1 & 547 & 0.219863 \\
+2 & 547 & 0.180404 \\
+3 & 547 & 0.172029 \\
+\bottomrule
+\end{tabular}
+\label{tab:epoch-loss}
+\end{table}
+
+First-step MSE was 1.100, final-step MSE was 0.150. All losses and gradient norms
+were finite. Training time was approximately 41 seconds (plus data loading).
+Peak GPU allocation was 52.9~MiB (of 24~GiB). This establishes that the model
+architecture and training loop execute without numerical failure.
+
+\subsection{Sample quality (negative result)}
+Despite declining training loss, \emph{generated sample magnitudes are physically
+implausible}. The GPU pilot produced 8 finite 24-hour residual sequences spanning
+$-16.91$ to $+7.94$ metres with SD 4.47~m. Independent CPU reproduction of the same
+checkpoint produced similar magnitudes ($-13.08$ to $+16.28$~m, SD 4.92~m).
+
+\begin{table}[htbp]
+\centering
+\caption{Pilot sample magnitudes vs.~training reference}
+\begin{tabular}{l c c c}
+\toprule
+Quantity & Training & GPU samples & CPU reproduction \\
+\midrule
+Mean (m) & 0.108 & — & — \\
+SD (m) & \textbf{0.215} & 4.474 & 4.922 \\
+Min (m) & — & $-16.910$ & $-13.079$ \\
+Max (m) & — & $+7.940$ & $+16.277$ \\
+SD ratio vs.~train & 1.00 & \textbf{20.8} & \textbf{22.9} \\
+\bottomrule
+\end{tabular}
+\label{tab:sample-magnitude}
+\end{table}
+
+The SD ratio of $\approx 22.95$ means that generated samples are roughly
+\emph{23 times more spread out} than the training target distribution. This is
+catastrophic scale explosion. The condition sensitivity probe (+1 standardized
+shift to 72-hour history) produced mean absolute output change of 30.8
+standardized units, confirming conditioning is active but not informative about
+realistic magnitudes. The eight nearest-training-window RMSE probes ranged from
+0.170 to 41.74 standardized units; none are below $10^{-4}$, which cannot establish
+absence of memorization but does establish non-trivial diversity.
+
+\subsection{Terminal-step amplification diagnosis}
+The cosine schedule's final step ($t=63$) has $\beta_{63} \approx 0.999$ and
+$\bar{\alpha}_{63} \approx 5.93 \times 10^{-7}$. This implies that the clean
+reconstruction is amplified relative to the epsilon prediction by:
+\begin{equation}
+    \frac{1}{\sqrt{\bar{\alpha}_{63}}} \approx 1298.8.
+    \label{eq:amplify}
+\end{equation}
+On the first eight fixed training windows with seed 20261028, terminal epsilon MSE
+was approximately 0.005746, which would correspond to clean reconstruction RMSE
+of approximately $0.005746 \times 1298.8 / \sqrt{1} \approx 21.1$~metres. This
+terminal-step sensitivity is a necessary contributing factor to the magnitude
+failure, though not sufficient alone: changing only the terminal schedule without
+retraining does not establish a fix.
+
+\subsection{Engineering validation guards}
+The repaired codebase adds nonfinite rejection at every reverse step and a
+train-reference scale screen. The historical GPU samples fail this screen
+(ratio 22.95 $\gg$ 5.0 threshold), as do the CPU reproductions. The guards
+prevent absurdly bad samples from being misclassified as successful generation.
+These are validation infrastructure, not a model repair.

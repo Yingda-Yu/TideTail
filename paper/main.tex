@@ -1,0 +1,56 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{natbib}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\title{\textbf{TideTail: Evaluating Extreme-Aware Diffusion Augmentation\\for Coastal Water-Level Forecasting}}
+
+\author{Yingda Yu \and Tong Mengxue \and Rong Jia}
+\date{\today\\\textit{Preprint — evidence-linked, not all hypotheses verified}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Coastal water-level forecasting faces a fundamental data scarcity problem: the most
+operationally critical extreme storm events are rare in historical records, yet
+predicting them correctly is the primary goal of coastal risk management. We
+investigate whether conditional diffusion models can generate physically plausible
+extreme coastal water-level residual samples that improve downstream forecasting on
+independent real storm events, under matched forecaster training budgets. This paper
+reports the pre-registration of this investigation, the frozen data protocol, the
+engineering implementation, and the negative result of our first controlled
+diffusion pilot. The 27,169-parameter conditional DDPM trained for three epochs on
+real residual data produces samples whose standard deviation is approximately
+\textbf{22.95 times} that of the training target, with magnitudes exceeding
+$\pm 16$ metres. We trace this failure through independent CPU reproduction,
+terminal-step noise sensitivity analysis ($\alpha_\text{bar} \approx 5.93 \times
+10^{-7}$), and end-to-end audit of the forward and reverse stochastic equations.
+The diagnosis confirms that while the model architecture and diffusion mathematics
+are formally correct, terminal-step amplification combined with imperfect epsilon
+prediction at the training budget causes catastrophic scale explosion. We present
+this finding, our repaired data-splitting infrastructure, and our frozen research
+protocol as a methodological contribution to the study of diffusion models for
+extreme-event time-series generation.
+\end{abstract}
+
+\input{sections/1-introduction}
+\input{sections/2-related-work}
+\input{sections/3-protocol}
+\input{sections/4-method}
+\input{sections/5-experiments}
+\input{sections/6-results}
+\input{sections/7-discussion}
+\input{sections/8-conclusion}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sections/a-audit}
+
+\end{document}
