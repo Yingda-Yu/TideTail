@@ -1,0 +1,10 @@
+/data/yingda/spartina-agent/worktrees/spartina/c00664ed/scripts/audit_prime.py:67: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = np.array([r['timestamp_utc'] for r in target], dtype='datetime64[s]')
+Traceback (most recent call last):
+  File "/data/yingda/spartina-agent/worktrees/spartina/c00664ed/scripts/audit_prime.py", line 145, in <module>
+    result = audit(args.root)
+  File "/data/yingda/spartina-agent/worktrees/spartina/c00664ed/scripts/audit_prime.py", line 106, in audit
+    window_summary = {k: {'shape': list(idx[k].shape), 'dtype': str(idx[k].dtype),
+  File "/data/yingda/spartina-agent/worktrees/spartina/c00664ed/scripts/audit_prime.py", line 107, in <dictcomp>
+    'first': idx[k][:3].tolist(), 'last': idx[k][-3:].tolist()}
+IndexError: too many indices for array: array is 0-dimensional, but 1 were indexed

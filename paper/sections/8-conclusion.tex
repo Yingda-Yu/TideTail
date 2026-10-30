@@ -1,0 +1,47 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We investigated whether conditional diffusion augmentation can generate physically
+plausible extreme coastal water-level residuals that improve downstream forecasting
+on independent real storm events. The answer is \emph{not yet}: our pilot DDPM
+produced samples whose standard deviation is approximately 23 times the training
+target SD, with magnitudes exceeding $\pm 16$ metres. This failure is reproduced
+on both CUDA and CPU, and traced to terminal-step amplification in the cosine
+noise schedule combined with imperfect epsilon prediction at a limited training
+budget.
+
+The oracle schedule comparison (Table~\ref{tab:oracle-schedules}) further isolates
+the terminal schedule shape as the principal driver: replacing a 64-step cosine
+schedule whose terminal $\bar{\alpha}_{64} \approx 5.93 \times 10^{-7}$ by a
+subsampled 1000-step schedule with $\bar{\alpha}_{64} \approx 5.89 \times 10^{-4}$
+reduces sample $\sigma$ from 4.92~m to 0.297~m (1.38$\times$ the training reference).
+This probe is not a scientific fix --- the checkpoint's epsilon predictions are
+schedule-specific --- but it establishes that \emph{terminal schedule geometry}
+is a structural cause of the explosion, not merely a symptom of insufficient
+training budget.
+
+More importantly, this work establishes \emph{what is needed} before diffusion
+augmentation can be meaningfully evaluated for coastal water-level forecasting,
+and implements it:
+\begin{enumerate}
+    \item A frozen data protocol (FORECAST\_TASK\_CONTRACT v1) with 96h$\rightarrow$72h
+    main task, train-only scalers/thresholds, and full-support embargo-safe event
+    splitting. Five regions are admitted; Hong Kong is excluded pending signoff.
+    \item Strong neural forecasting baselines on the formal contract: GRU encoder-decoder
+    and TCN with matched parameter budgets, plus persistence and seasonal baselines.
+    \item A balanced oversampler (A1) and physics-justified training-set augmentation
+    (A2, residual noise + tidal phase shift).
+    \item A controlled retraining of the diffusion model (A3/A4) with schedule
+    investigation, followed by downstream forecasting evaluation on independent
+    real storm events with paired bootstrap confidence intervals.
+\end{enumerate}
+
+The \texttt{trae/research-recovery-20261030} branch now contains 127 passing
+unit tests, zero Ruff warnings, and 7 committed builds over the original
+recovery merge. The frozen data protocol, embargo-safe splitting, training-set
+augmentation, and evaluation infrastructure prevent reintroduction of known
+leakage and generation-quality failures in future work. The claim in
+\texttt{paper/CLAIMS\_LEDGER.md} remains exactly as it was: H1 and H2 are
+\textbf{untested hypotheses}. The contribution of this paper is to record
+honestly what we have found, what we have ruled out, what infrastructure now
+exists, and what remains to be done.

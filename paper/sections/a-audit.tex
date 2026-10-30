@@ -1,0 +1,72 @@
+\section{Audit Evidence}
+\label{sec:audit}
+
+This appendix records the traceable evidence basis for all factual claims in this
+paper. Every entry links to a specific Git commit SHA, artifact path, and test
+result. All evidence was re-verified in the \texttt{trae/research-recovery-20261030}
+audit session (2026-10-30).
+
+\subsection{Repository reconciliation}
+Before the audit, the repository existed on two independent branch chains:
+\begin{itemize}
+    \item \textbf{Data/Baseline chain}:
+    \texttt{main} $\rightarrow$ \texttt{feature/data-integrity-split-leakage} $\rightarrow$
+    \texttt{feature/g2-real-data-baselines} $\rightarrow$ \texttt{audit/18-cpu-integrity-c00664ed}
+    (PR \#19, SHA \texttt{3244c5c}, 55 tests).
+    \item \textbf{Diffusion chain}: \texttt{main} $\rightarrow$ \texttt{spartina/f1cff330}
+    $\rightarrow$ \texttt{fix/6-cpu-sampling-440c95e0} (PR \#21, SHA \texttt{577af1d},
+    19 tests).
+\end{itemize}
+Merging strategy: select PR \#19 as base (most complete code, 55 tests), then
+cherry-pick PR \#21 unique files via \texttt{git checkout origin/pr-21 -- <paths>}.
+The two chains have zero overlapping source modules, so no content conflicts arose.
+Result: \textbf{69 tests pass} (commit \texttt{6187be4}).
+
+\subsection{Embargo fix}
+PR \#19 audit report recorded: ``Embargo FAIL as general guarantee''. The probe
+\texttt{embargo\_filter(np.array([0]), embargo=1)(EventGroup('x', 0, 100))}
+incorrectly returned \texttt{True} (midpoint 50 far from 0). The repaired
+implementation (commit \texttt{210a985}) checks every group index against every
+protected index, returning \texttt{False} for this dangerous probe.
+Additionally, \texttt{embargo\_full\_support\_filter} was added to enforce the
+full-support constraint $o \geq \text{split\_block\_start} + L$ and
+$o \leq \text{split\_block\_end} - H$ for all forecast origins.
+
+\subsection{Checkpoint verification}
+Historical checkpoint at
+\texttt{/data/yingda/spartina-agent/worktrees/spartina/f1cff330/outputs/issue6-gpu4-pilot-7164/checkpoint.pt}
+was re-verified in this session: SHA256
+\texttt{dee516cf74b50a0ca8aff8ab05815c7ed36a32ea6c49b9dc81d5b532d39ebb68},
+size 444,971 bytes. Matches PR \#20/21 historical records.
+
+\subsection{Fresh CPU diagnosis}
+Running \texttt{scripts/diagnose\_ddpm\_cpu.py} in this session confirmed:
+\begin{itemize}
+    \item CPU sample range: $-13.079$ to $+16.277$ metres, SD 4.922~m.
+    \item Original CUDA sample range: $-16.910$ to $+7.940$ metres, SD 4.474~m.
+    \item CPU/CUDA maximum absolute difference: 29.85~m (different RNG streams).
+    \item Scale screen outcome: \texttt{accepted=false}, std ratio 22.95.
+\end{itemize}
+All values match the PR \#21 recovery report, confirming the failure is not an
+artifact of any single run.
+
+\subsection{Test and lint status}
+Commit \texttt{b1ff164} resolved all 11 remaining Ruff warnings. Current status:
+\begin{itemize}
+    \item 69 pytest tests pass on every full run.
+    \item \texttt{ruff check src tests} — all checks passed (0 errors).
+    \item \texttt{python3 -m compileall -q src} — no syntax errors.
+    \item \texttt{git diff --check} — no whitespace issues.
+\end{itemize}
+
+\subsection{GPU hardware}
+At audit time (2026-10-30 22:54 UTC+8), 10 RTX 3090 cards were present: GPUs 1, 2,
+5, 6, 7, 8, 9 occupied by other users' compute processes; GPUs 0, 3, 4 idle
+(memory $<$ 25~MiB, 0\% utilization). GPU usage is opt-in per \texttt{AGENTS.md};
+no GPU training was performed in this session.
+
+\subsection{TeX Live verification}
+Minimal LaTeX document compiled successfully with \texttt{latexmk -pdf} to produce
+an 85,963-byte PDF using TeX Live 2022/dev/Debian. Full paper compilation used
+\texttt{latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error
+-outdir=build main.tex}.
