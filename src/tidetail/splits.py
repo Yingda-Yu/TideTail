@@ -129,8 +129,58 @@ def indices_from_groups(groups: Sequence[EventGroup]) -> np.ndarray:
 
 
 def embargo_filter(time_idx: np.ndarray, embargo: int) -> Callable[[EventGroup], bool]:
-    """Return predicate True for groups whose indices aren't within `embargo` of `time_idx`."""
+    """Return predicate True for groups whose full index interval isn't within `embargo` of `time_idx`.
+
+    Correct implementation: check every index [start_idx, end_idx] against every
+    protected time_idx. The OLD midpoint-only version was unsafe — see PR #19 audit
+    report "Embargo FAIL as general guarantee" and PR #21 recovery report §B.
+
+    For a forecast with lookback L and horizon H, the full support of origin time o
+    is [o-L, o+H). Two partitions' support intervals must NOT overlap.
+    """
+    time_idx = np.asarray(time_idx, dtype=int)
+    if time_idx.size == 0:
+        return lambda _g: True
+    if embargo < 0:
+        raise ValueError("embargo must be non-negative")
+
     def _ok(g: EventGroup) -> bool:
-        neighbors = np.abs(time_idx - np.mean([g.start_idx, g.end_idx]))
-        return (neighbors.min() > embargo) if neighbors.size else True
+        # All indices covered by this event group
+        group_indices = np.arange(g.start_idx, g.end_idx + 1)
+        if group_indices.size == 0:
+            return True
+        # Distance matrix: group_indices × time_idx
+        dists = np.abs(group_indices[:, None] - time_idx[None, :])
+        min_dist = dists.min()
+        return min_dist > embargo
+
+    return _ok
+
+
+def embargo_full_support_filter(
+    split_end: int, lookback: int, horizon: int
+) -> Callable[[EventGroup], bool]:
+    """Reject forecast origins whose full support [o-L, o+H) would cross split_end.
+
+    For an hourly forecast window with lookback L and horizon H, origin time o has
+    full support interval [o-L, o+H). If partition row block is [a, split_end),
+    only origins with o >= a+L AND o <= split_end-H are safe. Any origin whose
+    support overlaps another partition's row block is a leakage risk.
+
+    Args:
+        split_end: row index at which this partition ends (exclusive).
+        lookback: historical window length (L).
+        horizon: forecast horizon (H).
+
+    Returns:
+        Predicate True for EventGroups whose every index in [start_idx, end_idx] is
+        a safe forecast origin time (i.e., o >= lookback AND o <= split_end - horizon).
+    """
+    if split_end <= 0 or lookback <= 0 or horizon <= 0:
+        raise ValueError("split_end, lookback, horizon must be positive")
+
+    def _ok(g: EventGroup) -> bool:
+        safe_origin = (g.start_idx >= lookback) and (g.end_idx <= split_end - horizon)
+        return safe_origin
+
     return _ok
