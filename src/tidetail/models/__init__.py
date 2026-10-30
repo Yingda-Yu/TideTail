@@ -20,14 +20,19 @@ from .diffusion_ts import (
     fft_seasonal,
     moving_average_trend,
 )
+from .flow_matching import FlowMatching, VelocityTCN, ot_train_loss
 
 __all__ = [
-    # M2
+    # M2 — Diffusion-TS decomposition
     "DiffusionTS",
+    # M4 — Flow Matching (CNF)
+    "FlowMatching",
     "ResidualDenoiser",
+    "VelocityTCN",
     "decompose",
     "extrapolate_seasonal",
     "extrapolate_trend",
     "fft_seasonal",
     "moving_average_trend",
+    "ot_train_loss",
 ]
