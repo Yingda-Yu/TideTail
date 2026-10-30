@@ -1,46 +1,97 @@
-\section{Experiments}
+\section{Experimental Setup}
 \label{sec:exp}
 
+\subsection{Frozen forecast contract}
+The main task is \textbf{96 hours of hourly history $\rightarrow$ 72 hours of future forecast},
+targeting \texttt{observed\_total\_water\_level\_m} (raw tide plus surge in metres).
+This matches the frozen release contract in \texttt{database\_manifest.json}.
+The historical pilot (Issue~\#6) used 72h$\rightarrow$24h on de-tided residuals only;
+that model is classified as exploratory and \emph{must not} be compared directly
+against main-task metrics.
+
+Five regions are admitted: \texttt{ny\_bight}, \texttt{thames\_north\_sea},
+\texttt{southeast\_australia}, \texttt{us\_gulf\_coast}, \texttt{south\_atlantic\_charleston}.
+Hong Kong (\texttt{pearl\_river\_hong\_kong}) is excluded pending license/datum/signoff.
+
+\subsection{Split protocol}
+\begin{itemize}
+    \item \textbf{Event-grouped chronological 8:1:1 split}. Each partition contains
+    independent storm events in chronological order, with no event appearing in
+    two partitions.
+    \item \textbf{Full-support embargo}: a forecast origin $o$ is safe only if
+    $o \geq a + 96$ and $o \leq b - 72$, where $[a, b)$ is the partition's row block.
+    This ensures no window's support $[o-L, o+H)$ crosses a partition boundary.
+    \item \textbf{Train-only scalers}: mean/SD fit on train rows only, applied
+    without re-fit to all partitions.
+    \item \textbf{Train-only thresholds}: q95/q99 from train rows only, used for
+    tail metrics and oversampling weights.
+    \item \textbf{Missing masks}: all models consume a boolean mask per hour,
+    fixed and common across all A0--A4 methods.
+\end{itemize}
+
+\subsection{Evaluation metrics}
+All metrics are organized by their statistical unit (hourly cell, threshold event,
+or independent storm event), as defined in the companion document
+\texttt{docs/evaluation/METRIC\_DEFINITIONS.md}:
+
+\begin{table}[htbp]
+\centering
+\caption{Evaluation metrics by statistical unit}
+\small
+\begin{tabular}{lll}
+\toprule
+Unit & Metric & Definition \\
+\midrule
+\multirow{5}{*}{Hourly cell}
+    & MAE / RMSE & Absolute error over finite cells \\
+    & Tail MAE / RMSE (q95) & Cells where $y \geq q95_{\text{train}}$ only \\
+    & Tail MAE / RMSE (q99) & Cells where $y \geq q99_{\text{train}}$ only \\
+    & Lead-time MAE / RMSE & Per horizon hour (1--72) \\
+    & Station-wise MAE / RMSE & Per gauge station \\
+\midrule
+\multirow{4}{*}{Threshold event}
+    & Precision & TP / (TP + FP) \\
+    & Recall & TP / (TP + FN) \\
+    & FPR & FP / (FP + TN)  \\
+    & FAR & FP / (TP + FP) \\
+\midrule
+\multirow{3}{*}{Independent storm}
+    & Peak magnitude error & $|\max(y) - \max(\hat{y})|$ per event \\
+    & Peak timing error & $|\arg\max(y) - \arg\max(\hat{y})|$ per event \\
+    & Paired bootstrap CI & 95\% CI on per-storm mean differences \\
+\bottomrule
+\end{tabular}
+\label{tab:metrics}
+\end{table}
+
+All threshold denominators are explicit (zero-denominator returns NaN, never an
+implicit zero). The FPR definition follows standard clinical-statistics usage:
+FP / (FP + TN), not FP / (TP + FP) (the latter is FAR).
+
 \subsection{Comparison groups}
-Following the pre-registered protocol, the five comparison groups are:
+The five A0--A4 groups share identical downstream predictor architecture,
+optimizer budget, training sample budget, and random seeds. Augmentation fraction
+is matched across A3/A4.
 
 \begin{itemize}
     \item \textbf{A0}: Real-only training, no augmentation.
-    \item \textbf{A1}: Oversampled or balanced-loss training on real data (not
-    prediction-noise augmentation).
-    \item \textbf{A2}: Physically justified perturbation or interpolation.
+    \item \textbf{A1}: Balanced extreme-event oversampling via WeightedRandomSampler.
+    \item \textbf{A2}: Residual-noise + tidal-phase-shift augmentation on training set only.
     \item \textbf{A3}: Standard conditional diffusion (no tail-awareness).
-    \item \textbf{A4}: Tail-aware conditional diffusion (the primary H1 hypothesis).
+    \item \textbf{A4}: Tail-aware conditional diffusion (primary H1 hypothesis).
 \end{itemize}
 
-All groups share the same downstream predictor architecture, total optimizer steps,
-training sample budget, hyperparameter tuning budget, and random seeds. All test
-evaluations use \emph{only independent held-out real storm events}. A proposed A5
-(A4 + physical/spatial constraints) is conditional on positive A4 evidence.
-
-\subsection{Pilot experiment (Issue \#6)}
-The pilot investigates the \emph{generative model itself}, without downstream
-forecaster evaluation. It uses a frozen 72-hour $\rightarrow$ 24-hour window
-contract on New York Bight gauge NOAA\_8518750\_The\_Battery, training on 69,946
-overlapping windows from 70,041 finite training residuals. The normalization mean
-is 0.108~m and SD is 0.215~m, fitted before window creation on train rows only.
-
-\subsection{Evaluation metrics}
-The pilot records engineering diagnostics rather than forecast utility:
-\begin{itemize}
-    \item Per-step epsilon MSE, first and final step loss, first/final 100-step means.
-    \item Generated sample magnitude (min, max, SD) after inverse normalization.
-    \item Sample scale screen outcome (finite, std ratio, mean offset).
-    \item Terminal-step alpha\_bar and epsilon-to-clean amplification factor.
-    \item Condition sensitivity (standardized 72-hour history shift) and
-    nearest-training-window RMSE (eight probes, not a full memorization audit).
-\end{itemize}
+\subsection{Reproducibility metadata}
+Every run records exact git commit SHA, data file hashes, split manifest hash,
+random seed list, optimizer parameters, checkpoint SHA, and wall-clock time.
+The seed list is $\{0, 2024, 4242, 7777, 9001\}$; at least three seeds are run
+for each method before comparison.
 
 \subsection{Hardware and run environment}
 The GPU pilot executed on RTX3090 GPU index 4 (UUID
 \texttt{GPU-6be030f8-625e-c4e7-a2fb-1309a673664b}) with
-\texttt{CUDA\_VISIBLE\_DEVICES=4} and explicit BLAS/OpenMP thread caps at 2. The
-checkpoint (444,971 bytes, SHA256 \texttt{dee516cf...}) is preserved locally but
+\texttt{CUDA\_VISIBLE\_DEVICES=4} and explicit BLAS/OpenMP thread caps at 2.
+The checkpoint (444,971 bytes, SHA256 \texttt{dee516cf...}) is preserved locally but
 not committed to Git. Independent CPU reproduction confirmed the magnitude failure
 using the same checkpoint loaded with \texttt{map\_location="cpu"} and the same
-forward/reverse code.
+forward/reverse code. All current code and tests run on CPU with \texttt{CUDA\_VISIBLE\_DEVICES=""}.

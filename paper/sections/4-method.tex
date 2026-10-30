@@ -9,29 +9,38 @@ following components:
     \item \textbf{Temporal embedding}: sinusoidal frequencies $f_j = 10000^{-2j/D}$
     embedded into a width-\texttt{width} MLP, where $D$ is half the width.
 
-    \item \textbf{History conditioning}: a separate MLP consumes all 72 past
-    residuals, producing a \texttt{width}-dimensional conditioning vector that is
-    \emph{added} to the temporal embedding before entering the denoiser.
+    \item \textbf{History conditioning}: a separate MLP consumes all 96 past
+    observations (72 in the pilot), producing a \texttt{width}-dimensional
+    conditioning vector that is \emph{added} to the temporal embedding before
+    entering the denoiser.
 
     \item \textbf{Dilated residual blocks}: four blocks with dilation $\{1, 2, 4, 8\}$,
     each containing GroupNorm (groups=4), SiLU activation, 3-conv padding to
     preserve length, and a linear condition injection.
 
     \item \textbf{Output head}: GroupNorm + SiLU + 3-conv producing a single-channel
-    epsilon prediction at each of the 24 forecast horizons.
+    epsilon prediction at each of the 24 (pilot) or 72 (main-task) forecast horizons.
 \end{enumerate}
 
-Total parameter count: 27,169.
+Total parameter count: 27,169 (pilot 72$\rightarrow$24). For the main task 96$\rightarrow$72,
+the horizon changes to 72 and the conditioning input to 96 values; parameter
+count remains in the 30--40K range, matched to the GRU and TCN budgets below.
 
-\subsection{Forward and reverse processes}
-We implement cosine cumulative noise schedule~\citep{ho2020denoising} with 64
-diffusion steps:
+\subsection{Noise schedule and forward process}
+We implement cosine cumulative noise schedule~\citep{ho2020denoising} with
+$T=64$ diffusion steps in the pilot:
 \begin{equation}
     \beta_t = 1 - \frac{\cos((t+0.008)/1.008 \cdot \pi/2)^2}{\cos((t-1+0.008)/1.008 \cdot \pi/2)^2},
     \qquad \alpha_t = 1 - \beta_t, \qquad \bar{\alpha}_t = \prod_{i=1}^{t} \alpha_i.
 \end{equation}
+At $t=T=64$, the historical schedule reaches $\beta_{64} \approx 0.999$ and
+$\bar{\alpha}_{64} \approx 5.93 \times 10^{-7}$, producing $\approx 1299\times$
+clean amplification at the final reverse step. An oracle comparison (Section~\ref{sec:results})
+shows that subsampling a $T'=1000$ cosine schedule to 64 steps reaches
+$\bar{\alpha}_{64} \approx 5.89 \times 10^{-4}$ (41$\times$ amplification),
+which eliminates the catastrophic scale explosion.
 
-\subsection{Training}
+\subsection{Training objective}
 Training targets \emph{unit Gaussian epsilon} at each timestep. The loss is mean
 squared error between the network's epsilon prediction and the actual injected
 Gaussian noise:
@@ -40,9 +49,56 @@ Gaussian noise:
         \left\| \epsilon - \epsilon_\theta(\sqrt{\bar{\alpha}_t} x_0 + \sqrt{1-\bar{\alpha}_t} \epsilon, t, \text{history}) \right\|^2
     \right].
 \end{equation}
-
-Training hyperparameters for the pilot run (Issue \#6): AdamW with $\text{lr}=0.001$,
+Training hyperparameters for the pilot run (Issue~\#6): AdamW with $\text{lr}=0.001$,
 batch size 128, three epochs, BF16 precision on RTX3090 GPU~4, seed 20261025.
+
+\subsection{Forecasting baselines}
+All baselines consume 96 hours of hourly history and produce 72 hours of
+forecast, using the same train-only normalization as the diffusion model.
+Missing-value masks are concatenated as an extra input channel.
+
+\paragraph{Rule-based baselines.}
+\emph{Persistence} carries forward the last observed water level for all 72 hours.
+\emph{Seasonal baseline} repeats the most recent semi-diurnal tidal cycle
+(144 hours $\approx$ 6 days) to capture the dominant tidal periodicity.
+
+\paragraph{GRU encoder-decoder.}
+A 2-layer GRU encoder maps the 96-hour history into a hidden state; a GRU
+decoder then autoregressively produces 72 forecast steps, each step feeding
+its own output back as input. Hidden size is matched to DDPM parameter budget
+($\approx$ 5--10K). The GRU operates on normalized values with explicit
+gradient tracking for training and a no-grad \texttt{predict\_eval} path for
+inference.
+
+\paragraph{Temporal Convolutional Network.}
+A stack of dilated causal 1D convolutions with Chomp1d padding ensures causality.
+Dilation grows exponentially ($\{1, 2, 4, 8\}$) to achieve a receptive field
+covering the full 96-hour history. The final hidden-state channel at the
+latest timestep is projected to all 72 horizons \emph{at once} (non-autoregressive).
+Channel count is tuned to match DDPM budget ($\approx$ 15--20K).
+
+\subsection{Training-set augmentation}
+\emph{All augmentations modify the training set only.} Validation and test data
+are never augmented. Three augmentation strategies are implemented:
+
+\begin{enumerate}
+    \item \textbf{A1 — Balanced extreme-event oversampling.} Windows where any target
+    cell exceeds the train-only q95 threshold receive a higher sampling weight
+    ($\approx$ 3$\times$) in each optimizer step. This addresses the rare-event
+    training imbalance without fabricating new observations. Implemented via
+    \texttt{torch.utils.data.WeightedRandomSampler}.
+
+    \item \textbf{A2 — Residual noise perturbation.} Training history (not target)
+    is perturbed with additive Gaussian noise whose standard deviation is 30\% of
+    the train-only residual standard deviation. This models instrument uncertainty
+    and sub-hourly unresolved variability. Targets are \emph{never} modified.
+
+    \item \textbf{A2 — Tidal phase shifting.} Both history and target windows are
+    circular-shifted by a random fraction of the semi-diurnal tidal cycle
+    (12-hour period, maximum shift 6 hours). This exploits tidal phase symmetry
+    to create valid phase-shifted training pairs while preserving the residual
+    forecast relationship.
+\end{enumerate}
 
 \subsection{Engineering validation guards}
 After the pilot revealed catastrophic scale explosion, we added validation guards
