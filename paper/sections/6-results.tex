@@ -38,10 +38,10 @@ checkpoint produced similar magnitudes ($-13.08$ to $+16.28$~m, SD 4.92~m).
 \toprule
 Quantity & Training & GPU samples & CPU reproduction \\
 \midrule
-Mean (m) & 0.108 & — & — \\
+Mean (m) & 0.108 & --- & --- \\
 SD (m) & \textbf{0.215} & 4.474 & 4.922 \\
-Min (m) & — & $-16.910$ & $-13.079$ \\
-Max (m) & — & $+7.940$ & $+16.277$ \\
+Min (m) & --- & $-16.910$ & $-13.079$ \\
+Max (m) & --- & $+7.940$ & $+16.277$ \\
 SD ratio vs.~train & 1.00 & \textbf{20.8} & \textbf{22.9} \\
 \bottomrule
 \end{tabular}
@@ -71,6 +71,79 @@ of approximately $0.005746 \times 1298.8 / \sqrt{1} \approx 21.1$~metres. This
 terminal-step sensitivity is a necessary contributing factor to the magnitude
 failure, though not sufficient alone: changing only the terminal schedule without
 retraining does not establish a fix.
+
+\subsection{Oracle schedule comparison}
+To isolate whether terminal schedule shape is a sufficient cause of the
+magnitude failure, we run the \emph{same trained checkpoint} (27,169 parameters,
+three epochs on cosine 64-step schedule) with four different inference
+schedules without retraining. This is an oracle probe --- the checkpoint's
+epsilon predictions are schedule-specific, so this is not a scientific fix
+demonstration --- but it directly isolates whether terminal $\bar{\alpha}$ drives
+sample magnitude.
+
+\begin{table}[htbp]
+\centering
+\caption{Oracle schedule comparison --- same checkpoint, different inference}
+\small
+\begin{tabular}{l c c c c}
+\toprule
+Schedule & $\bar{\alpha}_T$ & Sample $\sigma$ (m) & Range (m) & Ratio \\
+\midrule
+Cosine 64 (historical) & $5.93\times10^{-7}$ & 4.922 & [$-$13.1, $+$16.3] & 22.95$\times$ \\
+Linear 64 & 0.523 & 0.099 & [$-$0.16, $+$0.37] & 0.46$\times$ \\
+Sigmoid 64 & 0.525 & 0.100 & [$-$0.17, $+$0.37] & 0.47$\times$ \\
+\textbf{Cosine 1000$\rightarrow$64} & $\mathbf{5.89\times10^{-4}}$ & \textbf{0.297} & \textbf{[$-$0.69, $+$0.91]} & \textbf{1.38$\times$} \\
+\midrule
+\emph{Train residual} & --- & 0.215 & [$-$1.25, $+$1.53] & 1.00$\times$ \\
+\bottomrule
+\end{tabular}
+\noindent\footnotesize Ratio: sample $\sigma$ / train $\sigma$. Amplification = $\sqrt{(1-\bar{\alpha}_T)/\bar{\alpha}_T}$.
+\label{tab:oracle-schedules}
+\end{table}
+
+Linear and sigmoid schedules both produce physically plausible \emph{ranges} but
+over-shrink the distribution ($\sigma = 0.10$~m, less than half the training standard
+deviation). This is expected: the checkpoint was trained to predict epsilon under
+the cosine schedule's noise levels, and those epsilon predictions do not transfer
+to linear/sigmoid inference without retraining. Strikingly, \textbf{cosine 1000
+subsampled to 64 steps} produces a physically reasonable sample: $\sigma = 0.297$~m
+(1.38$\times$ train, well within the $0.1$--$5.0$ engineering scale screen),
+range [$-$0.69, $+$0.91]~m covering most of the training distribution. The key
+difference is terminal $\bar{\alpha}_{63} \approx 5.89\times10^{-4}$ (41.2$\times$
+amplification) rather than $5.93\times10^{-7}$ (1299$\times$). This probe establishes
+that \textbf{terminal schedule shape is a principal driver of the explosion
+effect}: replacing a cosine schedule with $\bar{\alpha}_T \approx 10^{-7}$ by
+one with $\bar{\alpha}_T \approx 10^{-4}$ reduces sample standard deviation by
+an order of magnitude, without any retraining.
+
+\subsection{Reverse-step trace}
+Tracking per-step implied clean standard deviation during reverse sampling
+reveals the explosion dynamics:
+
+\begin{table}[htbp]
+\centering
+\caption{Per-step implied clean $\sigma$ during cosine reverse sampler}
+\begin{tabular}{c c c c c}
+\toprule
+Step & $\bar{\alpha}_t$ & Amp & $\epsilon$ RMS & Implied $\sigma$ (m) \\
+\midrule
+63 & $5.93\times10^{-7}$ & 1299$\times$ & 1.140 & \textbf{18.64} \\
+60 & $5.33\times10^{-3}$ & 13.7$\times$ & 1.278 & 5.76 \\
+55 & $3.75\times10^{-2}$ & 5.1$\times$ & 1.082 & 5.05 \\
+48 & $1.28\times10^{-1}$ & 2.6$\times$ & 0.863 & 5.09 \\
+32 & $4.70\times10^{-1}$ & 1.1$\times$ & 0.702 & 4.98 \\
+16 & $8.29\times10^{-1}$ & 0.5$\times$ & 0.582 & 4.94 \\
+\bottomrule
+\end{tabular}
+\label{tab:reverse-trace}
+\end{table}
+
+The implied clean $\sigma$ remains stable at $\approx 5.0$~m for steps 0--48 (amplification
+$\leq 2.6\times$), then \emph{explodes} at steps 55--63 as amplification dominates the
+epsilon-prediction error that grows slowly throughout the reverse chain. This
+pattern rules out a model-conditioning failure or a reversed-schedule-order bug:
+the core issue is terminal-step schedule geometry interacting with imperfect
+epsilon predictions at limited training budget.
 
 \subsection{Engineering validation guards}
 The repaired codebase adds nonfinite rejection at every reverse step and a
