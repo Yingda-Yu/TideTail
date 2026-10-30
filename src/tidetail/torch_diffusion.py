@@ -1,11 +1,66 @@
-"""Small conditional epsilon-predicting DDPM; no training at import time."""
+"""Small conditional epsilon-predicting DDPM; no training at import time.
+
+Schedule choices
+----------------
+``schedule="cosine"`` (default, historical) — direct cosine over [0,1]
+with ``steps`` points. Terminal α_bar ≈ 5.9e-07 at 64 steps → 1299×
+clean amplification. DO NOT use for new experiments; retained only for
+back-compat with historical checkpoint traces.
+
+``schedule="cosine1000_subsample"`` — compute cosine over 1000 points,
+then subsample ``steps`` evenly-spaced betas. At 64 steps this gives
+terminal α_bar ≈ 5.9e-4 → 41× amplification, physically plausible.
+**REQUIRES RETRAINING** (epsilon predictions are schedule-specific).
+
+``schedule="linear"`` — Ho et al. 2020 linear β ∈ [1e-4, 0.02].
+"""
 
 import math
+from typing import Literal
 
 import numpy as np
 import torch
 from torch import nn
 
+# ---------------------------------------------------------------------------
+# Schedule constructors
+# ---------------------------------------------------------------------------
+
+def _cosine_beta(steps: int, device: torch.device | str = "cpu") -> torch.Tensor:
+    """Imagen cosine schedule over [0,1] with `steps` betas."""
+    t = torch.linspace(0, 1, steps + 1, device=device)
+    curve = torch.cos((t + 0.008) / 1.008 * math.pi / 2).square()
+    beta = (1 - curve[1:] / curve[:-1]).clamp(0.0001, 0.999)
+    return beta
+
+
+def _cosine1000_subsample_beta(steps: int,
+                               device: torch.device | str = "cpu") -> torch.Tensor:
+    """cosine over 1000 points, subsample `steps` evenly-spaced betas.
+
+    At 64 steps → terminal α_bar ≈ 5.9e-4 (vs 5.9e-7 for direct 64).
+    """
+    beta_dense = _cosine_beta(1000, device=device)
+    idx = np.linspace(0, 999, steps, dtype=int)
+    return beta_dense[torch.from_numpy(idx).to(device)]
+
+
+def _linear_beta(steps: int, beta_min: float = 1e-4, beta_max: float = 0.02,
+                 device: torch.device | str = "cpu") -> torch.Tensor:
+    beta = torch.linspace(beta_min, beta_max, steps, device=device)
+    return beta.clamp(0.0001, 0.999)
+
+
+SCHEDULE_REGISTRY = {
+    "cosine": _cosine_beta,
+    "cosine1000_subsample": _cosine1000_subsample_beta,
+    "linear": _linear_beta,
+}
+
+
+# ---------------------------------------------------------------------------
+# Model components
+# ---------------------------------------------------------------------------
 
 class ResidualBlock(nn.Module):
     def __init__(self, width, dilation):
@@ -57,17 +112,35 @@ class TemporalDenoiser(nn.Module):
 
 
 class Diffusion:
-    def __init__(self, steps=64, device="cpu"):
+    def __init__(self, steps=64, device="cpu",
+                 schedule: Literal["cosine", "cosine1000_subsample", "linear"]
+                 = "cosine1000_subsample"):
         if steps < 2:
             raise ValueError("at least two diffusion steps required")
+        if schedule not in SCHEDULE_REGISTRY:
+            raise ValueError(
+                f"unknown schedule {schedule!r}; "
+                f"choose from {list(SCHEDULE_REGISTRY)}"
+            )
         self.steps = steps
-        t = torch.linspace(0, 1, steps + 1, device=device)
-        curve = torch.cos((t + 0.008) / 1.008 * math.pi / 2).square()
-        self.beta = (1 - curve[1:] / curve[:-1]).clamp(0.0001, 0.999)
+        self.schedule_name = schedule
+        self.beta = SCHEDULE_REGISTRY[schedule](steps, device=device)
         self.alpha = 1 - self.beta
         self.bar = self.alpha.cumprod(0)
-        previous = torch.cat((torch.ones(1, device=device), self.bar[:-1]))
+        previous = torch.cat((torch.ones(1, device=self.bar.device),
+                              self.bar[:-1]))
         self.posterior_variance = self.beta * (1 - previous) / (1 - self.bar)
+
+    # --- Convenience diagnostics --------------------------------------------------
+    @property
+    def terminal_alpha_bar(self) -> float:
+        return float(self.bar[-1])
+
+    @property
+    def terminal_amplification(self) -> float:
+        """sqrt((1 - ᾱ_T) / ᾱ_T)) — clean-signal vs noise std ratio at T."""
+        ab = self.terminal_alpha_bar
+        return float(math.sqrt(max(1 - ab, 0) / max(ab, 1e-30)))
 
     def noisy(self, clean, timestep, noise):
         bar = self.bar[timestep][:, None, None]

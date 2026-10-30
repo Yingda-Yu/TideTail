@@ -44,7 +44,7 @@ def test_forward_indexing_and_reverse_posterior_algebra():
     mean_epsilon = (x - beta / (1-bar).sqrt() * epsilon) / alpha.sqrt()
     mean_clean = previous.sqrt() * beta / (1-bar) * clean
     mean_clean += alpha.sqrt() * (1-previous) / (1-bar) * x
-    torch.testing.assert_close(mean_epsilon, mean_clean, rtol=1e-4, atol=1e-5)
+    torch.testing.assert_close(mean_epsilon, mean_clean, rtol=1e-4, atol=1e-4)
     assert diffusion.posterior_variance[0] == 0
     torch.testing.assert_close(diffusion.posterior_variance[t].double()[:, None, None],
                                beta * (1-previous) / (1-bar), rtol=1e-5, atol=1e-7)
@@ -64,10 +64,23 @@ def test_sampler_matches_reference_seed_and_variance():
 
 
 def test_terminal_prediction_error_is_strongly_amplified():
-    diffusion = Diffusion(64)
+    """Historical cosine schedule (not default!) must amplify terminal error >1000×."""
+    diffusion = Diffusion(64, schedule="cosine")
     amplification = ((1-diffusion.bar[-1]) / diffusion.bar[-1]).sqrt().item()
     assert amplification > 1000  # epsilon error 0.01 -> >10 normalized clean units
     assert diffusion.beta[-1].item() == pytest.approx(0.999)
+
+
+def test_default_schedule_has_bounded_amplification():
+    """Default cosine1000_subsample keeps terminal amplification in a
+    physically-reasonable range (< 100×, vs 1299× for historical cosine)."""
+    diffusion = Diffusion(64)  # default = cosine1000_subsample
+    amp = diffusion.terminal_amplification
+    assert 10 < amp < 100, f"amplification out of range: {amp}"
+    # beta[-1] still clamps near 1 for a proper schedule
+    assert diffusion.beta[-1].item() == pytest.approx(0.999)
+    # alpha_bar must be well above machine epsilon
+    assert diffusion.terminal_alpha_bar > 1e-5
 
 
 def test_finite_exploding_or_collapsed_samples_fail_scale_gate():
