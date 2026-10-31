@@ -462,6 +462,7 @@ def main():
                         "dup_real_count": group_cfg["dup_real_count"],
                         # Eval metrics
                         **metrics,
+                        "conditioning_aligned": group_cfg.get("conditioning_aligned", False),
                         "git_sha": git_sha,
                         "batch_size": args.batch_size,
                         "lr": args.lr,
@@ -475,9 +476,19 @@ def main():
                           f"tail95={metrics['tail_mae_q95']:.4f} "
                           f"tail95_n={metrics['tail_mae_q95_n']}")
 
-    # Save results
+    # Save results (merge-safe: dedupe by region/group/model/seed/git_sha)
     out_path = RESULTS_DIR / "a3_flowmatching_augment_96_72.json"
-    out_path.write_text(json.dumps(all_results, indent=2))
+    if out_path.exists():
+        existing = json.loads(out_path.read_text())
+        existing_keys = {(r["region"], r["group"], r["model"], r["seed"], r.get("git_sha", "")) for r in existing}
+        merged = list(existing)
+        for r in all_results:
+            key = (r["region"], r["group"], r["model"], r["seed"], r.get("git_sha", ""))
+            if key not in existing_keys:
+                merged.append(r)
+    else:
+        merged = all_results
+    out_path.write_text(json.dumps(merged, indent=2))
     print(f"\nSaved {len(all_results)} results → {out_path}")
     print(f"Total runtime: {time.time() - total_t0:.1f}s")
 
