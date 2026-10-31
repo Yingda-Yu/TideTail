@@ -77,24 +77,24 @@ def test_embargo_full_support_rejects_origin_at_split_boundary():
     # Every index i in [start_idx, end_idx] must be: i >= 0 + 96 AND i <= 1000 - 72 = 928
     # SAFE: all indices 96..928
     safe_group = EventGroup("safe", start_idx=500, end_idx=600)
-    assert full_ok(safe_group) == True
+    assert full_ok(safe_group)
 
     # UNSAFE: event with indices < 96 (lookback not possible at start of block)
     too_early = EventGroup("early", start_idx=50, end_idx=80)
-    assert full_ok(too_early) == False
+    assert not full_ok(too_early)
 
     # UNSAFE: event extends past split_end - horizon
     # Any index > 928 fails. Even index 929 is one past.
     too_late = EventGroup("late", start_idx=925, end_idx=930)  # 930 > 928
-    assert full_ok(too_late) == False
+    assert not full_ok(too_late)
 
     # EDGE: group entirely within [96, 928]
     edge_safe = EventGroup("edge_safe", start_idx=96, end_idx=928)
-    assert full_ok(edge_safe) == True
+    assert full_ok(edge_safe)
 
     # EDGE: group that extends just one past
     edge_unsafe = EventGroup("edge_past", start_idx=96, end_idx=929)
-    assert full_ok(edge_unsafe) == False
+    assert not full_ok(edge_unsafe)
 
 
 def test_embargo_filter_rejects_group_spanning_protected_region():
@@ -104,19 +104,19 @@ def test_embargo_filter_rejects_group_spanning_protected_region():
 
     # [200, 800] contains 500 → min distance = 0 < 200 → reject
     spans = EventGroup("spans", start_idx=200, end_idx=800)
-    assert emb(spans) == False
+    assert not emb(spans)
 
     # [0, 400] → min distance is 500 - 400 = 100 < 200 → reject
     close = EventGroup("close", start_idx=0, end_idx=400)
-    assert emb(close) == False
+    assert not emb(close)
 
     # [0, 299] → max idx 299, distance 500 - 299 = 201 > 200 → accept
     far = EventGroup("far", start_idx=0, end_idx=299)
-    assert emb(far) == True
+    assert emb(far)
 
     # [1000, 1500] → min distance 1000 - 500 = 500 > 200 → accept
     post = EventGroup("post", start_idx=1000, end_idx=1500)
-    assert emb(post) == True
+    assert emb(post)
 
 
 def test_embargo_rejects_touching_region():
@@ -126,15 +126,15 @@ def test_embargo_rejects_touching_region():
 
     # [0, 499]: max idx 499, min_dist = 1 < 200 → reject
     touching = EventGroup("touching", start_idx=0, end_idx=499)
-    assert emb(touching) == False
+    assert not emb(touching)
 
     # [0, 300]: max idx 300, min_dist = 200, embargo > so reject (strictly greater)
     at_boundary = EventGroup("at_boundary", start_idx=0, end_idx=300)
-    assert emb(at_boundary) == False
+    assert not emb(at_boundary)
 
     # [0, 299]: max idx 299, min_dist = 201 > 200 → accept
     clear = EventGroup("clear", start_idx=0, end_idx=299)
-    assert emb(clear) == True
+    assert emb(clear)
 
 
 # ==========================================================================

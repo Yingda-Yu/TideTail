@@ -21,18 +21,37 @@ from .diffusion_ts import (
     moving_average_trend,
 )
 from .flow_matching import FlowMatching, VelocityTCN, ot_train_loss
+from .physics_diffusion import (
+    PhysicsAwareResidualDenoiser,
+    PhysicsDiffusionTS,
+    TailAwareDiffusionTS,
+    compute_tail_mask,
+    physics_loss,
+    tail_aware_loss,
+)
+from .timegrad import TimeGrad, TimeGradDenoiser
 
 __all__ = [
     # M2 — Diffusion-TS decomposition
     "DiffusionTS",
     # M4 — Flow Matching (CNF)
     "FlowMatching",
+    "PhysicsAwareResidualDenoiser",
+    # M5 — Physics-guided & M6 — Tail-aware
+    "PhysicsDiffusionTS",
     "ResidualDenoiser",
+    "TailAwareDiffusionTS",
+    # M3 — TimeGrad autoregressive
+    "TimeGrad",
+    "TimeGradDenoiser",
     "VelocityTCN",
+    "compute_tail_mask",
     "decompose",
     "extrapolate_seasonal",
     "extrapolate_trend",
     "fft_seasonal",
     "moving_average_trend",
     "ot_train_loss",
+    "physics_loss",
+    "tail_aware_loss",
 ]
