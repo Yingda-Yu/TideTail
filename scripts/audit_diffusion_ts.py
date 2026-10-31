@@ -12,12 +12,10 @@ Run: python3 scripts/audit_diffusion_ts.py
 """
 from __future__ import annotations
 
-import math
-import sys
 import json
+import sys
 from pathlib import Path
 
-import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -47,11 +45,11 @@ def audit_2_training_loss_norm_path():
     tgt = torch.randn(4, hor) * 0.3 + 0.1
     dt = DiffusionTS(context=ctx, horizon=hor, steps=64,
                      schedule="cosine1000_subsample", device="cpu")
-    denoiser = ResidualDenoiser(context=ctx, horizon=hor, width=32,
+    ResidualDenoiser(context=ctx, horizon=hor, width=32,
                                 use_full_context=True)
 
     # Decompose
-    h_trend, h_seasonal, h_res = dt.decompose_history(hist)
+    _h_trend, _h_seasonal, h_res = dt.decompose_history(hist)
     _, _, t_res = dt.decompose_history(tgt)  # uses same decompose_history
 
     # Per-sample norm
@@ -67,11 +65,11 @@ def audit_2_training_loss_norm_path():
     t_diff = (t_recon - t_res).abs().max().item()
 
     # Uniform norm check: both hist and tgt residuals use SAME coeffs
-    same_coeffs = torch.allclose(res_mean[0], res_mean[1])  # across batch, they differ!
+    torch.allclose(res_mean[0], res_mean[1])  # across batch, they differ!
     print(f"  history residual max recon error:  {h_diff:.2e}")
     print(f"  target residual max recon error:   {t_diff:.2e}")
     print(f"  per-sample norm coeffs vary across batch (expected): mean_std={res_std.std().item():.3f}")
-    print(f"  training_loss calls decompose_history on BOTH hist and tgt → trend/seasonal differ!")
+    print("  training_loss calls decompose_history on BOTH hist and tgt → trend/seasonal differ!")
 
 
 def audit_3_forecast_sampler_math():
@@ -113,7 +111,7 @@ def audit_3_forecast_sampler_math():
     # Verify this matches ho_ddpm_formula
     expected_mean = (x_T - diff.beta[i] / (1 - diff.bar[i]).sqrt() * eps) / diff.alpha[i].sqrt()
     assert torch.allclose(x_next, expected_mean, atol=1e-6)
-    print(f"  Reverse sampler Ho 2020 formula: ✓ correct")
+    print("  Reverse sampler Ho 2020 formula: ✓ correct")
 
     # Check denormalize: residual_norm * std + mean == residual_future
     # This is also checked by evaluate_generation → no issue here
@@ -159,7 +157,7 @@ def audit_6_forward_backward_consistency():
     approximately recovers the input. This tests if the DDPM can theoretically
     denoise at all."""
     print("\n[6] Forward noising → reverse denoising round-trip")
-    ctx, hor = 96, 72
+    _ctx, hor = 96, 72
     torch.manual_seed(42)
     clean = torch.randn(2, 1, hor) * 0.3  # synthetic residual scale
 
@@ -168,7 +166,7 @@ def audit_6_forward_backward_consistency():
     # Noise step 50
     t = torch.tensor([50, 50])
     eps_forward = torch.randn_like(clean)
-    noisy = diff.noisy(clean, t, eps_forward)
+    diff.noisy(clean, t, eps_forward)
 
     # Manual reverse (skip variance noise → should recover clean up to eps prediction error)
     # Since we DON'T have the true denoiser, this test is only the schedule math

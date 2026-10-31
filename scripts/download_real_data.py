@@ -61,8 +61,7 @@ def http_get(url: str, dest: Path) -> dict:
                 continue
             dest.parent.mkdir(parents=True, exist_ok=True)
             with open(dest, "wb") as fh:
-                for chunk in r.iter_content(chunk_size=1 << 20):
-                    fh.write(chunk)
+                fh.writelines(r.iter_content(chunk_size=1 << 20))
             sz = dest.stat().st_size
             return {"status": "OK", "bytes": sz, "sha256": sha256_file(dest),
                     "http_code": 200}
@@ -198,7 +197,7 @@ def download_ibtracs():
                 shutil.copyfileobj(gz, out_f)
             ids = set()
             with open(csv_dest) as fh:
-                header = fh.readline()
+                fh.readline()
                 for line in fh:
                     parts = line.split(",")
                     if len(parts) > 1:
@@ -214,7 +213,7 @@ def download_ibtracs():
 
 def write_manifest(records):
     ok = [r for r in records if r["status"] == "OK"]
-    fail = [r for r in records if r["status"] != "OK"]
+    [r for r in records if r["status"] != "OK"]
     by_src = {}
     for r in records:
         s = r.get("source", "unknown")
