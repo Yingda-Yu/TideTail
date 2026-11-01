@@ -19,9 +19,11 @@ from __future__ import annotations
 
 import math
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+import numpy as np
 
 # ---------------------------------------------------------------------------
 # IBTrACS loader
@@ -337,3 +339,181 @@ def storms_in_region(
             continue
         result.append(storm)
     return result
+
+
+# ---------------------------------------------------------------------------
+# IBTrACS / HURDAT2 deduplication
+# ---------------------------------------------------------------------------
+
+def dedup_ibtracs_hurdat2(
+    ibtracs_storms: list[Storm],
+    hurdat2_storms: list[Storm],
+    overlap_tol_hours: float = 48.0,
+    overlap_tol_km: float = 300.0,
+) -> list[Storm]:
+    """Merge IBTrACS + HURDAT2, removing duplicate storms.
+
+    IBTrACS uses SIDs like ``2016273N13300``. HURDAT2 uses IDs like ``AL152016``.
+    Many Atlantic tropical cyclones appear in BOTH datasets. We keep the IBTrACS
+    version (global coverage) but include HURDAT2 storms that are genuinely new.
+
+    Dedup heuristic:
+      1. Storm year + approximate centroid match (within overlap_tol_km) +
+         overlapping time windows (within overlap_tol_hours).
+      2. HURDAT2 storms are supplementary — include only if IBTrACS has no match.
+    """
+    merged = list(ibtracs_storms)
+    ibtracs_years = {s.event_start_utc.year for s in ibtracs_storms}
+
+    for h2 in hurdat2_storms:
+        if h2.event_start_utc.year not in ibtracs_years:
+            merged.append(h2)
+            continue
+
+        h2_center = (
+            float(np.mean([tp.lat for tp in h2.track])),
+            float(np.mean([tp.lng for tp in h2.track])),
+        )
+        h2_win_start = h2.event_start_utc - timedelta(hours=overlap_tol_hours)
+        h2_win_end = h2.event_end_utc + timedelta(hours=overlap_tol_hours)
+
+        is_dup = False
+        for ib in ibtracs_storms:
+            if ib.event_start_utc.year != h2.event_start_utc.year:
+                continue
+            ib_center = (
+                float(np.mean([tp.lat for tp in ib.track])),
+                float(np.mean([tp.lng for tp in ib.track])),
+            )
+            d_km = haversine_km(h2_center[0], h2_center[1], ib_center[0], ib_center[1])
+            if d_km > overlap_tol_km:
+                continue
+            # Time overlap
+            ib_end = ib.event_end_utc
+            ib_start = ib.event_start_utc
+            if ib_end >= h2_win_start and ib_start <= h2_win_end:
+                is_dup = True
+                break
+
+        if not is_dup:
+            merged.append(h2)
+
+    return merged
+
+
+# ---------------------------------------------------------------------------
+# Event-wise split (critical for leakage prevention)
+# ---------------------------------------------------------------------------
+
+def build_canonical_event_groups(
+    all_matches: list[StormGaugeMatch],
+) -> dict[str, set[str]]:
+    """Canonical storm → set of gauges it hit.
+
+    ONE storm hitting 3 gauges is ONE canonical event, not three.
+    Returns {canonical_storm_id: {station_id, ...}}.
+    """
+    groups: dict[str, set[str]] = {}
+    for m in all_matches:
+        groups.setdefault(m.canonical_storm_id, set()).add(m.station_id)
+    return groups
+
+
+def event_wise_split(
+    canonical_events: list[str],
+    train_frac: float = 0.8,
+    val_frac: float = 0.1,
+    test_frac: float = 0.1,
+    seed: int = 42,
+) -> dict[str, list[str]]:
+    """Split canonical events into train/val/test by STORM ID.
+
+    A single storm always stays in one split — no cross-split leakage
+    even if it hit multiple gauges.
+    """
+    assert abs(train_frac + val_frac + test_frac - 1.0) < 1e-6
+    rng = np.random.default_rng(seed)
+    ev = list(canonical_events)
+    rng.shuffle(ev)
+
+    n = len(ev)
+    n_train = round(n * train_frac)
+    n_val = round(n * val_frac)
+
+    return {
+        "train": ev[:n_train],
+        "val": ev[n_train : n_train + n_val],
+        "test": ev[n_train + n_val :],
+    }
+
+
+def verify_split_integrity(split_events: dict[str, list[str]]) -> dict[str, Any]:
+    """Assert no storm appears in multiple splits. Returns diagnostics."""
+    sets = {k: set(v) for k, v in split_events.items()}
+    overlaps = {}
+    split_names = list(sets.keys())
+    for i in range(len(split_names)):
+        for j in range(i + 1, len(split_names)):
+            o = sets[split_names[i]] & sets[split_names[j]]
+            overlaps[f"{split_names[i]}∩{split_names[j]}"] = len(o)
+
+    total_unique = set()
+    for s in sets.values():
+        total_unique |= s
+
+    all_clean = all(v == 0 for v in overlaps.values())
+
+    return {
+        "split_sizes": {k: len(v) for k, v in split_events.items()},
+        "total_unique_events": len(total_unique),
+        "overlaps": overlaps,
+        "no_leakage": all_clean,
+    }
+
+
+def count_independent_storms(all_matches: list[StormGaugeMatch]) -> dict[str, int]:
+    """Count TRUE independent storm events (one storm at any number of gauges = 1).
+
+    CRITICAL: This is NOT len(all_matches). A single storm may appear in
+    multiple gauge matches — that counts as 1 independent storm, not N.
+    """
+    canonical_ids = {m.canonical_storm_id for m in all_matches}
+    gauge_storm_pairs = {(m.canonical_storm_id, m.station_id) for m in all_matches}
+
+    return {
+        "independent_storms": len(canonical_ids),
+        "gauge_storm_pairs": len(gauge_storm_pairs),
+        "total_matches": len(all_matches),
+        "multi_gauge_storms": sum(
+            1 for cid in canonical_ids
+            if sum(1 for m in all_matches if m.canonical_storm_id == cid) > 1
+        ),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Extratropical storm detection (placeholder — non-tropical Atlantic)
+# ---------------------------------------------------------------------------
+
+def mark_storm_type(
+    storms: list[Storm],
+    tropical_peak_wind_threshold: float = 34.0,  # knots (tropical storm)
+) -> None:
+    """Classify storm_type field in-place using peak wind + track latitude heuristic.
+
+    Tropical cyclones have peak sustained wind ≥ 34 kt and form in tropics.
+    Extratropical storms can be any wind speed but are poleward-moving.
+
+    Note: True classification needs NHC metadata. This is a best-effort proxy.
+    """
+    for storm in storms:
+        if storm.max_wind_kt is None:
+            storm.storm_type = "unknown"
+            continue
+        peak_lat = max(tp.lat for tp in storm.track)
+        if storm.max_wind_kt >= tropical_peak_wind_threshold and peak_lat < 40:
+            storm.storm_type = "tropical_cyclone"
+        elif storm.max_wind_kt >= tropical_peak_wind_threshold:
+            storm.storm_type = "tropical_cyclone_late"
+        else:
+            storm.storm_type = "extratropical_or_subtropical"
