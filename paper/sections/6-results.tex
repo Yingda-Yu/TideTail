@@ -214,16 +214,34 @@ Model & Region & Scale ratio & Peak ratio & q95 Gen/Real & q99 Gen/Real & Gate \
 \label{tab:gen-benchmark}
 \end{table}
 
-\textbf{Flow Matching produces correct scale across all five regions.} Scale
-ratios of 0.95--1.12 (within $\pm$12\% of real), q95/q99 quantiles within 3\% of
-real, and Wasserstein-1 distances of $\leq$0.10 confirm excellent bulk
-distribution match. All ten runs pass the scale, range, Wasserstein, and
-autocorrelation gates. The INCONCLUSIVE decisions stem \emph{exclusively} from
-peak KS-test $p$-values (peak-magnitude distribution mismatch, expected from
-single-model generation) and near-duplicate ratio warnings on the thames and
-australia regions (mode collapse at near\_dup\_ratio $\approx$0.96--1.0); neither
-triggers a hard rejection. Training loss plateaus at $\approx$1.5$\times 10^{-2}$
-after 15 epochs; additional epochs may reduce the near-duplicate issue.
+\textbf{\emph{P0 critical caveat (2026-11-03 post-hoc audit).}} The Flow
+Matching results in Table~\ref{tab:gen-benchmark} and the downstream A3
+augmentation run below were trained on a \emph{double-subtracted target}.
+\texttt{FORECAST\_TASK\_CONTRACT.md} defines \texttt{water\_level\_m} as the
+already de-tided surge residual ($\text{water\_level\_m} =
+\text{observed\_total} - \text{FES2022\_tide}$, verified MAE $< 10^{-8}$~m
+across all five regions). The FM training script computed
+\texttt{residual = water\_level\_m - tide\_level\_m}, re-subtracting the tide
+component. All FM scale ratios, q95/q99 matches, and downstream A3 metrics in
+this section are \emph{not physically meaningful} — the FM learned to
+generate an oscillatory signal that coincidentally matched bulk residual scale
+because the double-subtraction inflated residual std by tide std ($\sim$0.5~m),
+which FM compensated. A corrected retrain of all ten FM checkpoints
+(GPU RTX3090, 15 epochs each) was completed on 2026-11-03, and A3 augmentation
+reruns with correct residuals are executing as of this draft.
+
+With that caveat, \emph{at the time of the original run}: Flow Matching
+appeared to produce correct scale across all five regions. Scale ratios of
+0.95--1.12 (within $\pm$12\% of the corrupted-training reference), q95/q99
+quantiles within 3\% of reference, and Wasserstein-1 distances of $\leq$0.10
+suggested excellent bulk distribution match. All ten runs passed the scale,
+range, Wasserstein, and autocorrelation gates. The INCONCLUSIVE decisions
+stemmed \emph{exclusively} from peak KS-test $p$-values (peak-magnitude
+distribution mismatch, expected from single-model generation) and
+near-duplicate ratio warnings on the thames and australia regions (mode
+collapse at near\_dup\_ratio $\approx$0.96--1.0); neither triggered a hard
+rejection. Training loss plateaus at $\approx$1.5$\times 10^{-2}$ after 15
+epochs; additional epochs may reduce the near-duplicate issue.
 
 \textbf{Diffusion-TS (DDPM-based) is catastrophically rejected on all ten
 runs, even at 50 epochs.} This supersedes the earlier three-epoch finding.
@@ -256,10 +274,11 @@ the single velocity-regression loss trains a field that transports samples
 from a simple Gaussian prior to the data distribution via straight-line
 interpolation, and inference integrates the learned ODE forward in time
 (Euler, 64 steps). There is no reverse chain and no per-step amplification of
-accumulated error. The architecture is otherwise matched (dilated TCN, same
-training data, same per-sample residual normalisation), so the difference is
-attributable to the \emph{generative framework}, not model capacity (M4:
-27,937 vs M2: 39,425 parameters).
+accumulated error. \emph{However, the FM runs in Table~\ref{tab:gen-benchmark}
+were trained on the double-subtracted target detailed in the P0 caveat above.
+The observed scale-ratio difference between FM and DDPM in that table cannot
+therefore be attributed cleanly to the generative framework.} A corrected
+framework comparison on physically valid targets is deferred to future work.
 
 \textbf{Caution: this does not generalise to ``all DDPMs are bad.''}
 Our finding applies specifically to \emph{DDPM operating on the residual

@@ -172,17 +172,17 @@ def main():
             continue
         pa_a0 = predictions[a0_key]
         ci = paired_bootstrap(pa_a3, pa_a0)
+        verdict = "A3_better" if ci["candidate_better"] else ("A0_better" if ci["baseline_better"] else "neutral")
         a3_results.append({
             "region": region, "group_a3": grp, "seed": seed,
-            "a3_mae": (pa_a3["pred_residual"] + pa_a3["future_tide"] - pa_a3["obs_residual"] - pa_a3["future_tide"]).__class__,
             "delta": ci["delta_mae_a_minus_b"],
             "ci_lo": ci["ci_lo"], "ci_hi": ci["ci_hi"],
-            "verdict": "A3_better" if ci["candidate_better"] else ("A0_better" if ci["baseline_better"] else "neutral"),
+            "verdict": verdict,
         })
         ratio = grp.split("_")[-1] if "ratio_" in grp else ""
         fm_seed = grp.split("_s")[1].split("_")[0] if "_s" in grp else ""
         summary_lines.append(f"| {region} | {ratio} | s{fm_seed} | {ci['delta_mae_a_minus_b']:.4f} | "
-                             f"{ci['ci_lo']:.4f} | {ci['ci_hi']:.4f} | {ci['verdict']} |")
+                             f"{ci['ci_lo']:.4f} | {ci['ci_hi']:.4f} | {verdict} |")
 
     # A2 vs A0 bootstrap
     summary_lines.append("\n## A2 (history noise) vs A0 — Paired Bootstrap CI (tw_mae, GRU)\n")
@@ -195,8 +195,9 @@ def main():
             if a2_key not in predictions or a0_key not in predictions:
                 continue
             ci = paired_bootstrap(predictions[a2_key], predictions[a0_key])
+            v = "A2_better" if ci["candidate_better"] else ("A0_better" if ci["baseline_better"] else "neutral")
             summary_lines.append(f"| {region} (seed{seed}) | {ci['delta_mae_a_minus_b']:.4f} | "
-                                 f"{ci['ci_lo']:.4f} | {ci['ci_hi']:.4f} | {ci['verdict']} |")
+                                 f"{ci['ci_lo']:.4f} | {ci['ci_hi']:.4f} | {v} |")
 
     # A1 vs A0
     summary_lines.append("\n## A1 (oversampling) vs A0 — Paired Bootstrap CI (tw_mae, GRU)\n")
@@ -209,8 +210,9 @@ def main():
             if a1_key not in predictions or a0_key not in predictions:
                 continue
             ci = paired_bootstrap(predictions[a1_key], predictions[a0_key])
+            v = "A1_better" if ci["candidate_better"] else ("A0_better" if ci["baseline_better"] else "neutral")
             summary_lines.append(f"| {region} (seed{seed}) | {ci['delta_mae_a_minus_b']:.4f} | "
-                                 f"{ci['ci_lo']:.4f} | {ci['ci_hi']:.4f} | {ci['verdict']} |")
+                                 f"{ci['ci_lo']:.4f} | {ci['ci_hi']:.4f} | {v} |")
 
     OUT_MD.write_text("\n".join(summary_lines))
     print(f"\nSaved markdown summary → {OUT_MD}")

@@ -9,6 +9,8 @@ description = "TideTail research scaffolding for extreme-aware diffusion augment
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.24",
+    "pandas>=2.0",
+    "scipy>=1.10",
     "torch>=2.1",
 ]
 

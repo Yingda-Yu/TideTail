@@ -24,72 +24,92 @@ amplification is fatal. A DDPM operating directly on full water level (not
 decomposed) may behave differently; the decomposition itself may be the
 problem, not DDPM in general.
 
-\subsection{Why Flow Matching avoids this failure}
-Flow Matching (CNF) fundamentally avoids reverse-chain accumulation by
-construction. The single velocity-regression loss trains a field that
-transports samples from a simple Gaussian prior to the data distribution via
-straight-line interpolation, and inference integrates the learned ODE
-\emph{forward} in time (Euler, 64 steps). There is no per-step amplification
-and no accumulated error chain.
+\subsection{Why Flow Matching appeared to avoid this failure — P0 caveat}
+\emph{All results in this subsection are post-hoc invalidated by the P0
+target-semantics finding (2026-11-03, \texttt{fc45703}).} The original FM
+checkpoints and downstream A3 run were trained on
+\texttt{residual = water\_level\_m - tide\_level\_m}, a double-subtraction of
+the astronomical tide. \texttt{water\_level\_m} is already the de-tided surge
+residual per \texttt{FORECAST\_TASK\_CONTRACT.md} (verified MAE $< 10^{-8}$~m
+across all five regions). The FM scale ratios, q95/q99 matches, and the
+putative architecture comparison with DDPM in Section~\ref{sec:results} are
+\emph{not physically meaningful}.
 
-The architectural control is close: both models use dilated TCN encoders with
-similar parameter budgets (M4: 27,937 vs M2: 39,425), train on the same data
-with the same per-sample residual normalization, and forecast 72 hours. The
-only differences are (a) the generative framework (CNF vs DDPM) and (b) the
-residual-decomposition wrapper that M2 uses. The result — M4 passes all
-scale gates while M2 fails catastrophically — is therefore attributable to
-the generative framework choice, not model capacity or data protocol.
+The corrected retrain of all ten FM checkpoints (5 regions $\times$ 2 seeds,
+GPU RTX3090, 15 epochs each) was completed on 2026-11-03. A3 downstream
+augmentation reruns on correct residuals are executing concurrently with this
+draft revision. The DDPM negative result (10 full-budget runs, scale ratio
+0.11--0.35, all REJECTED) \emph{remains valid}: the DDPM was trained on the
+same corrupted target, yet still failed catastrophically on all metrics. This
+suggests that the DDPM failure mechanism (reverse-time accumulation on a
+small-variance residual sub-space) is real and robust to target variations.
+Whether Flow Matching produces comparable scale-correctness on physically
+valid targets awaits the corrected A3 reruns.
 
-M4 is not perfect: peak KS-test $p$-values are uniformly below 0.01
-(distribution mismatch in peak magnitudes, expected from any single generative
-model), and near-duplicate ratios approach 1.0 on thames/australia (mode
-collapse, known limitation of single-flow CNF). But scale is correct,
-Wasserstein-1 distances are $\leq$0.10, and q95/q99 quantiles match within
-3\% of real values. These are solvable with more sophisticated generative
-strategies (mixture models, diverse sampling); the DDPM issue is not.
+From a purely architectural perspective, Flow Matching (CNF) avoids reverse
+chain accumulation by construction: the single velocity-regression loss
+trains a field that transports samples from a simple Gaussian prior to the
+data distribution via straight-line interpolation, and inference integrates
+the learned ODE forward in time (Euler, 64 steps). There is no per-step
+amplification and no accumulated error chain. This architectural analysis
+remains valid as a theoretical contrast, but the empirical evidence in this
+paper for it is retracted.
 
 \subsection{Data and protocol limitations}
 \begin{itemize}
-    \item \textbf{IBTrACS storm data unavailable}. NCEI restructured the
-    IBTrACS download URLs; all tested URLs return HTTP 404. An alternative
-    mirror (\texttt{ibtracs.unca.edu}) may provide CSV downloads but was not
-    verified before this draft. HURDAT2 (2004 storms, 7.1 MB, SHA256 verified)
-    provides partial coverage.
+    \item \textbf{ERA5 CDS authentication missing}. Wind stress (U10, V10) and
+    mean sea-level pressure forcing are not yet available because
+    \texttt{~/.cdsapirc} is not configured. This blocks the full surge prior
+    calibration (\texttt{physics.py}) and physics-guided model variants.
+    Owner action required (register at \texttt{cds.climate.copernicus.eu},
+    configure API token).
 
-    \item \textbf{Real-world gauges downloaded but not integrated}. NOAA
-    CO-OPS 3 verified stations provide 360 monthly CSVs (102 MB, 2.6M rows,
-    6-min resolution). These are held-out ground-truth that can validate
-    model forecasts against observed storms, but were not used in the current
-    generative experiments which use prime-formal synthetic targets.
+    \item \textbf{NOAA gauge expansion incomplete}. Three verified CO-OPS
+    stations (8518750, 8665530, 8761724) provide 10 years of hourly
+    observations, but only cover the US east coast. Expanding to 10--30
+    stations across all five regions would strengthen the real-event
+    generalization test.
 
-    \item \textbf{Canonical independent storm grouping is not yet signed}.
-    Current threshold-run event intervals are not meteorologically independent
-    storms. The HK boundary-crossing event is unresolved.
+    \item \textbf{DDPM vs.\ FM comparison not on physically valid targets}.
+    See P0 caveat above. A corrected framework comparison is deferred.
 
-    \item \textbf{License and vertical datum sign-off are incomplete} for the
-    Hong Kong region and upstream data provenance of other regions.
+    \item \textbf{Hong Kong region excluded pending signoff}. 134 NaN rows
+    in the prime-formal data, datum and license signoff incomplete.
+
+    \item \textbf{Disk space constrained} (97\% used on \texttt{/data}).
+    Limits large dataset downloads and multiple checkpoint retention.
 \end{itemize}
 
-\subsection{Augmentation utility not yet evaluated}
-The A3 Flow Matching synthetic augmentation experiment (Section A3) evaluates
-whether adding Flow-Matching-generated residual targets to GRU/TCN training
-sets improves tail forecasting accuracy. Five augment groups (A0 real-only,
-A1 extreme oversampling, A2 physics residual noise, A3 FM synthetic at
-10\%/25\%/50\% ratios) run across 5 regions $\times$ 2 seeds for 30 epochs
-each. Results are pending final execution on GPU 4.
+\subsection{Augmentation utility under evaluation}
+The wave17 pipeline (2026-11-03, GPU3) is executing a corrected A3 Flow
+Matching synthetic augmentation experiment on physically valid residuals. Five
+augment groups (A0 real-only, A1 extreme oversampling, A2 history-noise,
+A3 FM synthetic at 10\%/25\%/50\% ratios) run across 5 regions $\times$ 2
+seeds $\times$ 2 downstream models (GRU/TCN), with corrected FM checkpoints
+(G8 pilot, retrained 21:27--21:47 on 2026-11-03). Partial results (3 regions
+complete) show region-dependent efficacy: A3 ratio 0.5 improves GRU
+\texttt{tw\_mae} by 15.5\% on ny\_bight and 12.4\% on us\_gulf\_coast, but
+degrades by 14.6\% on thames\_north\_sea — consistent with the largest
+residual-amplitude basin being the hardest to augment. A1 oversampling is
+consistently harmful across all regions (negative result confirmed). Full
+results pending pipeline completion.
 
 \subsection{What this \emph{is}}
-Despite containing a clear negative result, this work provides:
+Despite containing a clear negative result and a post-hoc target-semantics
+correction, this work provides:
 \begin{enumerate}
     \item A fully documented and leakage-safe research protocol frozen at the
-    96$\rightarrow$72 contract with train-only scalers and chronological 8:1:1 splits.
+    96$\rightarrow$72 contract with train-only scalers and chronological 8:1:1
+    splits, now with verified total-water reconstruction MAE $< 10^{-8}$~m.
     \item A definitive diagnosis of \emph{DDPM residual-decomposition
     amplification} as an architectural failure mode for tidal surge
-    generation, confirmed across 10 full-budget runs.
-    \item A generative architecture comparison (CNF vs DDPM) with matched
-    architectural controls and empirical evidence that Flow Matching is the
-    viable generative approach for this task.
-    \item Reproducible data download manifest with SHA256 hashes for real
-    NOAA/HURDAT2 sources.
-    \item 153 passing pytest tests and ruff-clean code as PR gate.
+    generation, confirmed across 10 full-budget runs (50 epochs each).
+    \item \emph{Post-hoc correction} of the M4 Flow Matching benchmark result
+    — the original run trained on a double-subtracted target and cannot
+    support the claimed framework-choice attribution. A corrected FM retrain
+    and A3 augmentation rerun are executing as of this revision.
+    \item Reproducible data download manifest with SHA256 hashes for verified
+    real NOAA CO-OPS (3 gauges, 10 years), HURDAT2 (2,004 storms), and
+    IBTrACS v04r01 (5,013 storms) sources.
+    \item 268 passing pytest tests and ruff-clean code as PR gate.
 \end{enumerate}
