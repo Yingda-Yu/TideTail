@@ -10,6 +10,7 @@ flow_matching  — M4: continuous normalizing flow baseline (non-DDPM)
 timegrad       — M3: autoregressive conditional diffusion
 physics_diffusion — M5: rate-of-change + peak-magnitude constraints
                    — M6: tail-aware extension (primary H1 candidate)
+vae            — M7: Conditional VAE baseline (control for diffusion models)
 """
 from .diffusion_ts import (
     DiffusionTS,
@@ -30,6 +31,12 @@ from .physics_diffusion import (
     tail_aware_loss,
 )
 from .timegrad import TimeGrad, TimeGradDenoiser
+from .vae import (
+    ConditionalVAE,
+    ConditionalVAEEncoder,
+    ConditionalVAEDecoder,
+    vae_count_params,
+)
 
 __all__ = [
     # M2 — Diffusion-TS decomposition
@@ -44,6 +51,11 @@ __all__ = [
     # M3 — TimeGrad autoregressive
     "TimeGrad",
     "TimeGradDenoiser",
+    # M7 — Conditional VAE
+    "ConditionalVAE",
+    "ConditionalVAEEncoder",
+    "ConditionalVAEDecoder",
+    "vae_count_params",
     "VelocityTCN",
     "compute_tail_mask",
     "decompose",
