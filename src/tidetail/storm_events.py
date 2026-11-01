@@ -13,10 +13,21 @@ Canonical schema per storm-event:
     max_wind_kt:         float          # max sustained wind (knots)
     min_pressure_mb:     float          # min central pressure (hPa)
     track_points:         list[dict]     # lat, lng, time, wind, pres
-    matched_gauges:      list[dict]     # station_id, nearest_track_dist_km, time_offset_hours
+    matched_gauges:      list[dict]     # station_id, nearest_track_dist_km,
+                                         # storm_arrival_to_gauge_peak_hours
+
+Validity tiers (separate questions, NOT a single hierarchy):
+    TRACK_MATCHED:        Storm track comes within distance threshold of gauge
+    OBSERVATION_MATCHED:  Gauge has hourly water-level data overlapping
+                          the storm's track period
+    WATER_LEVEL_EVENT_VALIDATED:  Observed water level shows genuine
+                          surge response concurrent with storm
+    FORMAL_TEST_ADMITTED: Storm appears in the test split AND its windows
+                          feed the forecasting pipeline
 """
 from __future__ import annotations
 
+import csv
 import math
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
@@ -26,67 +37,139 @@ from typing import Any
 import numpy as np
 
 # ---------------------------------------------------------------------------
-# IBTrACS loader
+# IBTrACS loader — uses csv module, handles quoted fields correctly
 # ---------------------------------------------------------------------------
 
 def load_ibtracs_csv(path: str | Path) -> list[dict[str, Any]]:
     """Load IBTrACS v04r01 CSV — skips the two-line header.
 
+    Uses Python's csv module for standards-compliant parsing (handles
+    quoted fields, escaped commas correctly). Naive split(",") worked
+    for the specific v04r01 file (no quoted fields observed in 312K rows)
+    but the csv module is required for correctness.
+
     IBTrACS CSVs have TWO header rows:
-        row 0: column names
+        row 0: column names (174 columns)
         row 1: units ("degrees_north", "kts", "mb", ...)
         rows 2+: data
     """
     path = Path(path)
-    with open(path, "r") as f:
-        all_lines = f.readlines()
+    with open(path, "r", newline="") as f:
+        reader = csv.reader(f)
+        header = next(reader)  # row 0: column names
+        # Skip row 1 (units)
+        next(reader)
 
-    header = all_lines[0].strip().split(",")
-    # Skip row 1 (units) — it's a data row that says "degrees_north" etc.
-    data_lines = all_lines[2:]
+        rows: list[dict[str, Any]] = []
+        for row in reader:
+            if not row or len(row) < 10:
+                continue
+            # Pad short rows
+            if len(row) < len(header):
+                row = row + [""] * (len(header) - len(row))
+            # Only zip up to header length
+            rows.append(dict(zip(header, row[:len(header)])))
 
-    rows: list[dict[str, Any]] = []
-    for line in data_lines:
-        line = line.strip()
-        if not line:
-            continue
-        parts = line.split(",")
-        if len(parts) < 10:
-            continue
-        row = dict(zip(header, parts))
-        rows.append(row)
     return rows
 
 
 def load_hurdat2(path: str | Path) -> list[dict[str, Any]]:
-    """Load HURDAT2 North Atlantic / Eastern Pacific CSV.
+    """Load HURDAT2 North Atlantic / Eastern Pacific / IO / Western Pacific.
 
-    HURDAT2 format: first row per storm is header (AL/SC + year + name),
-    then data rows with 6-hour track points.
+    HURDAT2 format (critical differences from IBTrACS):
+      - First row per storm: header with 3 CSV fields
+          AL011851,            UNNAMED,       14,
+          ^basin+num+year      ^name          ^n_data_rows
+      - Data rows use YYYYMMDD (no hyphens!) + HHMM (no colons!)
+          18510625, 0000,  , HU, 28.0N,  94.8W,  80, ...
+          col 0      col 1  col 2 col 3 col 4    col 5    col 6
+          date_utc   time_utc (blank?) status lat_str  lon_str  max_wind_kt
+      - Latitude has N/S suffix (e.g. "28.0N")
+      - Longitude has E/W suffix (e.g. "94.8W" → negative, "120.0E" → positive)
     """
     path = Path(path)
     with open(path, "r") as f:
-        lines = [l.strip() for l in f]
+        content = f.read()
 
     rows: list[dict[str, Any]] = []
     storm_id = ""
-    for line in lines:
+    storm_name = ""
+    for line in content.splitlines():
+        line = line.strip()
         if not line:
             continue
-        parts = line.split(",")
-        if len(parts) == 3 and parts[0].startswith(("AL", "SC", "CP", "EP")):
+        parts = [p.strip() for p in line.split(",")]
+        # Storm header: 3 parts, first part starts with basin prefix + numeric
+        if (
+            len(parts) >= 3
+            and len(parts[0]) >= 6
+            and parts[0][:2] in ("AL", "SC", "CP", "EP", "IO", "WP")
+            and parts[0][2:4].isdigit()
+        ):
             storm_id = parts[0].strip()
+            storm_name = parts[1].strip() if len(parts) > 1 else ""
             continue
+
+        # Data row
         if len(parts) < 5:
             continue
+
+        raw_date = parts[0].strip()  # YYYYMMDD
+        raw_time = parts[1].strip()  # HHMM
+        status = parts[3].strip() if len(parts) > 3 else ""
+        lat_str = parts[4].strip() if len(parts) > 4 else ""
+        lon_str = parts[5].strip() if len(parts) > 5 else ""
+        wind_str = parts[6].strip() if len(parts) > 6 else ""
+
+        # Parse HURDAT2-specific lat/lon format (28.0N, 94.8W)
+        lat = None
+        lng = None
+        if lat_str and lat_str[-1] in ("N", "S"):
+            try:
+                lat = float(lat_str[:-1])
+                if lat_str[-1] == "S":
+                    lat = -lat
+            except ValueError:
+                lat = None
+
+        if lon_str and lon_str[-1] in ("E", "W"):
+            try:
+                lng = float(lon_str[:-1])
+                if lon_str[-1] == "W":
+                    lng = -lng
+            except ValueError:
+                lng = None
+
+        # Parse HURDAT2 date/time (YYYYMMDD + HHMM, no separators)
+        dt = None
+        if len(raw_date) == 8 and len(raw_time) >= 3:
+            try:
+                y, mo, d = int(raw_date[:4]), int(raw_date[4:6]), int(raw_date[6:8])
+                hh = int(raw_time[:2])
+                mm = int(raw_time[2:4]) if len(raw_time) >= 4 else 0
+                dt = datetime(y, mo, d, hh, mm, tzinfo=timezone.utc)
+            except (ValueError, IndexError):
+                dt = None
+
+        wind = None
+        if wind_str and wind_str not in ("-999", "-99", ""):
+            try:
+                w = float(wind_str)
+                if 0 < w < 200:  # sanity
+                    wind = w
+            except ValueError:
+                pass
+
         rows.append({
             "HURDAT2_ID": storm_id,
-            "ISO_TIME": parts[0].strip(),
-            "LAT": parts[2].strip(),
-            "LON": parts[3].strip(),
-            "WIND_SPEED": parts[4].strip() if len(parts) > 4 else "",
-            "PRES": parts[5].strip() if len(parts) > 5 else "",
+            "HURDAT2_NAME": storm_name,
+            "ISO_TIME": dt.isoformat() if dt else "",
+            "STATUS": status,
+            "LAT": str(lat) if lat is not None else "",
+            "LON": str(lng) if lng is not None else "",
+            "WIND_SPEED": str(wind) if wind is not None else "",
         })
+
     return rows
 
 
@@ -218,6 +301,89 @@ def parse_ibtracs_to_storms(rows: list[dict[str, Any]]) -> list[Storm]:
     return result
 
 
+def parse_hurdat2_to_storms(rows: list[dict[str, Any]]) -> list[Storm]:
+    """Group HURDAT2 rows by HURDAT2_ID and build Storm objects.
+
+    Uses the STATUS field (HU, TS, ET, etc.) for better storm typing
+    than a pure latitude+wind heuristic.
+    """
+    storms: dict[str, list[TrackPoint]] = {}
+    wind_max: dict[str, float] = {}
+    status_set: dict[str, set[str]] = {}
+
+    for r in rows:
+        hid = r.get("HURDAT2_ID", "").strip()
+        if not hid:
+            continue
+
+        lat_str = r.get("LAT", "").strip()
+        lng_str = r.get("LON", "").strip()
+        try:
+            lat = float(lat_str) if lat_str else None
+            lng = float(lng_str) if lng_str else None
+        except ValueError:
+            lat = lng = None
+        if lat is None or lng is None:
+            continue
+
+        t_str = r.get("ISO_TIME", "").strip()
+        t = None
+        if t_str:
+            try:
+                t = datetime.fromisoformat(t_str)
+            except ValueError:
+                pass
+        if t is None:
+            continue
+
+        wind = None
+        wstr = r.get("WIND_SPEED", "").strip()
+        if wstr:
+            try:
+                w = float(wstr)
+                if 0 < w < 200:
+                    wind = w
+            except ValueError:
+                pass
+
+        tp = TrackPoint(lat=lat, lng=lng, time=t, wind_kt=wind)
+        storms.setdefault(hid, []).append(tp)
+        status_set.setdefault(hid, set()).add(r.get("STATUS", "").strip())
+
+        if wind is not None:
+            wind_max[hid] = max(wind_max.get(hid, 0.0), wind)
+
+    def _classify(hid: str) -> str:
+        statuses = status_set.get(hid, set())
+        winds = wind_max.get(hid)
+        if "ET" in statuses:
+            return "extratropical_or_subtropical"
+        if any(s in statuses for s in ("HU", "TY", "TC", "CY")):
+            return "tropical_cyclone"
+        if any(s in statuses for s in ("TS", "TD")):
+            return "tropical_depression_or_storm"
+        if winds is not None and winds >= 64:
+            return "tropical_cyclone"
+        return "unknown"
+
+    result: list[Storm] = []
+    for hid, track in storms.items():
+        track.sort(key=lambda x: x.time)
+        if not track:
+            continue
+        result.append(Storm(
+            canonical_storm_id=f"hurdat2_{hid}",
+            storm_type=_classify(hid),
+            source_dataset="HURDAT2",
+            source_storm_id=hid,
+            event_start_utc=track[0].time,
+            event_end_utc=track[-1].time,
+            max_wind_kt=wind_max.get(hid),
+            track=track,
+        ))
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Haversine distance
 # ---------------------------------------------------------------------------
@@ -251,8 +417,9 @@ class StormGaugeMatch:
     canonical_storm_id: str
     station_id: str
     nearest_track_dist_km: float
-    time_offset_hours: float  # |peak_time - gauge_window_center|
+    storm_peak_to_nearest_track_hours: float  # |storm_peak_time - nearest_track_point_time|
     storm_peak_wind_kt: float | None
+    validity_tier: str = "TRACK_MATCHED"  # one of TRACK_MATCHED, OBSERVATION_MATCHED, etc.
 
 
 def match_storms_to_gauges(
@@ -281,14 +448,15 @@ def match_storms_to_gauges(
 
         # Storm peak time: track point with max wind
         peak_tp = max(storm.track, key=lambda x: x.wind_kt or 0.0)
-        time_offset = abs((peak_tp.time - best_tp.time).total_seconds()) / 3600
+        peak_to_track = abs((peak_tp.time - best_tp.time).total_seconds()) / 3600
 
         matches.append(StormGaugeMatch(
             canonical_storm_id=storm.canonical_storm_id,
             station_id=gauge.station_id,
             nearest_track_dist_km=round(best_dist, 1),
-            time_offset_hours=round(time_offset, 1),
+            storm_peak_to_nearest_track_hours=round(peak_to_track, 1),
             storm_peak_wind_kt=storm.max_wind_kt,
+            validity_tier="TRACK_MATCHED",
         ))
 
     return matches
