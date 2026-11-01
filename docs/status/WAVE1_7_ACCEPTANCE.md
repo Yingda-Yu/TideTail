@@ -1,3 +1,5 @@
+> **2026-11-02 Issue #5 audit supersedes scientific acceptance below.** Training outputs exist, but independent-storm acceptance is BLOCKED. Window bootstrap significance and tidal-variance causal explanations below are historical, unverified claims, not accepted conclusions. See `docs/audits/WAVE17_INDEPENDENCE_AUDIT.md` and its JSON evidence. Live PR CPU CI failed (15 failed, 189 passed, 4 skipped, 40 errors); the earlier green-CI statement does not describe the remote PR gate.
+
 # WAVE 1.7 ACCEPTANCE — Recovered Forecasting Baselines + FM-Augmented A3
 
 **Date**: 2026-11-02
