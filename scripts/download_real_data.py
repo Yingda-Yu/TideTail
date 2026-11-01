@@ -96,7 +96,7 @@ VERIFIED_STATIONS = [
 
 def download_noaa_month(station_id: str, year: int, month: int) -> dict:
     start_s, end_s = next((b, e) for b, e in month_chunks(year)
-                          if dt.datetime.strptime(b, "%Y%m%d").month == month)
+                          if dt.datetime.strptime(b, "%Y%m%d").replace(tzinfo=dt.timezone.utc).month == month)
     url = (f"{NOAA_BASE}?station={station_id}&begin_date={start_s}&end_date={end_s}"
            f"&product=water_level&datum=MLLW&units=metric&time_zone=gmt&format=csv")
     dest = OUT / "noaa_coops" / f"{station_id}" / f"{year}-{month:02d}.csv"
@@ -108,7 +108,7 @@ def download_noaa_month(station_id: str, year: int, month: int) -> dict:
             rec["rows"] = rows
             if rows < 50:
                 rec["status"] = "TOO_FEW_ROWS"
-        except Exception as e:
+        except (OSError, csv.Error) as e:
             rec["status"] = f"PARSE_ERROR: {e}"
             rec["rows"] = 0
     return rec
@@ -128,7 +128,7 @@ def download_noaa_all():
                     "region": region, "description": desc,
                     "latitude": lat, "longitude": lon,
                     "year": yr, "month": month,
-                    "downloaded_at": datetime.utcnow().isoformat() + "Z",
+                    "downloaded_at": datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
                 })
                 records.append(rec)
                 if rec["status"] == "OK":
@@ -160,14 +160,16 @@ def download_hurdat2():
         with open(dest) as fh:
             for line in fh:
                 line = line.strip()
-                if len(line) > 4 and line[:2] in ("AL", "NA") and line[2:4].isdigit():
-                    if line[4:6] == "  ":  # storm header line
-                        n_storms += 1
+                if (
+                    len(line) > 4 and line[:2] in ("AL", "NA") and line[2:4].isdigit()
+                    and line[4:6] == "  "
+                ):
+                    n_storms += 1
     print(f"{rec['status']} ({rec['bytes']:,} B, ~{n_storms} storms)")
     rec.update({
         "source": "hurdat2", "url": HURDAT2_URL,
         "estimated_storms": n_storms,
-        "downloaded_at": datetime.utcnow().isoformat() + "Z",
+        "downloaded_at": datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
     })
     return [rec]
 
@@ -188,7 +190,7 @@ def download_ibtracs():
         rec = http_get(url, dest)
         rec.update({
             "source": "ibtracs", "url": url,
-            "downloaded_at": datetime.utcnow().isoformat() + "Z",
+            "downloaded_at": datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
         })
         if rec["status"] == "OK" and ext == "CSV.gz":
             # Decompress and count unique storm IDs
@@ -225,7 +227,7 @@ def write_manifest(records):
             st["fail"] += 1
     import shutil
     manifest = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
         "disk_free_gb": shutil.disk_usage("/data").free / (1024 ** 3),
         "total_files_ok": len(ok),
         "total_bytes_ok": sum(r["bytes"] for r in ok),

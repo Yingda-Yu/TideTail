@@ -17,15 +17,11 @@ Canonical schema per storm-event:
 """
 from __future__ import annotations
 
-import csv
 import math
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timedelta
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-
-import numpy as np
-
 
 # ---------------------------------------------------------------------------
 # IBTrACS loader
@@ -68,7 +64,7 @@ def load_hurdat2(path: str | Path) -> list[dict[str, Any]]:
     """
     path = Path(path)
     with open(path, "r") as f:
-        lines = [l.strip() for l in f.readlines()]
+        lines = [l.strip() for l in f]
 
     rows: list[dict[str, Any]] = []
     storm_id = ""
@@ -139,7 +135,7 @@ def _parse_iso_time(s: str) -> datetime | None:
     if not s:
         return None
     try:
-        return datetime.strptime(s.split(".")[0], "%Y-%m-%d %H:%M:%S")
+        return datetime.strptime(s.split(".")[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
     except ValueError:
         return None
 
@@ -311,6 +307,22 @@ def storms_in_region(
     longitudes are expected in -180..180 range.
     """
     result = []
+    # Normalize date_range bounds to match storm timezone awareness
+    dr_start = dr_end = None
+    if date_range is not None:
+        first_storm = storms[0] if storms else None
+        aware_tz = (
+            first_storm.event_start_utc.tzinfo
+            if first_storm is not None and first_storm.event_start_utc.tzinfo is not None
+            else None
+        )
+        def _norm(d: datetime) -> datetime:
+            if aware_tz is not None and d.tzinfo is None:
+                return d.replace(tzinfo=aware_tz)
+            return d
+        dr_start = _norm(date_range[0])
+        dr_end = _norm(date_range[1])
+
     for storm in storms:
         in_region = any(
             lat_range[0] <= tp.lat <= lat_range[1] and
@@ -319,8 +331,9 @@ def storms_in_region(
         )
         if not in_region:
             continue
-        if date_range is not None:
-            if storm.event_end_utc < date_range[0] or storm.event_start_utc > date_range[1]:
-                continue
+        if dr_start is not None and (
+            storm.event_end_utc < dr_start or storm.event_start_utc > dr_end
+        ):
+            continue
         result.append(storm)
     return result
