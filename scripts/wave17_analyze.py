@@ -29,7 +29,7 @@ REGIONS = [
 def load_prediction(path: Path) -> dict:
     d = np.load(path, allow_pickle=True)
     meta = json.loads(str(d["meta_json"])) if "meta_json" in d.files else {}
-    return {
+    result = {
         "pred_residual": d["pred_residual"].astype(np.float64),
         "obs_residual": d["obs_residual"].astype(np.float64),
         "future_tide": d["future_tide"].astype(np.float64),
@@ -37,6 +37,11 @@ def load_prediction(path: Path) -> dict:
         "path": str(path),
         "filename": path.stem,
     }
+    if "event_ids" in d.files:
+        result["event_ids"] = d["event_ids"].astype(np.int64)
+    if "timestamps" in d.files:
+        result["timestamps"] = d["timestamps"].astype(np.int64)
+    return result
 
 
 def total_water_eval(pa: dict) -> dict:
@@ -59,18 +64,51 @@ def total_water_eval(pa: dict) -> dict:
 
 
 def paired_bootstrap(pa_a: dict, pa_b: dict, n_boot: int = 500, seed: int = 42) -> dict:
-    """Paired bootstrap on per-window MAE — fully vectorized."""
-    err_a = np.abs((pa_a["pred_residual"] - pa_a["obs_residual"]))  # (N, 72)
-    err_b = np.abs((pa_b["pred_residual"] - pa_b["obs_residual"]))
-    mae_a = err_a.mean(axis=1)  # (N,) per-window MAE
-    mae_b = err_b.mean(axis=1)
-    delta = float(mae_a.mean() - mae_b.mean())
+    """Paired bootstrap on total-water MAE with event-level grouping when available.
 
-    # Vectorized bootstrap: sample (n_boot, n) indices once
+    Uses total-water (residual + future tide) evaluation, not residual alone.
+    When pseudo_event_ids (calendar-day groups) are available, resamples GROUPS
+    of windows to preserve within-day correlation. Falls back to window-level
+    resampling when event_ids are absent.
+    """
+    pred_a = pa_a["pred_residual"] + pa_a["future_tide"]
+    pred_b = pa_b["pred_residual"] + pa_b["future_tide"]
+    obs = pa_a["obs_residual"] + pa_a["future_tide"]
+    assert np.allclose(obs, pa_b["obs_residual"] + pa_b["future_tide"]), "target mismatch"
+
+    err_a = np.abs(pred_a - obs).mean(axis=1)  # (N,) per-window total-water MAE
+    err_b = np.abs(pred_b - obs).mean(axis=1)
+    mae_a = float(err_a.mean())
+    mae_b = float(err_b.mean())
+    delta = mae_a - mae_b
+
     rng = np.random.default_rng(seed)
-    n = len(mae_a)
-    idx = rng.integers(0, n, size=(n_boot, n))  # (n_boot, n)
-    boot_deltas = mae_a[idx].mean(axis=1) - mae_b[idx].mean(axis=1)  # (n_boot,)
+    n = len(err_a)
+
+    if "event_ids" in pa_a and "event_ids" in pa_b:
+        # Event-level: resample groups of windows sharing the same pseudo_event_id
+        eids = pa_a["event_ids"]
+        unique_eids = np.unique(eids)
+        n_events = len(unique_eids)
+        event_to_idx = {}
+        for i, eid in enumerate(eids):
+            event_to_idx.setdefault(int(eid), []).append(i)
+
+        boot_deltas = np.zeros(n_boot)
+        for b in range(n_boot):
+            sampled_events = rng.choice(unique_eids, size=n_events, replace=True)
+            sampled_idx = []
+            for eid in sampled_events:
+                sampled_idx.extend(event_to_idx[int(eid)])
+            sampled_idx = np.array(sampled_idx)
+            boot_deltas[b] = float(err_a[sampled_idx].mean() - err_b[sampled_idx].mean())
+        bootstrap_units = f"pseudo_event_ids (n_events={n_events}, calendar-day groups, {n} total windows)"
+    else:
+        boot_deltas = np.zeros(n_boot)
+        for b in range(n_boot):
+            idx = rng.integers(0, n, size=n)
+            boot_deltas[b] = float(err_a[idx].mean() - err_b[idx].mean())
+        bootstrap_units = f"forecast_windows (n={n}, NO event_ids — CI may be optimistic)"
 
     ci_lo, ci_hi = float(np.percentile(boot_deltas, 2.5)), float(np.percentile(boot_deltas, 97.5))
     return {
@@ -79,7 +117,8 @@ def paired_bootstrap(pa_a: dict, pa_b: dict, n_boot: int = 500, seed: int = 42) 
         "candidate_better": ci_hi < 0,
         "baseline_better": ci_lo > 0,
         "neutral": not (ci_lo > 0 or ci_hi < 0),
-        "bootstrap_units": f"forecast_windows (n={n})",
+        "bootstrap_units": bootstrap_units,
+        "n_boot": n_boot,
     }
 
 
