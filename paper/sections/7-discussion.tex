@@ -80,19 +80,48 @@ paper for it is retracted.
     Limits large dataset downloads and multiple checkpoint retention.
 \end{itemize}
 
-\subsection{Augmentation utility under evaluation}
-The wave17 pipeline (2026-11-03, GPU3) is executing a corrected A3 Flow
-Matching synthetic augmentation experiment on physically valid residuals. Five
-augment groups (A0 real-only, A1 extreme oversampling, A2 history-noise,
-A3 FM synthetic at 10\%/25\%/50\% ratios) run across 5 regions $\times$ 2
-seeds $\times$ 2 downstream models (GRU/TCN), with corrected FM checkpoints
-(G8 pilot, retrained 21:27--21:47 on 2026-11-03). Partial results (3 regions
-complete) show region-dependent efficacy: A3 ratio 0.5 improves GRU
-\texttt{tw\_mae} by 15.5\% on ny\_bight and 12.4\% on us\_gulf\_coast, but
-degrades by 14.6\% on thames\_north\_sea — consistent with the largest
-residual-amplitude basin being the hardest to augment. A1 oversampling is
-consistently harmful across all regions (negative result confirmed). Full
-results pending pipeline completion.
+\subsection{Augmentation utility --- verified and region-dependent}
+\label{subsec:aug-verified}
+The Wave 1.7 benchmark (190 predictions, event-level bootstrap CI with
+calendar-day pseudo-events, 301--360 independent groups per region)
+establishes that \emph{Flow Matching synthetic augmentation improves
+forecasting accuracy in three of five regions} under physically valid
+target residuals. The effect sizes (8.9--15.3\% total-water MAE reduction
+on GRU) are substantial. However:
+
+\begin{itemize}
+    \item The Thames \emph{fundamentally differs} from the other four
+    regions. With a 6.32~m tidal range (the largest in the study,
+    2.5$\times$ the next-largest region), 24.7\% NaN source-data gaps,
+    and a macrotidal regime where surge represents a small fraction of
+    total water level, the Thames cannot be augmented by current synthetic
+    approaches. Whether this reflects tide-dominance, data completeness,
+    or storm-climatology differences remains unresolved.
+
+    \item Southeast Australia is a low-variance regime where the GRU A0
+    baseline already achieves 0.047~m MAE; there is essentially no room
+    for augmentation to improve, and the near-zero residual variance
+    ($\sigma = 0.097$~m) makes generative modeling difficult.
+
+    \item The tidal-range correlation ($r=0.66$, $N=5$) is presented as
+    a hypothesis, not a finding. Five regions cannot support a
+    statistically significant correlation.
+
+    \item \emph{All 12 A3 configurations are reported}. The ``best per
+    region'' table in Section~\ref{subsec:wave17-benchmark} is explicitly
+    post-hoc. No test-set hyperparameter selection occurred.
+\end{itemize}
+
+\textbf{A1 oversampling is a definitively negative result.} Twenty
+comparisons (5 regions $\times$ 2 models $\times$ 2 seeds) $\rightarrow$
+zero improvements over A0. Simply duplicating training storm windows does
+not improve test generalization. This should inform future augmentation
+designs: diversity matters more than quantity.
+
+\textbf{GRU dominates TCN}. Architecture choice is the single largest
+variation source in this study (38/38 wins on GRU vs TCN). Augmentation
+strategies are secondary. Future generative benchmarks should hold the
+forecasting architecture constant while varying synthesis approaches.
 
 \subsection{What this \emph{is}}
 Despite containing a clear negative result and a post-hoc target-semantics

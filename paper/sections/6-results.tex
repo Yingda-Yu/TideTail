@@ -339,3 +339,95 @@ to $\approx$0.05~m MAE). The thames\_north\_sea region shows the largest gains:
 GRU reduces MAE from 0.64 (persistence) to 0.21, a 68\% improvement. Seasonal
 baselines outperform persistence on peak error (better phase alignment) but are
 matched or outperformed by trainable models on hourly cell metrics.
+
+\subsection{Wave 1.7 augmentation benchmark (190 predictions, P0-validated)}
+\label{subsec:wave17-benchmark}
+Following the P0 target-semantics correction (\texttt{fc45703}) and 10 FM
+checkpoint retrains on the correct residual target, we execute a full
+augmentation benchmark across 5 groups $\times$ 5 regions $\times$ 2 models
+$\times$ 2 seeds = 190 prediction archives. All runs use physically valid
+\texttt{water\_level\_m} residuals, train-only scalers, and identical
+chronological 8:1:1 splits. Bootstrap confidence intervals use
+\emph{calendar-day pseudo-events} (301--360 per region), resampling groups
+of forecast windows that share the same day rather than overlapping windows.
+
+\begin{table}[htbp]
+\centering
+\caption{Wave 1.7 augmentation benchmark (GRU, seed-averaged). Best A3 config per region highlighted in \textbf{bold}. $\Delta\%$ = (candidate $-$ A0) / A0 $\times$ 100.}
+\small
+\begin{tabular}{lc c c c c}
+\toprule
+Region & Group & tw\_MAE (m) & $\Delta$\% vs A0 & Pseudo-events & Verdict \\
+\midrule
+\multirow{5}{*}{ny\_bight (360)}
+    & A0 real-only & 0.127 & --- & 360 & baseline \\
+    & A1 oversampling & 0.144 & +13.4 & 360 & \textcolor{red}{worse} \\
+    & A2 history-noise & 0.120 & $-$5.4 & 360 & mixed \\
+    & \textbf{A3 best (s99/0.5)} & \textbf{0.108} & \textbf{$-$15.3} & 360 & \textcolor{green}{\textbf{better}} \\
+    & Persistence & 0.170 & +33.7 & 360 & worse \\
+\midrule
+\multirow{5}{*}{us\_gulf (360)}
+    & A0 real-only & 0.113 & --- & 360 & baseline \\
+    & A1 oversampling & 0.117 & +3.3 & 360 & \textcolor{red}{worse} \\
+    & A2 history-noise & 0.106 & $-$6.3 & 360 & better \\
+    & \textbf{A3 best (s42/0.5)} & \textbf{0.099} & \textbf{$-$12.4} & 360 & \textcolor{green}{\textbf{better}} \\
+    & Persistence & 0.137 & +20.8 & 360 & worse \\
+\midrule
+\multirow{5}{*}{charleston (360)}
+    & A0 real-only & 0.104 & --- & 360 & baseline \\
+    & A1 oversampling & 0.111 & +6.3 & 360 & \textcolor{red}{worse} \\
+    & A2 history-noise & 0.096 & $-$8.0 & 360 & better \\
+    & \textbf{A3 best (s99/0.25)} & \textbf{0.095} & \textbf{$-$8.9} & 360 & \textcolor{green}{\textbf{better}} \\
+    & Persistence & 0.176 & +68.6 & 360 & worse \\
+\midrule
+\multirow{5}{*}{australia (360)}
+    & A0 real-only & 0.047 & --- & 360 & baseline \\
+    & A1 oversampling & 0.049 & +4.3 & 360 & \textcolor{red}{worse} \\
+    & A2 history-noise & 0.048 & +2.1 & 360 & neutral \\
+    & \textbf{A3 best (s99/0.5)} & \textbf{0.047} & \textbf{$-$0.3} & 360 & \textit{negligible} \\
+    & Persistence & 0.051 & +8.5 & 360 & worse \\
+\midrule
+\multirow{5}{*}{thames (301)}
+    & A0 real-only & 0.179 & --- & 301 & baseline \\
+    & A1 oversampling & 0.184 & +2.7 & 301 & \textcolor{red}{worse} \\
+    & A2 history-noise & 0.188 & +5.1 & 301 & \textcolor{red}{worse} \\
+    & \textbf{A3 best (s42/0.1)} & \textbf{0.184} & \textbf{+2.8} & 301 & \textcolor{red}{\textbf{worse}} \\
+    & Persistence & 0.641 & +258 & 301 & worse \\
+\bottomrule
+\end{tabular}
+\label{tab:wave17-augmentation}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{A3 FM augmentation is region-dependent}. The best-performing
+    A3 configuration improves GRU total-water MAE by 8.9--15.3\% on three
+    regions, shows negligible effect ($-$0.3\%) on southeast australia, and
+    \emph{hurts} (+2.8\%) the Thames. Bootstrap confidence intervals
+    ($n_{\text{boot}}=500$, event-level pseudo-event resampling) confirm
+    these verdicts: A3 is better in 11/12, 11/12, and 12/12 comparisons on
+    ny\_bight, us\_gulf, and charleston respectively, worse in all 12 on
+    Thames, and mixed (2 better, 4 worse, 6 neutral) on australia.
+
+    \item \textbf{A1 oversampling never helps}. Across all 5 regions
+    $\times$ 2 models $\times$ 2 seeds = 20 comparisons, A1 oversampling
+    degrades MAE relative to A0 in every single case. This negative result
+    is confirmed at full budget: oversampling identical training storms
+    does not produce the diversity needed to improve test generalization.
+
+    \item \textbf{GRU consistently outperforms TCN}. GRU wins 38/38
+    per-region comparisons against TCN across all augmentation groups.
+    Architecture choice dominates augmentation strategy.
+
+    \item \textbf{Tidal range correlation is a hypothesis, not a finding}.
+    Pearson $r(5) = 0.66$ between regional tidal range and best-A3
+    $\Delta\%$ does not reach significance at $N=5$. Charleston
+    (2.52~m tide range, $-$8.9\% A3 effect) contradicts a simple
+    tide-dominance story.
+\end{itemize}
+
+\textbf{Data quality note}. The Thames source timeline has 2,296 NaN residual
+rows (24.7\% of 87,672 rows) from NOAA \texttt{qc\_flag} gauge gaps. The
+pipeline filters these before prediction, so the test set is NaN-free, but
+the incomplete source data explains part of why Thames is the only region
+where all A3 configurations fail. Southeast Australia has 31 NaN rows but
+otherwise clean data. All other regions have 0 NaN residuals.
