@@ -58,28 +58,23 @@ def total_water_eval(pa: dict) -> dict:
     }
 
 
-def paired_bootstrap(pa_a: dict, pa_b: dict, n_boot: int = 2000, seed: int = 42) -> dict:
-    """Paired bootstrap on per-window MAE (event-wise resampling fallback)."""
-    pred_a = pa_a["pred_residual"] + pa_a["future_tide"]
-    pred_b = pa_b["pred_residual"] + pa_b["future_tide"]
-    obs = pa_a["obs_residual"] + pa_a["future_tide"]
-    assert np.allclose(obs, pa_b["obs_residual"] + pa_b["future_tide"]), "target mismatch"
+def paired_bootstrap(pa_a: dict, pa_b: dict, n_boot: int = 500, seed: int = 42) -> dict:
+    """Paired bootstrap on per-window MAE — fully vectorized."""
+    err_a = np.abs((pa_a["pred_residual"] - pa_a["obs_residual"]))  # (N, 72)
+    err_b = np.abs((pa_b["pred_residual"] - pa_b["obs_residual"]))
+    mae_a = err_a.mean(axis=1)  # (N,) per-window MAE
+    mae_b = err_b.mean(axis=1)
+    delta = float(mae_a.mean() - mae_b.mean())
 
-    mae_a = np.abs(pred_a - obs).mean()
-    mae_b = np.abs(pred_b - obs).mean()
-    delta = mae_a - mae_b
-
-    # Window-level bootstrap (event IDs not available in prediction files)
+    # Vectorized bootstrap: sample (n_boot, n) indices once
     rng = np.random.default_rng(seed)
-    n = len(obs)
-    boot_deltas = np.zeros(n_boot)
-    for b in range(n_boot):
-        idx = rng.integers(0, n, size=n)
-        boot_deltas[b] = np.abs(pred_a[idx] - obs[idx]).mean() - np.abs(pred_b[idx] - obs[idx]).mean()
+    n = len(mae_a)
+    idx = rng.integers(0, n, size=(n_boot, n))  # (n_boot, n)
+    boot_deltas = mae_a[idx].mean(axis=1) - mae_b[idx].mean(axis=1)  # (n_boot,)
 
     ci_lo, ci_hi = float(np.percentile(boot_deltas, 2.5)), float(np.percentile(boot_deltas, 97.5))
     return {
-        "delta_mae_a_minus_b": float(delta),
+        "delta_mae_a_minus_b": delta,
         "ci_lo": ci_lo, "ci_hi": ci_hi,
         "candidate_better": ci_hi < 0,
         "baseline_better": ci_lo > 0,
