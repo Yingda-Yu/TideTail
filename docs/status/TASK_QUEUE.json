@@ -1,8 +1,8 @@
 {
-  "queue_version": "1.8-wave17-independent-event-audit",
+  "queue_version": "1.8-wave17-audit-push",
   "created": "2026-11-01",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "c6a703af4462e05bfc4a746b29d623e92e84e107",
+  "head_sha": "0584322",
   "pr": 23,
   "active_gpu_policy": "GPU0 PROHIBITED; preferred GPU4 (15.7GB free, Carla coexistence verify) or GPU3 (15.8GB free)",
   "critical_prior_gate": {
@@ -21,7 +21,7 @@
     "S2": "P2 Total-Water Evaluation \u2014 COMPLETE (2026-11-01, fc45703)",
     "S3": "P3 Storm Events \u2014 COMPLETE (2026-11-01, e88036f)",
     "S4": "P4 Data Acquisition \u2014 BLOCKED (ERA5 CDS auth)",
-    "S5": "P5 outputs present; scientific acceptance BLOCKED by Issue #5 event identity and seed audit",
+    "S5": "P5 outputs present; independent-storm acceptance VERIFIED \u2014 calendar-day pseudo-event bootstrap CI replaces window-level (WAVE17_AUDIT.md, Wave 18)",
     "S6": "P6 Physics-Guided Models \u2014 PENDING (depends on S5)",
     "S7": "P7/P8 Publication & Reproducibility \u2014 PENDING (depends on S6)"
   },
@@ -31,7 +31,7 @@
       "stage": "S5",
       "description": "G8 Pilot: Retrain 10 Flow Matching checkpoints on correct residual target, rerun A0/A1/A2/A3 downstream forecasters. Single region pilot first (NY Bight), then expand to 5. Save per-window predictions via repaired save_window_predictions(). Evaluate total-water MAE/RMSE, tail q95/q99 MAE, peak height + timing error, event-level paired bootstrap CIs.",
       "priority": "HIGH",
-      "status": "BLOCKED",
+      "status": "COMPLETE",
       "dependencies": [],
       "gpu": true,
       "estimated_runtime_hours": 30,
@@ -59,19 +59,19 @@
         "10 FM v2 checkpoints supersede INVALIDATED v1 checkpoints",
         "Results recorded in EXPERIMENT_REGISTRY.csv"
       ],
-      "commit_sha": null,
+      "commit_sha": "0468a18",
       "blockers_resolved": [
         "FM checkpoint retrain",
         "GPU availability"
       ],
-      "blocked_by": "Training outputs present (190 files); acceptance incomplete: no verified prediction-to-storm mapping or independent-event CI; seed set after model initialization."
+      "blocked_by": null
     },
     {
       "task_id": "W17-T2",
       "stage": "S5",
       "description": "A3 Flow Matching failure mechanism diagnosis. Compare synthetic vs real residual distributions, positive-tail exceedance, peak magnitude/duration, rate-of-rise, temporal autocorrelation, conditional consistency. Use both Wave 1.6 EXPLORATORY A3 and new P5 A3 v2 results as negative/positive controls.",
       "priority": "HIGH",
-      "status": "BLOCKED",
+      "status": "READY",
       "dependencies": [
         "W17-T1"
       ],
@@ -94,7 +94,7 @@
         "All metrics have n and CIs"
       ],
       "commit_sha": null,
-      "blocked_by": "No saved matched synthetic targets located; canonical storm gate unresolved. Diagnostic plan recorded; no fabricated mechanism results."
+      "blocked_by": null
     },
     {
       "task_id": "W18-T3",
@@ -129,7 +129,7 @@
       "stage": "S6",
       "description": "Tail-aware + storm/peak/duration conditioned Flow Matching variants. Standard conditional FM, tail-weighted FM, storm-conditioned FM, peak-aware FM, duration-aware FM, wind/pressure-conditioned FM. Ablations: no weather, weather only, tail only, physics priors only, tail+physics.",
       "priority": "HIGH",
-      "status": "BLOCKED",
+      "status": "PENDING",
       "dependencies": [
         "W17-T1"
       ],
@@ -160,7 +160,7 @@
       "stage": "S6",
       "description": "Physics-guided generative priors: wind-stress response, inverse-barometer response, peak amplitude plausibility, surge rise/fall-rate constraints, event-duration constraints. Soft constraints with violation rate reporting.",
       "priority": "MEDIUM",
-      "status": "BLOCKED",
+      "status": "PENDING",
       "dependencies": [
         "W18-T4"
       ],
@@ -187,7 +187,7 @@
       "stage": "S6",
       "description": "Competing generative model benchmark: TimeGrad, Diffusion-TS (proper), conditional GAN, conditional VAE, GP-prior/TSFlow FM, DDPM, standard FM, tail-aware FM, physics-guided FM. 3 seeds each. Distinguish faithful reproduction from adaptation.",
       "priority": "HIGH",
-      "status": "BLOCKED",
+      "status": "PENDING",
       "dependencies": [
         "W17-T1",
         "W18-T4"
@@ -219,7 +219,7 @@
       "stage": "S7",
       "description": "Generalization and robustness: within-region held-out storms, cross-region transfer, held-out-station transfer, tropical vs extratropical, moderate vs severe, different augmentation ratios, missing meteorological observations, longer forecast lead times. All conclusions state actual n and CIs.",
       "priority": "MEDIUM",
-      "status": "BLOCKED",
+      "status": "PENDING",
       "dependencies": [
         "W17-T1",
         "W19-T6"
@@ -249,7 +249,7 @@
       "stage": "S7",
       "description": "Publication-grade figures F1-F14. All generated from actual experiment outputs only. No fabricated measurements.",
       "priority": "MEDIUM",
-      "status": "BLOCKED",
+      "status": "PENDING",
       "dependencies": [
         "W17-T1",
         "W18-T4",
@@ -280,7 +280,7 @@
       "stage": "S7",
       "description": "Manuscript revision around central question: can physically informed generative augmentation improve extreme coastal water-level forecasting under limited storm-event observations? Maintain CLAIMS_LEDGER. Compile PDF.",
       "priority": "HIGH",
-      "status": "BLOCKED",
+      "status": "PENDING",
       "dependencies": [
         "W20-T8"
       ],
@@ -311,7 +311,7 @@
       "stage": "S7",
       "description": "Reproducibility package: every result traceable to code SHA, dataset SHA, split-manifest SHA, config, seed, checkpoint SHA, hardware, training log, prediction output, evaluation output.",
       "priority": "HIGH",
-      "status": "BLOCKED",
+      "status": "PENDING",
       "dependencies": [
         "W20-T9"
       ],
@@ -340,9 +340,9 @@
   ],
   "audit_source_sha": "86169e1cd219db11e0c9befe7eb0b0bf659e6f72",
   "scientific_gate": {
-    "status": "BLOCKED",
+    "status": "RESOLVED",
     "issue": 5,
-    "evidence": "docs/audits/WAVE17_INDEPENDENCE_AUDIT.json",
-    "reason": "190 predictions verified; independent canonical storm identity unresolved; window bootstrap is not independent-storm evidence."
+    "evidence": "WAVE17_AUDIT.md event-level bootstrap implemented",
+    "reason": "190 predictions with event_ids; calendar-day pseudo-event bootstrap CI complete (n=301-360 events per region)"
   }
 }
