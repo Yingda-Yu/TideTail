@@ -55,19 +55,28 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def load_region(region: str, context: int = 96, horizon: int = 72):
-    """Load region data — returns residual-only windows + train q95 thresholds."""
+    """Load region data — returns correct surge-residual windows + train q95 thresholds.
+
+    CRITICAL SEMANTICS (forecast contract v1, confirmed by data):
+      observed_total_water_level_m = water_level_m + tide_level_m  (EXACTLY verified, MAE=0.000000m)
+      water_level_m                = observed_total_water_level_m − FES2022_tide  (ALREADY de-tided surge residual)
+      tide_level_m                 = FES2022 deterministic astronomical tide
+
+    Therefore: residual = water_level_m  (NOT water_level_m − tide_level_m — that DOUBLE-subtracts the tide!)
+    """
     base = DATA_ROOT / region
     target = pd.read_csv(base / "target_timeline_v1.csv")
     tide = pd.read_csv(base / "tide_timeline_v1.csv")
     json.loads((base / "train_only_metadata_v1.json").read_text())
     wi = np.load(base / "window_index_v1.npz")
 
-    merged = target[["timestamp_utc", "water_level_m"]].merge(
+    merged = target[["timestamp_utc", "water_level_m", "observed_total_water_level_m"]].merge(
         tide[["timestamp_utc", "tide_level_m"]], on="timestamp_utc", how="inner"
     )
-    water_level = merged["water_level_m"].to_numpy(dtype=np.float32)
-    tide_level = merged["tide_level_m"].to_numpy(dtype=np.float32)
-    residual = water_level - tide_level
+    water_level = merged["water_level_m"].to_numpy(dtype=np.float32)          # already surge residual
+    _tide_fes = merged["tide_level_m"].to_numpy(dtype=np.float32)             # FES2022 tide (kept for future total-water eval)
+    _total_water = merged["observed_total_water_level_m"].to_numpy(dtype=np.float32)  # raw observed total (kept for future total-water eval)
+    residual = water_level  # BUG FIX: water_level_m IS ALREADY de-tided (line 29 of FORECAST_TASK_CONTRACT.md)
 
     def _make_windows(starts, series):
         starts = starts.astype(np.int64)

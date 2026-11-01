@@ -51,9 +51,20 @@ CKPT_DIR.mkdir(parents=True, exist_ok=True)
 def load_region(region: str, context: int = 96, horizon: int = 72):
     """Load prime data for a region, return train/val/test windows + scaler.
 
-    Returns BOTH water-level and residual windows so different model types
-    can pick the right input (DiffusionTS decomposes full water level;
-    FlowMatching operates on non-tidal residual directly).
+    CRITICAL TARGET SEMANTICS (FORECAST_TASK_CONTRACT.md line 29 — verified
+    across all 5 prime regions, MAE=0.000000m):
+
+        observed_total_water_level_m = water_level_m + tide_level_m  (EXACTLY)
+        water_level_m                = observed_total − FES2022_tide  (ALREADY de-tided surge residual)
+        tide_level_m                 = FES2022 deterministic astronomical tide
+
+    Therefore residual = water_level_m  (NOT water_level_m − tide_level_m —
+    that DOUBLE-subtracts the tide, an error present in all historical
+    M2 Diffusion-TS + M4 Flow Matching runs before 2026-11-03).
+
+    Returns BOTH total-water and residual windows:
+      - DiffusionTS operates on OBSERVED TOTAL WATER (raw_water below)
+      - FlowMatching operates on non-tidal residual directly (residual below)
     """
     base = DATA_ROOT / region
     target = pd.read_csv(base / "target_timeline_v1.csv")
@@ -61,12 +72,12 @@ def load_region(region: str, context: int = 96, horizon: int = 72):
     meta = json.loads((base / "train_only_metadata_v1.json").read_text())
     wi = np.load(base / "window_index_v1.npz")
 
-    merged = target[["timestamp_utc", "water_level_m"]].merge(
+    merged = target[["timestamp_utc", "water_level_m", "observed_total_water_level_m"]].merge(
         tide[["timestamp_utc", "tide_level_m"]], on="timestamp_utc", how="inner"
     )
-    water_level = merged["water_level_m"].to_numpy(dtype=np.float32)
-    tide_level = merged["tide_level_m"].to_numpy(dtype=np.float32)
-    residual = water_level - tide_level
+    raw_water = merged["observed_total_water_level_m"].to_numpy(dtype=np.float32)  # total observed
+    residual  = merged["water_level_m"].to_numpy(dtype=np.float32)                   # already de-tided
+    tide_fes  = merged["tide_level_m"].to_numpy(dtype=np.float32)                    # FES2022
 
     scaler_mean = float(meta["scalers"]["water_level_m"]["mean"])
     scaler_std = float(meta["scalers"]["water_level_m"]["std"])
@@ -81,18 +92,18 @@ def load_region(region: str, context: int = 96, horizon: int = 72):
             t[i] = series[s + context : s + context + horizon]
         return h, t
 
-    # --- Full water-level windows (for Diffusion-TS which decomposes internally) ---
-    tr_h, tr_t = _make_windows(wi["train_start_indices"], water_level)
-    va_h, va_t = _make_windows(wi["validation_start_indices"], water_level)
-    te_h, te_t = _make_windows(wi["test_start_indices"], water_level)
+    # --- Full observed water-level windows (Diffusion-TS — decomposes internally) ---
+    tr_h, tr_t = _make_windows(wi["train_start_indices"], raw_water)
+    va_h, va_t = _make_windows(wi["validation_start_indices"], raw_water)
+    te_h, te_t = _make_windows(wi["test_start_indices"], raw_water)
 
-    # --- Residual windows (for Flow Matching which models residual directly) ---
+    # --- Residual windows (Flow Matching — models surge residual directly) ---
     rtr_h, rtr_t = _make_windows(wi["train_start_indices"], residual)
     rva_h, rva_t = _make_windows(wi["validation_start_indices"], residual)
     rte_h, rte_t = _make_windows(wi["test_start_indices"], residual)
 
     return {
-        # Full water level (Diffusion-TS)
+        # Observed total water (Diffusion-TS)
         "train_hist_wl": tr_h, "train_tgt_wl": tr_t,
         "val_hist_wl": va_h,   "val_tgt_wl": va_t,
         "test_hist_wl": te_h,  "test_tgt_wl": te_t,
@@ -100,6 +111,8 @@ def load_region(region: str, context: int = 96, horizon: int = 72):
         "train_hist_res": rtr_h, "train_tgt_res": rtr_t,
         "val_hist_res": rva_h,   "val_tgt_res": rva_t,
         "test_hist_res": rte_h,  "test_tgt_res": rte_t,
+        # FES2022 tide for total-water reconstruction
+        "full_tide": tide_fes,
         "scaler_mean": scaler_mean,
         "scaler_std": scaler_std,
         "meta": meta,
