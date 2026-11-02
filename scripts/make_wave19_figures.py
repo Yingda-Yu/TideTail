@@ -10,7 +10,7 @@ All figures preserve Wave 1.8 numerical accuracy but fix conceptual framing.
 """
 from __future__ import annotations
 
-import json, hashlib
+import json
 from pathlib import Path
 import numpy as np
 import matplotlib; matplotlib.use("Agg")

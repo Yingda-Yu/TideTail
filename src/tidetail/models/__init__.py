@@ -33,8 +33,8 @@ from .physics_diffusion import (
 from .timegrad import TimeGrad, TimeGradDenoiser
 from .vae import (
     ConditionalVAE,
-    ConditionalVAEEncoder,
     ConditionalVAEDecoder,
+    ConditionalVAEEncoder,
     vae_count_params,
 )
 

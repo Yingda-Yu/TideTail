@@ -12,20 +12,17 @@ Source SHA recorded per figure in the script.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
-import sys
-import hashlib
 from pathlib import Path
 
+import matplotlib
 import numpy as np
 import pandas as pd
-import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-from matplotlib.patches import Patch
-from matplotlib.colors import LinearSegmentedColormap
 from scipy import stats
 
 # Paths

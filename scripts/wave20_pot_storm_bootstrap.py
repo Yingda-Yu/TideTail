@@ -27,8 +27,9 @@ Output:
 """
 from __future__ import annotations
 
-import json, os, sys, math, shutil
-from datetime import datetime, timezone, timedelta
+import json
+import shutil
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -126,7 +127,7 @@ def storm_level_bootstrap(tw_pred: np.ndarray, tw_obs: np.ndarray,
 
     return {
         "independent_units": int(n_groups),
-        "total_test_windows": int(len(group_ids)),
+        "total_test_windows": len(group_ids),
         "point_mae": float(np.mean(group_means)),
         "bootstrap_mean": float(np.mean(boot)),
         "ci_low_2.5": float(np.percentile(boot, 2.5)),

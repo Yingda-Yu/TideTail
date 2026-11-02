@@ -40,8 +40,6 @@ sys.path.insert(0, str(ROOT))
 
 from tidetail.models import (
     ConditionalVAE,
-    ConditionalVAEEncoder,
-    ConditionalVAEDecoder,
     DiffusionTS,
     FlowMatching,
     ResidualDenoiser,
@@ -363,7 +361,6 @@ def train_timegrad(data, region: str, epochs: int, batch_size: int,
 def generate_samples(model_name: str, model_obj, nets, data, device,
                      seed: int, n_samples: int = 5000):
     """Generate synthetic forecast samples and compute quality metrics."""
-    import torch.nn.functional as F
 
     if model_name in ("vae", "flow_matching", "timegrad"):
         test_hist = torch.from_numpy(data["test_hist_res"]).to(device)
