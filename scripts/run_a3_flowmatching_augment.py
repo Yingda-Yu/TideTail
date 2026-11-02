@@ -113,8 +113,11 @@ def generate_synthetic_residuals(ckpt_path: Path, hist_res: torch.Tensor,
                                   device: str, n_gen_per_real: int = 1) -> np.ndarray:
     """Generate synthetic residual targets — row i of output conditioned on row i of input history."""
     ckpt = torch.load(ckpt_path, map_location=device)
+    state_dict = ckpt.get("state_dict", ckpt.get("model_state"))
+    if state_dict is None:
+        raise KeyError(f"Checkpoint {ckpt_path} has no state_dict or model_state keys: {list(ckpt.keys())}")
     velocity_net = VelocityTCN(context=96, horizon=72, width=32).to(device)
-    velocity_net.load_state_dict(ckpt["state_dict"])
+    velocity_net.load_state_dict(state_dict)
     fm = FlowMatching(context=96, horizon=72, euler_steps=64, device=device)
 
     h = hist_res.to(device)
@@ -322,6 +325,8 @@ def main():
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--seeds", type=int, nargs="+", default=[42, 99])
     ap.add_argument("--fm-seed", type=int, default=42)
+    ap.add_argument("--fm-prefix", default="flow_matching",
+                    help="FM checkpoint prefix: flow_matching (standard) or flow_matching_tailaware")
     args = ap.parse_args()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -345,8 +350,8 @@ def main():
         print(f"  train={rtr_h.shape}, val={rva_h.shape}, test={rte_h.shape}")
         print(f"  train q95(abs)={train_q95:.4f}, q95(pos)={train_q95_pos:.4f}")
 
-        # Load FM checkpoint
-        fm_ckpt = CKPT_DIR / f"flow_matching_{region}_seed{args.fm_seed}.pt"
+        # Load FM checkpoint (standard or tail-aware)
+        fm_ckpt = CKPT_DIR / f"{args.fm_prefix}_{region}_seed{args.fm_seed}.pt"
         if not fm_ckpt.exists():
             print(f"  WARNING: {fm_ckpt} not found — skipping A3 for {region}")
             synthetic_tgt = None
@@ -417,7 +422,7 @@ def main():
                 a3_t = np.concatenate([rtr_t, synthetic_tgt[synth_idx]], axis=0)
 
                 groups_config.append({
-                    "group_name": f"A3_fm_ratio_{ratio}",
+                    "group_name": f"A3_{args.fm_prefix}_ratio_{ratio}",
                     "train_hist": a3_h,
                     "train_tgt": a3_t,
                     "train_size": len(a3_h),

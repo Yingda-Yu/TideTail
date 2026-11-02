@@ -45,6 +45,8 @@ from tidetail.models import (
     DiffusionTS,
     FlowMatching,
     ResidualDenoiser,
+    TimeGrad,
+    TimeGradDenoiser,
     VelocityTCN,
 )
 from tidetail.quality import evaluate
@@ -306,6 +308,55 @@ def train_flow_matching(data, region: str, epochs: int, batch_size: int,
 
 
 # ---------------------------------------------------------------------------
+# Training: TimeGrad (autoregressive conditional diffusion)
+# ---------------------------------------------------------------------------
+
+def train_timegrad(data, region: str, epochs: int, batch_size: int,
+                   lr: float, seed: int, device: str):
+    """Train TimeGrad on residual data (autoregressive scalar diffusion)."""
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+
+    context, horizon = 96, 72
+    model = TimeGrad(context=context, horizon=horizon, steps=64,
+                     schedule="cosine1000_subsample", device=device)
+    denoiser = TimeGradDenoiser(context=context, horizon=horizon, width=24).to(device)
+    optimizer = torch.optim.Adam(denoiser.parameters(), lr=lr)
+
+    X_hist = torch.from_numpy(data["train_hist_res"]).to(device)
+    X_tgt = torch.from_numpy(data["train_tgt_res"]).to(device)
+
+    print(f"  TimeGrad training on {region}: {X_hist.shape[0]} windows, "
+          f"{epochs} epochs, batch={batch_size}, params={sum(p.numel() for p in denoiser.parameters()):,}")
+
+    n_batches = (X_hist.shape[0] + batch_size - 1) // batch_size
+    history = {"epoch": [], "train_loss": [], "time_s": []}
+    t0 = time.time()
+
+    denoiser.train()
+    for epoch in range(epochs):
+        perm = torch.randperm(X_hist.shape[0], device=device)
+        epoch_loss = 0.0
+        for b in range(n_batches):
+            idx = perm[b * batch_size : (b + 1) * batch_size]
+            loss = model.training_loss(X_hist[idx], X_tgt[idx], denoiser)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            epoch_loss += loss.item() * len(idx)
+
+        epoch_loss /= X_hist.shape[0]
+        history["epoch"].append(epoch)
+        history["train_loss"].append(epoch_loss)
+        elapsed = time.time() - t0
+        if epoch % max(1, epochs // 10) == 0 or epoch == epochs - 1:
+            print(f"    epoch {epoch + 1}/{epochs}: loss={epoch_loss:.6f}  "
+                  f"elapsed={elapsed:.1f}s")
+
+    return denoiser, history, model
+
+
+# ---------------------------------------------------------------------------
 # Evaluation (generates samples, runs quality evaluator)
 # ---------------------------------------------------------------------------
 
@@ -314,7 +365,7 @@ def generate_samples(model_name: str, model_obj, nets, data, device,
     """Generate synthetic forecast samples and compute quality metrics."""
     import torch.nn.functional as F
 
-    if model_name in ("vae", "flow_matching"):
+    if model_name in ("vae", "flow_matching", "timegrad"):
         test_hist = torch.from_numpy(data["test_hist_res"]).to(device)
         test_tgt = data["test_tgt_res"]
         target_type = "residual"
@@ -351,6 +402,10 @@ def generate_samples(model_name: str, model_obj, nets, data, device,
             denoiser = nets
             gen = model_obj.forecast(hist_sub, denoiser, seed=seed).cpu().numpy()
             real = real_tgt.cpu().numpy() if isinstance(real_tgt, torch.Tensor) else real_tgt
+        elif model_name == "timegrad":
+            denoiser = nets
+            gen = model_obj.forecast(test_hist, denoiser, seed=seed).cpu().numpy()
+            real = test_tgt.cpu().numpy() if isinstance(test_tgt, torch.Tensor) else test_tgt
         else:
             raise ValueError(f"unknown model {model_name}")
 
@@ -399,7 +454,7 @@ def generate_samples(model_name: str, model_obj, nets, data, device,
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", choices=["vae", "flow_matching", "diffusion_ts"],
+    ap.add_argument("--model", choices=["vae", "flow_matching", "diffusion_ts", "timegrad"],
                     required=True)
     ap.add_argument("--regions", nargs="+", default=["ny_bight"])
     ap.add_argument("--epochs", type=int, default=15)
@@ -457,6 +512,11 @@ def main():
                 nets = net_for_ckpt
             elif args.model == "flow_matching":
                 net_for_ckpt, hist, model_obj = train_flow_matching(
+                    data, region, args.epochs, args.batch_size, args.lr, seed, device
+                )
+                nets = net_for_ckpt
+            elif args.model == "timegrad":
+                net_for_ckpt, hist, model_obj = train_timegrad(
                     data, region, args.epochs, args.batch_size, args.lr, seed, device
                 )
                 nets = net_for_ckpt
