@@ -1,348 +1,200 @@
 {
-  "queue_version": "1.8-wave17-audit-push",
-  "created": "2026-11-01",
+  "queue_version": "2.0-wave2-multiyear-cohort",
+  "created": "2026-11-02",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "0584322",
+  "head_sha": "d7fdb5a",
   "pr": 23,
-  "active_gpu_policy": "GPU0 PROHIBITED; preferred GPU4 (15.7GB free, Carla coexistence verify) or GPU3 (15.8GB free)",
-  "critical_prior_gate": {
-    "wave1_6_status": "COMPLETE",
-    "p0_double_detiding_fix": "COMMITTED fc45703 \u2014 water_level_m IS ALREADY residual; scripts that did water-tide were broken",
-    "p2_total_water_eval_fix": "COMMITTED ad63c1b \u2014 event-resampled bootstrap, peak split, save/load",
-    "p3_storm_events_fix": "COMMITTED e88036f \u2014 IBTrACS csv module, HURDAT2 parse, STATUS typing",
-    "a0_baselines_valid": "20 records VALID \u2014 always read water_level_m correctly (GRU/TCN x 5 regions x 2 seeds)",
-    "a3_existing_results": "120 records EXPLORATORY \u2014 trained on double-detided residuals, not scientifically meaningful",
-    "fm_checkpoints_invalidated": "10 checkpoints INVALIDATED \u2014 trained on double-detided targets, need retrain",
-    "wave17_baselines_v2": "190 prediction archives verified at source 86169e1; 8000 steps reported for trained arms; independent-storm acceptance BLOCKED"
+  "active_gpu_policy": "GPU0 PROHIBITED. GPUs 3+4 currently occupied by starvla-policy (99%/27% util). All 10 GPUs saturated. Wait for free GPU before training. Do NOT interrupt other users.",
+  "disk": "204 GB free (98% used). TIGHT — monitor before downloads.",
+  "scientific_framework": {
+    "independent_unit_definition": "168h Coles 2001 POT + canonical TC overlay (Wave 2.0 CORRECTED)",
+    "target_semantics": "water_level_m IS ALREADY de-tided surge residual — never double-subtract tide",
+    "key_corrections": [
+      "Wave 1.9 under-counted independent units by ignoring POT declustering — only counted canonical TCs",
+      "Wave 2.0 POT+TC combined: 6–17 independent units per region in 2024 alone; 3/5 regions POWERED (≥12)",
+      "Anchor station IDs corrected (were using short codes NOAA_8518750, now full NOAA_8518750_The_Battery)"
+    ]
   },
   "stages": {
-    "S0": "P0 Environment & Repo Audit \u2014 COMPLETE (2026-10-30)",
-    "S1": "P1 Data Integrity & Formal Protocol \u2014 P0 subset complete (P1 deferred to P5 rerun)",
-    "S2": "P2 Total-Water Evaluation \u2014 COMPLETE (2026-11-01, fc45703)",
-    "S3": "P3 Storm Events \u2014 COMPLETE (2026-11-01, e88036f)",
-    "S4": "P4 Data Acquisition \u2014 BLOCKED (ERA5 CDS auth)",
-    "S5": "P5 outputs present; independent-storm acceptance VERIFIED \u2014 calendar-day pseudo-event bootstrap CI replaces window-level (WAVE17_AUDIT.md, Wave 18)",
-    "S6": "P6 Physics-Guided Models \u2014 PENDING (depends on S5)",
-    "S7": "P7/P8 Publication & Reproducibility \u2014 PENDING (depends on S6)"
+    "S0": "P0 Environment & Repo Audit — COMPLETE (2026-10-30)",
+    "S1": "P1 Data Integrity & Multi-Year Cohort — COMPLETE (2026-11-02, d7fdb5a)",
+    "S2": "P2 Total-Water Evaluation — COMPLETE (2026-11-01, fc45703)",
+    "S3": "P3 Storm Events + POT Declustering — COMPLETE (2026-11-02, d7fdb5a)",
+    "S4": "P4 Physics — P0/P1 COMPLETE; P2 ERA5 BLOCKED",
+    "S5": "P5 Generative Benchmark — 31/61 checkpoints; needs TimeGrad/VAE-all-regions/WGAN-GP/physics-prior",
+    "S6": "P6 Independent-Unit Evaluation — E16a verdict RE-EVALUATION PENDING with POT counts",
+    "S7": "P7/P8 Publication & Reproducibility — PENDING"
   },
   "tasks": [
     {
-      "task_id": "W17-T1",
-      "stage": "S5",
-      "description": "G8 Pilot: Retrain 10 Flow Matching checkpoints on correct residual target, rerun A0/A1/A2/A3 downstream forecasters. Single region pilot first (NY Bight), then expand to 5. Save per-window predictions via repaired save_window_predictions(). Evaluate total-water MAE/RMSE, tail q95/q99 MAE, peak height + timing error, event-level paired bootstrap CIs.",
+      "task_id": "W20-D01",
+      "stage": "S1",
+      "description": "Multi-year observational cohort: POT+TC declustering, 3 split variants, feasibility analysis, census CSV, split manifest.",
       "priority": "HIGH",
       "status": "COMPLETE",
       "dependencies": [],
-      "gpu": true,
-      "estimated_runtime_hours": 30,
-      "required_data": [
-        "/data/yingda/tidetail-data/prime-formal-2015-2024"
-      ],
-      "required_gpu": "GPU4 (15.7GB free, verify nvidia-smi first for Carla coexistence) or GPU3 (15.8GB free)",
+      "gpu": false,
+      "commit_sha": "d7fdb5a",
       "result_paths": [
-        "data/checkpoints/fm_v2/",
-        "data/results/a0_v2_96_72.json",
-        "data/results/a3_v2_96_72.json",
-        "data/predictions/baselines_v2/",
-        "data/predictions/a0_v2/",
-        "data/predictions/a1_v2/",
-        "data/predictions/a2_v2/",
-        "data/predictions/a3_v2/"
-      ],
-      "acceptance_criteria": [
-        "All models use identical train/val/test splits",
-        "Split manifests SHA256 recorded",
-        "Per-window predictions saved (not just aggregate metrics)",
-        "Event-level paired bootstrap CI computed",
-        "Wave 1.6 target contract verified for all loaders (water_level_m IS residual)",
-        "No GPU0 used",
-        "10 FM v2 checkpoints supersede INVALIDATED v1 checkpoints",
-        "Results recorded in EXPERIMENT_REGISTRY.csv"
-      ],
-      "commit_sha": "0468a18",
-      "blockers_resolved": [
-        "FM checkpoint retrain",
-        "GPU availability"
-      ],
-      "blocked_by": null
+        "docs/data/STORM_EVENT_CENSUS.csv",
+        "docs/data/INDEPENDENT_TEST_FEASIBILITY.md",
+        "data/manifests/multiyear_declustering.json",
+        "data/manifests/multiyear_split_manifest.json"
+      ]
     },
     {
-      "task_id": "W17-T2",
-      "stage": "S5",
-      "description": "A3 Flow Matching failure mechanism diagnosis. Compare synthetic vs real residual distributions, positive-tail exceedance, peak magnitude/duration, rate-of-rise, temporal autocorrelation, conditional consistency. Use both Wave 1.6 EXPLORATORY A3 and new P5 A3 v2 results as negative/positive controls.",
+      "task_id": "W20-D02",
+      "stage": "S6",
+      "description": "Re-evaluate E16a (A3 augmentation verdicts) using Wave 2.0 POT+TC independent-unit counts (6–17 units/region 2024, 15–35 2023-2024). Prior E16a bootstrap used calendar-day pseudo-events then 168h-only observ segments — now use POT+TC combined. Generate updated event-level CIs.",
       "priority": "HIGH",
       "status": "READY",
-      "dependencies": [
-        "W17-T1"
-      ],
-      "gpu": false,
-      "estimated_runtime_hours": 8,
-      "required_data": [
-        "data/predictions/a3_v2/",
-        "data/predictions/a0_v2/",
-        "data/results/a3_flowmatching_augment_96_72.json"
-      ],
-      "required_gpu": "None (CPU analysis only)",
-      "result_paths": [
-        "docs/experiments/A3_FAILURE_MECHANISM_STUDY.md"
-      ],
-      "acceptance_criteria": [
-        "Distinguish distribution mismatch vs conditional mismatch vs downstream optimization interference",
-        "At least 10 quantitative diagnostics",
-        "Compare A3-synthesized vs A0-real on identical conditioning windows",
-        "Preserve Wave 1.6 A3 exploratory results as negative control",
-        "All metrics have n and CIs"
-      ],
-      "commit_sha": null,
-      "blocked_by": null
-    },
-    {
-      "task_id": "W18-T3",
-      "stage": "S4",
-      "description": "ERA5 weather forcing integration: CDS API for U10/V10/MSLP, derive wind speed/direction/alongshore-onshore/wind-stress/pressure anomaly/inverse-barometer. GEBCO bathymetry + coastal orientation. Preprocessing fit on training data only.",
-      "priority": "MEDIUM",
-      "status": "BLOCKED",
-      "dependencies": [],
+      "dependencies": ["W20-D01"],
       "gpu": false,
       "estimated_runtime_hours": 4,
       "required_data": [
-        "ERA5 CDS API",
-        "GEBCO OPeNDAP"
+        "data/manifests/multiyear_declustering.json",
+        "data/predictions/v2/*.npz"
       ],
-      "required_gpu": "None",
-      "result_paths": [
-        "data/forcing/era5_/",
-        "data/forcing/gebco_/"
-      ],
+      "result_paths": ["data/results/wave20_pot_storm_bootstrap.json"],
       "acceptance_criteria": [
-        "Preprocessing fit on train data only",
-        "Training/operational forcing split explicit",
-        "No future ERA5 reanalysis presented as operational forecast",
-        "All downloaded data SHA256 verified",
-        "5 regions only \u2014 minimal footprint"
-      ],
-      "blocked_by": "CDS config absent; existing ERA5/GEBCO manifest provenance and operational issue-time availability unvalidated",
-      "commit_sha": null
+        "Independent unit = POT cluster OR canonical TC",
+        "Per-region n clearly stated",
+        "CIs wider for low-count regions (se_aus=6, thames=10) vs powered (gulf=17, ny_bight=15, charleston=15)",
+        "Verdict updated in CLAIMS_LEDGER",
+        "Not marked VERIFIED POSITIVE unless ALL 5 regions show consistent improvement"
+      ]
     },
     {
-      "task_id": "W18-T4",
-      "stage": "S6",
-      "description": "Tail-aware + storm/peak/duration conditioned Flow Matching variants. Standard conditional FM, tail-weighted FM, storm-conditioned FM, peak-aware FM, duration-aware FM, wind/pressure-conditioned FM. Ablations: no weather, weather only, tail only, physics priors only, tail+physics.",
+      "task_id": "W20-G01",
+      "stage": "S5",
+      "description": "Tail-aware FM downstream A3 augmentation: frozen flow_matching_tailaware checkpoints (10 exist, correct target), generate synthetic residuals at 10/25/50% ratios, train GRU/TCN forecasters with Protocol F1 equal-steps budget, compare vs standard FM.",
       "priority": "HIGH",
-      "status": "PENDING",
-      "dependencies": [
-        "W17-T1"
-      ],
+      "status": "READY",
+      "dependencies": [],
       "gpu": true,
-      "estimated_runtime_hours": 60,
-      "required_data": [
-        "data/checkpoints/fm_v2/",
-        "data/predictions/a0_v2/"
-      ],
-      "required_gpu": "GPU4, may need GPU3 for parallel",
-      "result_paths": [
-        "data/checkpoints/fm_tailaware_v2/",
-        "data/results/fm_tailaware_comparison.json"
-      ],
-      "acceptance_criteria": [
-        "Tail weighting threshold fit on training data only",
-        "Synthetic fidelity evaluated (KS on distribution, tail exceedance, peak/duration)",
-        "Downstream A0-relative utility on independent storms",
-        "Ablation table: all 5 configs x fidelity + utility",
-        "Config/seed/model_size/training_steps saved per run",
-        "All checkpoints SHA256 recorded"
-      ],
-      "commit_sha": null,
-      "blocked_by": "Unmet prerequisites: independent-storm scientific gate and upstream tasks; GPU unavailable in current execution environment where required."
-    },
-    {
-      "task_id": "W18-T5",
-      "stage": "S6",
-      "description": "Physics-guided generative priors: wind-stress response, inverse-barometer response, peak amplitude plausibility, surge rise/fall-rate constraints, event-duration constraints. Soft constraints with violation rate reporting.",
-      "priority": "MEDIUM",
-      "status": "PENDING",
-      "dependencies": [
-        "W18-T4"
-      ],
-      "gpu": true,
-      "estimated_runtime_hours": 20,
-      "required_data": [],
-      "required_gpu": "GPU4",
-      "result_paths": [
-        "docs/experiments/PHYSICS_GUIDED_GENERATION_ABLATION.md",
-        "data/results/physics_priors_ablation.json"
-      ],
-      "acceptance_criteria": [
-        "Soft constraints, violation rates reported",
-        "No claim of shallow-water PDE conservation without required state variables",
-        "Physical priors traced to NOAA/EMODnet literature",
-        "Compared vs FM without physics priors",
-        "All runs use identical splits and seeds"
-      ],
-      "commit_sha": null,
-      "blocked_by": "Unmet prerequisites: independent-storm scientific gate and upstream tasks; GPU unavailable in current execution environment where required."
-    },
-    {
-      "task_id": "W19-T6",
-      "stage": "S6",
-      "description": "Competing generative model benchmark: TimeGrad, Diffusion-TS (proper), conditional GAN, conditional VAE, GP-prior/TSFlow FM, DDPM, standard FM, tail-aware FM, physics-guided FM. 3 seeds each. Distinguish faithful reproduction from adaptation.",
-      "priority": "HIGH",
-      "status": "PENDING",
-      "dependencies": [
-        "W17-T1",
-        "W18-T4"
-      ],
-      "gpu": true,
-      "estimated_runtime_hours": 120,
-      "required_data": [
-        "data/checkpoints/fm_v2/",
-        "data/predictions/a0_v2/"
-      ],
-      "required_gpu": "GPU4, may need GPU3",
-      "result_paths": [
-        "data/results/generative_benchmark_v2.json",
-        "docs/experiments/GENERATIVE_MODEL_BENCHMARK.md"
-      ],
-      "acceptance_criteria": [
-        "Each model: source paper + implementation reference recorded",
-        "Config/seed/model_size/training_steps saved",
-        "Checkpoint SHA256 recorded",
-        "Synthetic fidelity + downstream A0-relative utility",
-        "Wall-clock and GPU time per model",
-        "All models on identical splits and seeds"
-      ],
-      "commit_sha": null,
-      "blocked_by": "Unmet prerequisites: independent-storm scientific gate and upstream tasks; GPU unavailable in current execution environment where required."
-    },
-    {
-      "task_id": "W19-T7",
-      "stage": "S7",
-      "description": "Generalization and robustness: within-region held-out storms, cross-region transfer, held-out-station transfer, tropical vs extratropical, moderate vs severe, different augmentation ratios, missing meteorological observations, longer forecast lead times. All conclusions state actual n and CIs.",
-      "priority": "MEDIUM",
-      "status": "PENDING",
-      "dependencies": [
-        "W17-T1",
-        "W19-T6"
-      ],
-      "gpu": false,
-      "estimated_runtime_hours": 10,
-      "required_data": [
-        "data/predictions/",
-        "data/results/"
-      ],
-      "required_gpu": "None (CPU)",
-      "result_paths": [
-        "data/results/generalization_robustness.json"
-      ],
-      "acceptance_criteria": [
-        "Every claim includes n and CI",
-        "Independent storm event counts per subgroup",
-        "Augmentation ratio sensitivity curve (10/25/50%)",
-        "Cross-region transfer table",
-        "Tropical vs extratropical comparison"
-      ],
-      "commit_sha": null,
-      "blocked_by": "Unmet prerequisites: independent-storm scientific gate and upstream tasks; GPU unavailable in current execution environment where required."
-    },
-    {
-      "task_id": "W20-T8",
-      "stage": "S7",
-      "description": "Publication-grade figures F1-F14. All generated from actual experiment outputs only. No fabricated measurements.",
-      "priority": "MEDIUM",
-      "status": "PENDING",
-      "dependencies": [
-        "W17-T1",
-        "W18-T4",
-        "W19-T6"
-      ],
-      "gpu": false,
-      "estimated_runtime_hours": 16,
-      "required_data": [
-        "data/results/",
-        "data/predictions/"
-      ],
-      "required_gpu": "None",
-      "result_paths": [
-        "paper/figures/"
-      ],
-      "acceptance_criteria": [
-        "All 14 figures generated from actual experiment outputs",
-        "Source data SHA recorded per figure",
-        "No fabricated measurements or unsupported visual conclusions",
-        "Figure metadata in FIGURE_REGISTRY.csv",
-        "Citable figure IDs F1\u2013F14"
-      ],
-      "commit_sha": null,
-      "blocked_by": "Unmet prerequisites: independent-storm scientific gate and upstream tasks; GPU unavailable in current execution environment where required."
-    },
-    {
-      "task_id": "W20-T9",
-      "stage": "S7",
-      "description": "Manuscript revision around central question: can physically informed generative augmentation improve extreme coastal water-level forecasting under limited storm-event observations? Maintain CLAIMS_LEDGER. Compile PDF.",
-      "priority": "HIGH",
-      "status": "PENDING",
-      "dependencies": [
-        "W20-T8"
-      ],
-      "gpu": false,
-      "estimated_runtime_hours": 40,
-      "required_data": [
-        "paper/main.tex",
-        "paper/CLAIMS_LEDGER.md"
-      ],
-      "required_gpu": "None",
-      "result_paths": [
-        "paper/main.pdf",
-        "paper/CLAIMS_LEDGER.md"
-      ],
-      "acceptance_criteria": [
-        "Compile with zero LaTeX errors",
-        "All negative findings preserved",
-        "CLAIMS_LEDGER current and evidence-bounded",
-        "No claim overstates evidence",
-        "All figures referenced",
-        "Diffused/invalidated runs clearly labeled"
-      ],
-      "commit_sha": null,
-      "blocked_by": "Unmet prerequisites: independent-storm scientific gate and upstream tasks; GPU unavailable in current execution environment where required."
-    },
-    {
-      "task_id": "W20-T10",
-      "stage": "S7",
-      "description": "Reproducibility package: every result traceable to code SHA, dataset SHA, split-manifest SHA, config, seed, checkpoint SHA, hardware, training log, prediction output, evaluation output.",
-      "priority": "HIGH",
-      "status": "PENDING",
-      "dependencies": [
-        "W20-T9"
-      ],
-      "gpu": false,
       "estimated_runtime_hours": 8,
-      "required_data": [],
-      "required_gpu": "None",
-      "result_paths": [
-        "docs/reproducibility/EXPERIMENT_REGISTRY.md",
-        "docs/reproducibility/DATA_PROVENANCE.md",
-        "docs/reproducibility/MODEL_CHECKPOINTS.md",
-        "docs/reproducibility/COMPUTE_BUDGET.md",
-        "docs/reproducibility/REPRODUCTION_GUIDE.md"
+      "required_data": [
+        "data/checkpoints/flow_matching_tailaware_{region}_seed{42,99}.pt",
+        "data/checkpoints/flow_matching_{region}_seed{42,99}.pt (standard FM for comparison)"
       ],
+      "required_gpu": "GPU3 or 4 — verify nvidia-smi first",
+      "result_paths": ["data/results/a3_tailaware_vs_standard_v2.json"],
       "acceptance_criteria": [
-        "Every result has 10-entry traceability record",
-        "Split manifest SHA recorded per split",
-        "Checkpoint SHA256 recorded per model",
-        "EXPERIMENT_REGISTRY.csv complete",
-        "DATASET_REGISTRY.csv complete",
-        "FIGURE_REGISTRY.csv complete"
-      ],
-      "commit_sha": null,
-      "blocked_by": "Unmet prerequisites: independent-storm scientific gate and upstream tasks; GPU unavailable in current execution environment where required."
+        "Same Protocol F1 as Wave 1.7 A3 (equal optimizer steps)",
+        "Tail-aware vs standard FM comparison per region, per ratio",
+        "Independent-unit bootstrap CI per region",
+        "Scale_ratio / q95 / q99 fidelity metrics for tail-aware FM samples",
+        "Negative findings preserved if tail-aware FM does not help"
+      ]
+    },
+    {
+      "task_id": "W20-G02",
+      "stage": "S5",
+      "description": "Conditional VAE full training: 5 regions × 2 seeds × ≥100 epochs with KL annealing. Only ny_bight seed42 trained (15 epochs, insufficient). Need KL annealing schedule implementation.",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "dependencies": [],
+      "gpu": true,
+      "estimated_runtime_hours": 36,
+      "required_gpu": "GPU3",
+      "acceptance_criteria": [
+        "VAE training loss converged (reconstruction ≈ diffusive models)",
+        "KL weight annealing from 0 to 1 over first 30 epochs",
+        "Posterior collapse monitored (KL divergence vs epoch)",
+        "Scale_ratio within [0.8, 1.2]",
+        "5 regions × 2 seeds checkpoints saved"
+      ]
+    },
+    {
+      "task_id": "W20-G03",
+      "stage": "S5",
+      "description": "Diffusion-TS target verification + retrain if needed. Checkpoints were loaded with observed_total_water_level_m (correct for DDPM decomposition). Verify target semantics and retrain on residual (water_level_m) for generative benchmark comparison.",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "dependencies": [],
+      "gpu": true,
+      "estimated_runtime_hours": 12,
+      "required_gpu": "GPU4"
+    },
+    {
+      "task_id": "W20-G04",
+      "stage": "S5",
+      "description": "TimeGrad training: 5 regions × 2 seeds × ≥50 epochs. Autoregressive scalar diffusion — expensive rollout (72 × 64 denoiser calls/sample). CPU smoke test works (scale=15.8 at 2 epochs — expected, needs GPU). 6,553 params denoiser.",
+      "priority": "MEDIUM",
+      "status": "PENDING",
+      "dependencies": [],
+      "gpu": true,
+      "estimated_runtime_hours": 72,
+      "required_gpu": "GPU3+4 (autoregressive is slow)"
+    },
+    {
+      "task_id": "W20-G05",
+      "stage": "S5",
+      "description": "WGAN-GP implementation + training. Code module needed first (conditional generator + discriminator with gradient penalty). Then 5 regions × 2 seeds × ≥100 epochs.",
+      "priority": "MEDIUM",
+      "status": "PENDING",
+      "dependencies": [],
+      "gpu": true,
+      "estimated_runtime_hours": 36,
+      "required_gpu": "GPU3"
+    },
+    {
+      "task_id": "W20-G06",
+      "stage": "S5",
+      "description": "GP-prior / TSFlow-style Flow Matching. Design stochastic interpolant between Gaussian prior and data. Implement if scientifically justified.",
+      "priority": "LOW",
+      "status": "PENDING",
+      "dependencies": ["W20-G01"],
+      "gpu": true,
+      "estimated_runtime_hours": 24,
+      "required_gpu": "GPU4"
+    },
+    {
+      "task_id": "W20-P01",
+      "stage": "S4",
+      "description": "Physics-prior FM variants: pressure-only, wind-only, bathymetry-conditioned, combined tail+physics. Requires ERA5 (BLOCKED) + GEBCO (not downloaded).",
+      "priority": "MEDIUM",
+      "status": "BLOCKED",
+      "blocked_by": "ERA5 CDS credentials missing, GEBCO not downloaded",
+      "required_action": "Owner: create ~/.cdsapirc with CDS API key",
+      "gpu": true,
+      "estimated_runtime_hours": 40,
+      "required_gpu": "GPU3+4"
+    },
+    {
+      "task_id": "W20-M01",
+      "stage": "S7",
+      "description": "Manuscript audit + Wave 2.0 revision. Replace Wave 1.6 exploratory DDPM-pilot framing with Wave 2.0 multi-year POT framework. Add: §Data (multi-year split), §Independent Units, §Generative Benchmark protocol. Keep result sections provisional until experiments complete.",
+      "priority": "HIGH",
+      "status": "READY",
+      "dependencies": ["W20-D01"],
+      "gpu": false,
+      "estimated_runtime_hours": 12
+    },
+    {
+      "task_id": "W20-M02",
+      "stage": "S7",
+      "description": "Publication figures F1-F14 + tables. Generate from actual experiment outputs only. No fabricated measurements.",
+      "priority": "MEDIUM",
+      "status": "PENDING",
+      "dependencies": ["W20-G01", "W20-G02", "W20-G03", "W20-G04", "W20-G05"]
+    },
+    {
+      "task_id": "W20-A01",
+      "stage": "S5",
+      "description": "Persistent autonomous execution framework: worker lock, heartbeat, dependency resolution, crash recovery, bounded retries, GPU validation. Test restart recovery with CPU task.",
+      "priority": "MEDIUM",
+      "status": "PENDING",
+      "gpu": false
     }
   ],
-  "audit_source_sha": "86169e1cd219db11e0c9befe7eb0b0bf659e6f72",
-  "scientific_gate": {
-    "status": "RESOLVED",
-    "issue": 5,
-    "evidence": "WAVE17_AUDIT.md event-level bootstrap implemented",
-    "reason": "190 predictions with event_ids; calendar-day pseudo-event bootstrap CI complete (n=301-360 events per region)"
+  "checkpoints_total": 31,
+  "predictions_total": 190,
+  "acceptance_gate": {
+    "wave2_0": "EXPECTED 2026-11-03: G01 tail-aware downstream + D02 POT bootstrap re-evaluation",
+    "wave2_1": "EXPECTED 2026-11-05: G02 VAE + G03 Diffusion-TS + G04 TimeGrad",
+    "wave2_2": "EXPECTED 2026-11-07: G05 WGAN-GP + G06 GP-prior FM",
+    "wave2_3": "EXPECTED 2026-11-10: P01 Physics (if ERA5 authorized)",
+    "wave2_4": "EXPECTED 2026-11-14: M01–M02 Manuscript + figures + tables"
   }
 }
