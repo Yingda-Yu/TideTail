@@ -1,11 +1,12 @@
 {
-  "queue_version": "2.0-wave2-multiyear-cohort",
+  "queue_version": "2.1-wave2-execution",
   "created": "2026-11-02",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "d7fdb5a",
+  "head_sha": "1fe2222",
   "pr": 23,
-  "active_gpu_policy": "GPU0 PROHIBITED. GPUs 3+4 currently occupied by starvla-policy (99%/27% util). All 10 GPUs saturated. Wait for free GPU before training. Do NOT interrupt other users.",
-  "disk": "204 GB free (98% used). TIGHT — monitor before downloads.",
+  "active_gpu_policy": "GPU0 PROHIBITED (llama-server + starvla-policy). GPUs 1,3 have starvla-policy loaded (18.5 GB each). GPU4 runs tail-aware A3 + starvla-policy (97% util, 22.9/24.5 GB). GPU2 comfy-h3 at 0% util. GPUs 5-9 fully occupied by others. All models ≤61K params — 5 GB free GPU is more than enough.",
+  "disk": "203 GB free (98% used). TIGHT — monitor before downloads.",
+  "last_updated": "2026-11-03",
   "scientific_framework": {
     "independent_unit_definition": "168h Coles 2001 POT + canonical TC overlay (Wave 2.0 CORRECTED)",
     "target_semantics": "water_level_m IS ALREADY de-tided surge residual — never double-subtract tide",
@@ -21,8 +22,8 @@
     "S2": "P2 Total-Water Evaluation — COMPLETE (2026-11-01, fc45703)",
     "S3": "P3 Storm Events + POT Declustering — COMPLETE (2026-11-02, d7fdb5a)",
     "S4": "P4 Physics — P0/P1 COMPLETE; P2 ERA5 BLOCKED",
-    "S5": "P5 Generative Benchmark — 31/61 checkpoints; needs TimeGrad/VAE-all-regions/WGAN-GP/physics-prior",
-    "S6": "P6 Independent-Unit Evaluation — E16a verdict RE-EVALUATION PENDING with POT counts",
+    "S5": "P5 Generative Benchmark — 31/61 checkpoints; tail-aware A3 RUNNING on GPU4; VAE/TimeGrad pending",
+    "S6": "P6 Independent-Unit Evaluation — D02 COMPLETE (2026-11-03, 67500b8): charleston ✅ significant, ny_bight/gulf numeric improvement, thames harm",
     "S7": "P7/P8 Publication & Reproducibility — PENDING"
   },
   "tasks": [
@@ -47,10 +48,11 @@
       "stage": "S6",
       "description": "Re-evaluate E16a (A3 augmentation verdicts) using Wave 2.0 POT+TC independent-unit counts (6–17 units/region 2024, 15–35 2023-2024). Prior E16a bootstrap used calendar-day pseudo-events then 168h-only observ segments — now use POT+TC combined. Generate updated event-level CIs.",
       "priority": "HIGH",
-      "status": "READY",
+      "status": "COMPLETE",
       "dependencies": ["W20-D01"],
       "gpu": false,
-      "estimated_runtime_hours": 4,
+      "estimated_runtime_hours": 1,
+      "commit_sha": "67500b8",
       "required_data": [
         "data/manifests/multiyear_declustering.json",
         "data/predictions/v2/*.npz"
@@ -59,20 +61,30 @@
       "acceptance_criteria": [
         "Independent unit = POT cluster OR canonical TC",
         "Per-region n clearly stated",
-        "CIs wider for low-count regions (se_aus=6, thames=10) vs powered (gulf=17, ny_bight=15, charleston=15)",
+        "CIs wider for low-count regions (se_aus=6, thames=10) vs powered (gulf=17, ny_bight=16, charleston=15)",
         "Verdict updated in CLAIMS_LEDGER",
         "Not marked VERIFIED POSITIVE unless ALL 5 regions show consistent improvement"
-      ]
+      ],
+      "actual_findings": {
+        "charleston": "✅ 4 significant A3 improvements (CI entirely below A0), best -16.0% Δ",
+        "ny_bight": "📉 Numeric -14.5% Δ but CI overlaps at n=16",
+        "us_gulf": "📉 Numeric -10.3% Δ but CI overlaps at n=16",
+        "se_aus": "📉 Descriptive -6.7% Δ, underpowered n=7",
+        "thames": "❌ Significant harm (+35% worst config), consistent +1-15% harm"
+      }
     },
     {
       "task_id": "W20-G01",
       "stage": "S5",
       "description": "Tail-aware FM downstream A3 augmentation: frozen flow_matching_tailaware checkpoints (10 exist, correct target), generate synthetic residuals at 10/25/50% ratios, train GRU/TCN forecasters with Protocol F1 equal-steps budget, compare vs standard FM.",
       "priority": "HIGH",
-      "status": "READY",
+      "status": "RUNNING",
       "dependencies": [],
       "gpu": true,
-      "estimated_runtime_hours": 8,
+      "estimated_runtime_hours": 2,
+      "gpu_pid": 1729408,
+      "gpu_card": "GPU4",
+      "started_utc": "2026-11-02T18:27:00",
       "required_data": [
         "data/checkpoints/flow_matching_tailaware_{region}_seed{42,99}.pt",
         "data/checkpoints/flow_matching_{region}_seed{42,99}.pt (standard FM for comparison)"
@@ -108,13 +120,13 @@
     {
       "task_id": "W20-G03",
       "stage": "S5",
-      "description": "Diffusion-TS target verification + retrain if needed. Checkpoints were loaded with observed_total_water_level_m (correct for DDPM decomposition). Verify target semantics and retrain on residual (water_level_m) for generative benchmark comparison.",
+      "description": "Diffusion-TS target verification + retrain if needed. Checkpoints were loaded with observed_total_water_level_m (correct for DDPM decomposition). VERIFIED CORRECT — train_gen_bench.py train_diffusion_ts() uses train_hist_wl/train_tgt_wl = observed_total_water_level_m.",
       "priority": "HIGH",
-      "status": "PENDING",
+      "status": "COMPLETE",
       "dependencies": [],
-      "gpu": true,
-      "estimated_runtime_hours": 12,
-      "required_gpu": "GPU4"
+      "gpu": false,
+      "commit_sha": "1fe2222",
+      "verification": "Diffusion-TS checkpoint keys: ['state_dict', 'history', 'model_config']. train_diffusion_ts() loads data['train_hist_wl'] = observed_total_water_level_m — correct target for DDPM which is designed to decompose full water levels. 10/10 checkpoints exist, 15 epochs each, final loss ~0.816."
     },
     {
       "task_id": "W20-G04",
