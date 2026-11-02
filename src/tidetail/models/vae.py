@@ -22,6 +22,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
+
 # ---------------------------------------------------------------------------
 # TCN building blocks (shared pattern with other TideTail models)
 # ---------------------------------------------------------------------------

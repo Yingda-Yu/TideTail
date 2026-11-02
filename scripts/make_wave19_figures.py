@@ -10,7 +10,7 @@ All figures preserve Wave 1.8 numerical accuracy but fix conceptual framing.
 """
 from __future__ import annotations
 
-import json
+import json, hashlib
 from pathlib import Path
 import numpy as np
 import matplotlib; matplotlib.use("Agg")
@@ -61,7 +61,7 @@ def fig_f3_independent_units():
             "of 168h-contiguous forecast windows.\n"
             "Most regions have 2024-only test split → 1 segment.",
             transform=ax.transAxes, fontsize=8, va="top",
-            bbox={"boxstyle": "round,pad=0.3", "facecolor": "wheat", "alpha": 0.9})
+            bbox=dict(boxstyle="round,pad=0.3", facecolor="wheat", alpha=0.9))
 
     out = FIG_OUT / "F3_independent_units_corrected.pdf"
     fig.savefig(out, format="pdf", dpi=300, bbox_inches="tight")
