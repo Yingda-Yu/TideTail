@@ -1,99 +1,134 @@
-# LATEST PROGRESS — TideTail
+# LATEST PROGRESS — TideTail Wave 2.0–2.4
 
-**Last updated**: 2026-11-03 Wave 1.8
-**Head SHA**: `d124bcc`
+**Last updated**: 2026-11-03 Wave 2.4 (unified orchestration checkpoint)
+**Head SHA**: `108eba3`
 **Branch**: `trae/global-data-generative-research-20261031`
-**PR**: #23 (Draft)
+**PR**: #23 (Draft — DO NOT MERGE main)
 
 ---
 
-## Current Status
+## Unified Dependency-Aware Task Queue
 
-### ✅ COMPLETE
-- **Wave 1.7 P0 audit**: 190 prediction files verified, 10 FM checkpoints verified, event-level bootstrap CI computed
-- **Physics equations**: Full math derivation for inverse barometer, wind stress, coastal setup, tail weights, lag kernel
-- **Publication figures**: 6/14 generated (F1, F3, F4, F6, F8, F9) from verified artifacts only
-- **Dataset coverage matrix**: All 10 datasets catalogued with provenance
-- **Task queue**: W17-T1 marked COMPLETE, scientific_gate RESOLVED
-
-### 🟡 IN PROGRESS / PENDING
-- **Generative benchmark**: GPU3 and GPU4 available (24 GB free each) — next immediate priority
-- **Manuscript updates**: Need event-level CI + data quality notes + figure references
-- **GEBCO download**: Available without auth — low bandwidth, no blocker
-- **ERA5**: AUTH_REQUIRED (user action: register CDS → get token → write ~/.cdsapirc)
-
-### ❌ BLOCKED
-- **Physics-guided generative models**: Need ERA5 wind/pressure data
-- **Full shallow-water PDE claims**: Not within scope of TideTail
+| Task | PID | GPU | Status | Artifacts |
+|---|---|---|---|---|
+| **Standard FM A3 downstream** | 4019786 | GPU4 | 🔄 RUNNING | → append to `a3_flowmatching_augment_96_72.json` |
+| **VAE full training (5×2×100)** | 4022380 | GPU1 | 🔄 RUNNING | → `data/checkpoints/vae_*_seed{42,99}.pt` |
+| **TimeGrad full training (5×2×50)** | 4022383 | GPU3 | 🔄 RUNNING | → `data/checkpoints/timegrad_*.pt` |
+| **ERA5 download (2 workers)** | 1868415/16 | CPU | 🔄 RUNNING | 253/600 verified, 786 MB |
+| **CDS auth tiny test** | 4070374 | — | 🔄 RUNNING | → `/tmp/era5_auth_result.json` |
+| **Storm event census** | — | CPU | ✅ COMPLETE | `data/results/storm_event_census_2015_2024.json` |
+| **POT+TC bootstrap** | — | CPU | ✅ COMPLETE | `data/results/wave20_pot_storm_bootstrap.json` |
+| **Tail-aware FM A3** | done | GPU4 | ✅ COMPLETE | 242 records in `a3_flowmatching_augment_96_72.json` |
 
 ---
 
-## Key Verified Numbers
+## Resource Status
+
+| Resource | Value |
+|---|---|
+| **GPU0** | 🚫 PROHIBITED (llama-server + starvla, 22MB free) |
+| **GPU1** | VAE full training (19.4GB/24GB, 30% util) |
+| **GPU2** | comfy-h3 (22.3GB), FREE otherwise |
+| **GPU3** | TimeGrad (419MB used — initializing) |
+| **GPU4** | Standard FM (5.4GB used — initializing) |
+| **GPUs 5-9** | OCCUPIED by others |
+| **Disk free** | 933 GB (after ERA5 download + 136 GB increase) |
+| **pytest** | 270 PASS |
+
+---
+
+## ERA5 Download Pipeline
 
 | Metric | Value |
 |---|---|
-| Total prediction files | 190/190 ✅ |
-| FM checkpoints (correct target) | 10/10 ✅ |
-| Pytest | 270 passed, 0 fail |
-| Unique pseudo-events | 360×4 + 301×1 = 1741 calendar-day groups |
-| Valid A3 configs | 12 per region (6 FM seeds × 3 ratios × 2 downstream seeds) |
-| **Best A3 overall** | ny_bight, -15.3% GRU (s99_ratio_0.5) |
-| **Worst region** | thames_north_sea, all A3 configs hurt, +2.8% best-case |
-| A1 oversampling | 0/20 comparisons help — UNIVERSAL NEGATIVE |
-| Event-level CI | Slightly more conservative than window-level but directionally identical |
+| CDS config | `~/.cdsapirc`, perms 600, ✅ auth tested |
+| cdsapi | 0.7.7 ✅ |
+| Workers | 2 PID=1868415 (ny_bight, se_aus) + 1868416 (gulf, charleston, thames) |
+| Verified | 253 / 600 (42%), 786 MB |
+| Manifest | `/data/yingda/tidetail-data/real-sources-v1/era5/MANIFEST.json` |
+| Integrity | xarray verify: vars present, hour count, lat/lon bounds, physical plausibility |
+| Rate limit | 3s cooldown per chunk, CDS protection notice acknowledged |
+| Test data | `/data/yingda/tidetail-data/real-sources-v1/era5-test/` 1.4 MB verified |
 
 ---
 
-## GPU Status (2026-11-03)
+## Generative Model Status
 
-| GPU | VRAM | Usage | Policy |
-|---|---:|---|---|
-| **0** | 24 GB | 22 MiB | ❌ PROHIBITED (other user) |
-| 1 | 24 GB | 18.5 GB | LOCKED |
-| 2 | 24 GB | 22.3 GB | SATURATED |
-| **3** | 24 GB | **24 MiB** | ✅ **FREE** |
-| **4** | 24 GB | **18 MiB** | ✅ **FREE** |
-| 5-9 | 24 GB | 17-18 GB | 100% saturated |
-
-**Immediate**: `CUDA_VISIBLE_DEVICES=3,4` for tail-aware FM training.
+| Model | Checkpoints | Training | Results |
+|---|---|---|---|
+| Diffusion-TS | 10/10 ✅ | ✅ 1 region seed42 done | `diffusion_ts_96_72.json` 1 record |
+| Flow Matching (standard) | 10/10 ✅ | 🔄 GPU4 A3 eval running | Pending |
+| Flow Matching (tail-aware) | 10/10 ✅ | ✅ Complete | 242 records |
+| Conditional VAE | 1/10 | 🔄 GPU1 5×2×100 running | Pending |
+| TimeGrad | 0/10 | 🔄 GPU3 5×2×50 running | Pending |
+| WGAN-GP | Not started | Needs code | — |
 
 ---
 
-## Immediate Next Commands
+## Storm Event Independence — CRITICAL SCIENTIFIC FINDING
 
-```bash
-# 1. Push everything
-git add -A && git commit -m "feat: Wave 1.8 — physics docs, figures, acceptance report"
-git push origin trae/global-data-generative-research-20261031
+POT q95 + 168h support embargo declustering across all 5 regions, 2015-2024:
 
-# 2. Verify PR #23 CI
-gh pr view 23 --repo Yingda-Yu/TideTail --json checks
+| Region | per-2024 | per-2023-24 | per-2022-24 | 10yr total | TC coverage |
+|---|---:|---:|---:|---:|---:|
+| ny_bight | 15 ✅ | 33 ✅ | 51 ✅ | 171 | 10 TCs |
+| us_gulf_coast | 11 | 26 | 37 | 110 | 37 TCs (rich!) |
+| charleston | 13 | 27 | 40 | 133 | 25 TCs |
+| se_aus | 6 ❌ | 15 | 20 | 101 | 0 TCs |
+| thames | 10 | 18 | 34 | 119 | 1 TC |
+| **TOTAL** | **55** | **119** | **182** | **634** | |
 
-# 3. Start tail-aware FM training (GPU3)
-CUDA_VISIBLE_DEVICES=3 python3 scripts/train_tail_aware_fm.py --region ny_bight --seed 42
-
-# 4. Download GEBCO regional subsets (no auth)
-python3 scripts/download_gebco.py --regions ny_bight,us_gulf_coast,south_atlantic_charleston,southeast_australia,thames_north_sea
-```
-
----
-
-## Blockers
-
-| Blocker | Resolution | Status |
-|---|---|---|
-| ERA5 CDS auth | User register + get token → write ~/.cdsapirc | ❌ AUTH_REQUIRED |
-| Canonical storm IDs | Wire storm_events.py into pipeline | ❌ DEFERRED |
-| Thames NaN source gaps | NOAA QC flags likely maintenance | ❌ DOCUMENTED (test set clean) |
+### Key conclusions:
+1. Wave 1.9's 2024-only finding was exploratory due to low power (se_aus only 6 units)
+2. **expanded_3yr_test (2022-2024, 182 units)** is now the formal evaluation protocol
+3. Charleston's 2024 finding (FM aug statistically significant) needs expanded-cohort reconfirmation
+4. Thames' significant harm finding also needs expanded-cohort validation
+5. us_gulf_coast has rich canonical TC coverage (37 TCs 10yr) → best for TC-conditioned analysis
 
 ---
 
-## Evidence Traceability
+## Wave 2.0 POT+TC Bootstrap — 2024-only results
 
-Every claim in this session traces to:
-- Git SHA `d124bcc` (HEAD at time of writing)
-- `data/results/wave17_analysis_v2.json` (190 records)
-- `data/predictions/v2/*.npz` (190 files, all with event_ids + timestamps)
-- `data/checkpoints/flow_matching_{region}_seed{42,99}.pt` (10 checkpoints)
-- `docs/status/WAVE17_AUDIT.md` (independent P0 audit)
-- `docs/status/WAVE1_8_ACCEPTANCE.md` (this wave's acceptance report)
+| Region | Independent Units | Best A3 Δ% | Verdict |
+|---|---:|---:|---|
+| **charleston** | 15 | -16.0% | ✅ 4 significant improvements (CI95 entirely below A0 MAE=0.1023) |
+| ny_bight | 16 | -14.5% | 📉 numeric, CI overlaps |
+| us_gulf | 16 | -10.3% | 📉 numeric, CI overlaps |
+| se_aus | 7 | -6.7% | Descriptive only |
+| **thames** | 10 | +35% worst | ❌ Significant harm |
+
+---
+
+## Next Three Executable Tasks
+
+1. **When GPU4 FM finishes → diffusing on expanded_3yr_test protocol** (2022-2024 test years, 182 independent units)
+2. **Physics-guided FM ablation** (once ≥3 regions ERA5 complete): pressure-only prior, wind-only prior, combined
+3. **Expanded-cohort bootstrap** for charleston/thames formal inference on 2022-2024 units
+
+---
+
+## Git & CI
+
+| Item | Value |
+|---|---|
+| Current branch | `trae/global-data-generative-research-20261031` |
+| Base | `d7fdb5a` |
+| Head | `108eba3` |
+| New commits this session | 7 |
+| pytest | 270 PASS |
+| Merges | NO — DRAFT PR #23 |
+
+---
+
+## CLAIMS_LEDGER E16a Status
+
+- ❌ Wave 1.9: exploratory (0-1 observ segments/year)
+- ✅ Wave 2.0: mixed scientific finding (charleston verified, thames harm confirmed)
+- ⏳ Wave 2.4: awaiting expanded-cohort reconfirmation on 182 3yr units
+
+---
+
+**Blockers**: None currently. All pipelines running or queued.
+**Independent units**: 634 POT clusters confirmed 2015-2024 across 5 regions.
+**ERA5 progress**: 42% downloaded, 2 workers active 14+ hours.
+**Next checkpoint**: After standard FM / VAE / TimeGrad training completes (~1-2h).
