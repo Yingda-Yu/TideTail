@@ -1,0 +1,106 @@
+{
+  "ny_bight": {
+    "total_independent": 16,
+    "canonical_tc_units": 0,
+    "pot_only_units": 0,
+    "background_units": 1,
+    "unique_ids": [
+      -999,
+      -16,
+      -15,
+      -14,
+      -13,
+      -12,
+      -11,
+      -10,
+      -9,
+      -8,
+      -7,
+      -6,
+      -5,
+      -4,
+      -3,
+      -2
+    ]
+  },
+  "us_gulf_coast": {
+    "total_independent": 16,
+    "canonical_tc_units": 6,
+    "pot_only_units": 0,
+    "background_units": 1,
+    "unique_ids": [
+      -999,
+      -12,
+      -11,
+      -9,
+      -7,
+      -6,
+      -5,
+      -4,
+      -3,
+      -2,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "south_atlantic_charleston": {
+    "total_independent": 15,
+    "canonical_tc_units": 2,
+    "pot_only_units": 0,
+    "background_units": 1,
+    "unique_ids": [
+      -999,
+      -14,
+      -13,
+      -12,
+      -11,
+      -9,
+      -8,
+      -7,
+      -6,
+      -5,
+      -4,
+      -3,
+      -2,
+      0,
+      1
+    ]
+  },
+  "southeast_australia": {
+    "total_independent": 7,
+    "canonical_tc_units": 0,
+    "pot_only_units": 0,
+    "background_units": 1,
+    "unique_ids": [
+      -999,
+      -7,
+      -6,
+      -5,
+      -4,
+      -3,
+      -2
+    ]
+  },
+  "thames_north_sea": {
+    "total_independent": 10,
+    "canonical_tc_units": 0,
+    "pot_only_units": 0,
+    "background_units": 1,
+    "unique_ids": [
+      -999,
+      -11,
+      -10,
+      -9,
+      -8,
+      -7,
+      -6,
+      -4,
+      -3,
+      -2
+    ]
+  }
+}
