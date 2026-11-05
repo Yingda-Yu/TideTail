@@ -84,3 +84,29 @@ def test_event_set_union_arithmetic():
 ---
 *Wave 2.6 Event Set Audit — corrected 2026-11-04*
 *Source: scripts/event_set_audit.py + data/results/wave26_event_set_audit.json*
+
+## WAVE 2.7 CORRECTION (2026-11-05)
+
+Two statements above are superseded.
+
+1. **Event-ID encoding.** The table says POT clusters are `id < -999`. They are not:
+   POT clusters are encoded as `-(cluster_id + 1)`, i.e. `-1 … -N`, and only
+   `-999` means background. The Wave 2.6 audit's `pot_units` filter
+   (`unique_ids < -999`) therefore always returned an empty POT set. Correct
+   classification lives in `src/tidetail/event_union.py::classify_event_id`.
+2. **Decade count.** "Correct unique is approximately 634" is replaced by the
+   measured union: POT 634, TC 73, one-to-one matches **28**, POT-only 606,
+   TC-only 45, **union 679**. Overlap was never 73.
+
+The 2024 bootstrap counts in the table (15/15/14/6/9 = 59 extreme units) are
+independently reproduced and remain valid. 2024 set-union arithmetic gives 60
+before intersecting with available test windows; the difference is one Thames
+cluster with no 2024 test window.
+
+Test-cohort unions (2015-2024): 178 / 138 / 143 / 101 / 119 per region.
+See `data/results/wave27_event_set_audit.json` for tolerance sensitivity
+(0/24/48/72 h) and integrity checks (no duplicate timestamps, aligned
+`event_ids`, 8,601 test windows with Thames = 6,968).
+
+Forecast-window integrity: no duplicated storm events across splits and no
+forecast-window overlap were found in the audited prediction files.

@@ -1,68 +1,97 @@
 \section{Introduction}
 
-Coastal flooding causes approximately \$1 trillion in global damages annually and
-displaces hundreds of thousands of people~\citep{yang2023storm}. Reliable forecasting
-of extreme water levels during storm events is therefore an urgent public safety
-problem. The core challenge is \emph{data imbalance}: the most operationally
-critical storm surges are also the rarest. Training standard neural forecasters on
-historically recorded water levels allocates most model capacity to predicting the
-frequent benign conditions rather than the infrequent but catastrophic extremes.
+Coastal flooding is among the most costly natural hazards, and the events that
+matter most operationally are the ones that are rarest in the historical
+record. A forecaster trained on ten years of gauge observations therefore spends
+most of its capacity on benign conditions. Generative augmentation is the
+obvious response: synthesise additional extreme residuals so that the
+downstream forecaster sees more of the tail. The question this paper asks is
+narrower and more useful than ``does augmentation work'': \emph{when} does
+generative augmentation help extreme coastal water-level forecasting, and what
+does the answer depend on?
 
-Data augmentation has emerged as a promising approach to rebalance training
-distributions. For time-series forecasting, augmentation traditionally takes the
-form of oversampling, bootstrapping, noise perturbation, or interpolation. These
-methods are well-established for image data but have received less scrutiny for
-coastal water-level prediction, where physical laws (tidal cycles, wave dynamics,
-storm surge propagation) impose strong constraints on what constitutes a plausible
-augmented sample.
-
-Conditional diffusion models~\citep{ho2020denoising} offer a generative framework
-that could produce physically realistic extreme events by learning the conditional
-distribution of water-level residuals given historical gauge observations. The
-hypothesis driving this work is:
+We began with the standard hypothesis, stated here in its original form so that
+the reader can see what the evidence did to it:
 
 \begin{quote}
-\textbf{H1}: Tail-aware conditional diffusion augmentation, applied under a matched
-forecaster training budget, improves prediction accuracy on \emph{independent held-out
-real storm events} relative to real-only training, standard oversampling, perturbation
-augmentation, and standard conditional diffusion.
+\textbf{H1}: Tail-aware conditional generative augmentation, applied under a
+matched forecaster training budget, improves prediction accuracy on
+\emph{independent held-out real storm events} relative to real-only training,
+standard oversampling, perturbation augmentation, and standard conditional
+diffusion.
 \end{quote}
 
-A secondary hypothesis (H2) investigates whether adding physical consistency or
-multi-gauge spatial coherence further improves synthesis usefulness. Both are
-\emph{unverified hypotheses} at this writing. This paper reports the frozen
-research protocol, the engineering implementation, and the first controlled
-empirical evidence — which is, at this stage, a \emph{negative result}: our
-pilot DDPM produces samples of physically implausible magnitude. We argue that
-this finding, its diagnosis, and the methodological infrastructure built to obtain
-it are themselves a contribution to the study of diffusion models for extreme-event
-time-series generation.
+H1 is still not established. What this paper contributes is the reason
+it is not established, and the conditions under which a future study could
+establish it.
+
+\subsection{Why the question is harder than it looks}
+
+Three problems recur in published and internal evaluations of generative
+augmentation for time series, and all three were present in our own earlier
+work.
+
+\begin{enumerate}
+    \item \textbf{Window overlap masquerades as sample size.} A 96\,h$\rightarrow$72\,h
+    contract produces tens of thousands of sliding windows per region, but a
+    single storm supplies hundreds of them. Treating windows as independent
+    inflates every confidence interval by roughly the square root of the
+    within-event window count. The unit of inference must be the \emph{event},
+    not the window.
+    \item \textbf{Event counts are easy to double-count.} Tropical-cyclone
+    catalogues and peak-over-threshold (POT) declustering describe overlapping
+    phenomena. Adding the two totals without computing the intersection inflates
+    the census; in our own repository this produced a decade count of 707
+    instead of 679 (Section~\ref{sec:results-census}).
+    \item \textbf{Generator failures are attributed to families rather than to
+    code.} A diffusion model whose reverse sampler is correct but whose Fourier
+    regulariser regresses the wrong target will fail, and it is tempting to
+    conclude that diffusion is unsuited to the problem. It is not a
+    family-level conclusion; it is a line-level defect
+    (Section~\ref{sec:results-recovery}).
+\end{enumerate}
 
 \subsection{Contributions}
+
 \begin{enumerate}
-    \item We present a fully documented, leakage-safe research protocol for
-    coastal water-level forecasting with diffusion augmentation, including
-    event-grouped chronological splits, full-support embargo, train-only thresholds,
-    and a six-region data manifest frozen at license-admission boundaries.
-    \item We implement and audit a conditional denoising diffusion probabilistic
-    model (DDPM) for residual water-level generation, with 27,169 parameters, a
-    cosine noise schedule, and 64 reverse diffusion steps.
-    \item We report a \emph{reproduced negative result}: independently verified on
-    both CUDA and CPU, the model's 24-hour generated residuals span $-16.91$ to
-    $+7.94$ metres (SD 4.47m), approximately $22.95\times$ the training target
-    standard deviation of 0.215m. We diagnose terminal-step amplification and
-    imperfect epsilon prediction as contributing factors.
-    \item We present engineering validation guards (nonfinite rejection,
-    train-reference scale screen) that prevent absurdly bad samples from being
-    misclassified as successful generation. These guards are validation
-    infrastructure, not model repairs.
+    \item \textbf{A verified event census.} We recompute the 2015--2024
+    independent-event union for five regions from raw cluster artefacts
+    (634 POT clusters, 73 tropical cyclones, 28 matched $\Rightarrow$
+    \textbf{679} units), and show that the 2024 test split contains
+    \textbf{59} independent units. Duplicate timestamps and cross-split
+    forecast-window leakage are checked and found absent.
+    \item \textbf{A four-generator benchmark on identical splits.} Conditional
+    VAE, TimeGrad, Diffusion-TS and Flow Matching are compared under one
+    contract with one fidelity gate. Flow Matching is the only generator that
+    reproduces the target dispersion ($0.945$--$1.116$), and even it does not
+    clear the full gate.
+    \item \textbf{A diagnostic recovery study.} We prove the DDPM reverse
+    recursion correct with an oracle denoiser (max absolute error
+    $1.1\times10^{-10}$), localise three implementation defects, and report
+    honestly that \emph{two of the three proposed repairs did not work} ---
+    the repaired VAE samples \emph{worse}, and the repaired Diffusion-TS
+    diverges to NaN. This is a negative result about our repairs, not about
+    the families.
+    \item \textbf{A corrected event-level evaluation.} After fixing cross-architecture
+    pairing, a $5{,}000\times$ p-value inflation and a Monte-Carlo resolution
+    floor above the correction threshold, we find \textbf{zero}
+    seed-robust augmentation findings across 320 comparisons. Effects are
+    architecture-dependent (TCN responds, GRU barely does) and region-dependent
+    (Thames is harmed), and baseline seed variance alone reaches 25\%.
+    \item \textbf{A physics-prior pilot and a three-year protocol.} Causal
+    ERA5-conditioned Flow Matching variants are trained and evaluated
+    (Section~\ref{sec:results-physics}), and a 2015--2020/2021/2022--2024
+    protocol is implemented from scratch because no existing checkpoint can be
+    evaluated on 2022--2024 (Section~\ref{sec:results-expanded}).
 \end{enumerate}
 
 \subsection{Paper structure}
-Section~\ref{sec:related} surveys related work. Section~\ref{sec:protocol} details
-our frozen research protocol and data admission. Section~\ref{sec:method} describes
-the conditional DDPM architecture and training setup. Section~\ref{sec:exp}
-describes our experimental plan and implementation.
-Section~\ref{sec:results} reports our empirical findings, including the negative
-result of the pilot. Section~\ref{sec:discussion} discusses implications, limitations,
-and ongoing work. Section~\ref{sec:conclusion} concludes.
+
+Section~\ref{sec:related} positions the work. Section~\ref{sec:protocol}
+describes the frozen data protocol. Section~\ref{sec:method} describes the
+generators and the forecasters. Section~\ref{sec:exp} states the experimental
+design. Section~\ref{sec:results} reports the census, the generator benchmark,
+the recovery study, the corrected event-level analysis, the physics pilot and
+the expanded protocol. Section~\ref{sec:discussion} explains the mechanisms;
+Section~\ref{sec:conclusion} states what would be required to move H1 from
+untested to established.

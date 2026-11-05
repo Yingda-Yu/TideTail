@@ -1,433 +1,313 @@
 \section{Results}
 \label{sec:results}
 
-\subsection{Pilot training outcome (engineering success)}
-The GPU pilot completed 1,641 optimizer steps across three full epochs. Epsilon
-MSE declined monotonically:
+\subsection{The independent-event census}
+\label{sec:results-census}
+
+An independent event unit is either a POT cluster (q95 threshold, 168\,h
+declustering, Coles 2001) or a canonical tropical cyclone, counted once. Cluster
+identifiers restart each January, so a year-unique label
+$-(1000\,\cdot\,\text{year} + c + 1)$ is required; the naive
+``event\_id $< -999$ means background'' convention used in an earlier wave
+silently dropped valid clusters.
+
+The corrected census is shown in Table~\ref{tab:census}. The union identity
+$|\text{POT} \cup \text{TC}| = |\text{POT}| + |\text{TC}| - |\text{POT} \cap
+\text{TC}|$ was checked per region and per period.
 
 \begin{table}[htbp]
 \centering
-\caption{Epoch-average epsilon MSE (GPU pilot, 27,169 parameters)}
-\begin{tabular}{c c c}
+\caption{Independent event units, 2015--2024, and the 2024 test split.
+Union is computed by one-to-one peak matching, not by addition.}
+\begin{tabular}{l r r r r r}
 \toprule
-Epoch & Steps & Mean $\epsilon$ MSE \\
+Region & POT & TC & matched & \textbf{union} & 2024 extreme units \\
 \midrule
-1 & 547 & 0.219863 \\
-2 & 547 & 0.180404 \\
-3 & 547 & 0.172029 \\
+New York Bight        & 171 & 10 & 3  & \textbf{178} & 15 \\
+US Gulf Coast         & 110 & 38 & 10 & \textbf{138} & 15 \\
+Charleston            & 133 & 24 & 14 & \textbf{143} & 14 \\
+Southeast Australia   & 101 & 0  & 0  & \textbf{101} & 6  \\
+Thames / North Sea    & 119 & 1  & 1  & \textbf{119} & 9  \\
+\midrule
+Total                 & 634 & 73 & 28 & \textbf{679} & \textbf{59} \\
 \bottomrule
 \end{tabular}
-\label{tab:epoch-loss}
+\label{tab:census}
 \end{table}
 
-First-step MSE was 1.100, final-step MSE was 0.150. All losses and gradient norms
-were finite. Training time was approximately 41 seconds (plus data loading).
-Peak GPU allocation was 52.9~MiB (of 24~GiB). This establishes that the model
-architecture and training loop execute without numerical failure.
+The earlier repository record reported $634 + 73 = 707$. That arithmetic
+double-counts the 28 TC peaks that already exceed q95 within their own POT
+cluster, and the overlap had never been computed. The grand union is
+\textbf{679}. Per-period unions are 60 (2024), 127 (2023--2024), 190
+(2022--2024) and 679 (2015--2024); the 2024 bootstrap cohort contains 59
+window-eligible extreme units, one per region being ineligible because the
+168\,h horizon runs past the series end.
 
-\subsection{Sample quality (negative result)}
-Despite declining training loss, \emph{generated sample magnitudes are physically
-implausible}. The GPU pilot produced 8 finite 24-hour residual sequences spanning
-$-16.91$ to $+7.94$ metres with SD 4.47~m. Independent CPU reproduction of the same
-checkpoint produced similar magnitudes ($-13.08$ to $+16.28$~m, SD 4.92~m).
+Window integrity checks pass: \textbf{0 duplicate timestamps} in every region,
+8,601 test windows in four regions and 6,968 in Thames (whose source series has
+24.7\% NaN gaps), and every window's event-id array matches its length. There is
+no forecast-window overlap across the train/validation/test boundaries.
+Figure~\ref{fig:census} shows the raw components against the deduplicated union:
+the gap between the stacked bars and the black marker is exactly the
+double-count a naive sum would introduce.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/W27_event_census.pdf}
+\caption{(a) Raw POT and TC components stacked, with the deduplicated union as
+a black marker. The vertical gap is the double-count removed by matching.
+(b) Window-eligible independent extreme units in the 2024 test split.}
+\label{fig:census}
+\end{figure}
+
+\subsection{Four generators under one fidelity gate}
+\label{sec:results-generators}
+
+All generators share the same splits and the same
+96\,h$\rightarrow$72\,h contract, and the target is
+\texttt{water\_level\_m}, the non-tidal residual (total observed water level
+equals residual plus astronomical tide, so the tide must never be subtracted a
+second time). Three of the four consume that residual directly. Diffusion-TS is
+trained on observed \emph{total} water level by design, because its
+trend/seasonal/residual decomposition is defined on the full signal; the
+companion series has standard deviation 0.598~m against 0.207~m for the residual,
+so its row is scored against its own target and is \emph{not} directly
+comparable with the other three. It is retained because the failure is
+unambiguous within its own target and because it motivates the repair study
+below. Samples are scored by a single
+gate (scale ratio $\in[0.5, 2.0]$, Wasserstein-1 $\le 0.25$, autocorrelation RMSE
+$\le 0.15$, q95 exceedance ratio $\in[0.5, 2.5]$, peak KS $p \ge 0.01$).
 
 \begin{table}[htbp]
 \centering
-\caption{Pilot sample magnitudes vs.~training reference}
-\begin{tabular}{l c c c}
+\caption{Production generative benchmark, 5 regions $\times$ 2 seeds.
+Scale ratio is generated/real dispersion; the gate accepts $[0.5, 2.0]$.}
+\begin{tabular}{l r r r r}
 \toprule
-Quantity & Training & GPU samples & CPU reproduction \\
+Model & Params & Median scale ratio (range) & W1 & Gate outcome \\
 \midrule
-Mean (m) & 0.108 & --- & --- \\
-SD (m) & \textbf{0.215} & 4.474 & 4.922 \\
-Min (m) & --- & $-16.910$ & $-13.079$ \\
-Max (m) & --- & $+7.940$ & $+16.277$ \\
-SD ratio vs.~train & 1.00 & \textbf{20.8} & \textbf{22.9} \\
+Conditional VAE & 63{,}273 & 0.440 (0.326--0.807) & 0.203 & 4 inconclusive / 6 rejected \\
+TimeGrad        & 7{,}177  & 0.084 (0.072--0.320) & 1.527 & 10 rejected \\
+Diffusion-TS    & 39{,}425 & 0.181 (0.118--0.204) & ---   & 10 rejected \\
+Flow Matching   & 27{,}937 & \textbf{1.048} (0.945--1.116) & \textbf{0.047} & 10 inconclusive \\
 \bottomrule
 \end{tabular}
-\label{tab:sample-magnitude}
+\label{tab:generators}
 \end{table}
 
-The SD ratio of $\approx 22.95$ means that generated samples are roughly
-\emph{23 times more spread out} than the training target distribution. This is
-catastrophic scale explosion. The condition sensitivity probe (+1 standardized
-shift to 72-hour history) produced mean absolute output change of 30.8
-standardized units, confirming conditioning is active but not informative about
-realistic magnitudes. The eight nearest-training-window RMSE probes ranged from
-0.170 to 41.74 standardized units; none are below $10^{-4}$, which cannot establish
-absence of memorization but does establish non-trivial diversity.
+Only Flow Matching reproduces the dispersion of the real residual
+distribution (Table~\ref{tab:generators}, Figure~\ref{fig:fidelity}). The VAE
+and TimeGrad are under-dispersed by factors of 2.3 and 12; Diffusion-TS is
+under-dispersed on the bulk while over-shooting the peak. Every Flow Matching
+run is formally \emph{inconclusive} rather than accepted: scale and
+Wasserstein distance pass, but the gate also requires peak tail agreement, which
+the samples do not establish at $n=10$ runs.
 
-\subsection{Terminal-step amplification diagnosis}
-The cosine schedule's final step ($t=63$) has $\beta_{63} \approx 0.999$ and
-$\bar{\alpha}_{63} \approx 5.93 \times 10^{-7}$. This implies that the clean
-reconstruction is amplified relative to the epsilon prediction by:
-\begin{equation}
-    \frac{1}{\sqrt{\bar{\alpha}_{63}}} \approx 1298.8.
-    \label{eq:amplify}
-\end{equation}
-On the first eight fixed training windows with seed 20261028, terminal epsilon MSE
-was approximately 0.005746 (epsilon $\sigma \approx \sqrt{0.005746} \approx 0.076$).
-The clean reconstruction error scales as $\sigma_{\text{clean}} \approx
-\sigma_\epsilon / \sqrt{\bar{\alpha}_{63}}$ (equation~\ref{eq:amplify}), giving
-$0.076 \times 1298.8 \approx 99$~metres of implied clean RMSE. The observed implied
-clean $\sigma$ at step 63 was 18.6~m (Table~\ref{tab:reverse-trace}), somewhat
-smaller than this worst-case bound because the terminal-step amplification
-applies only to the latest step's epsilon error accumulation, not an independent
-worst case on every step. Regardless, the implication is unambiguous:
-\emph{terminal alpha bar of order $10^{-7}$ amplifies any non-negligible epsilon
-prediction error to catastrophic scale.}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/W27_fidelity_gate.pdf}
+\caption{Generated-to-real scale ratio for each production run (10 per
+generator), log axis. The shaded band is the accepted gate. The red bar is the
+median. Flow Matching is the only generator whose median lies inside the band.}
+\label{fig:fidelity}
+\end{figure}
 
-\subsection{Oracle schedule comparison}
-To isolate whether terminal schedule shape is a sufficient cause of the
-magnitude failure, we run the \emph{same trained checkpoint} (27,169 parameters,
-three epochs on cosine 64-step schedule) with four different inference
-schedules without retraining. This is an oracle probe --- the checkpoint's
-epsilon predictions are schedule-specific, so this is not a scientific fix
-demonstration --- but it directly isolates whether terminal $\bar{\alpha}$ drives
-sample magnitude.
+\subsection{Diagnosing the failed generators}
+\label{sec:results-recovery}
+
+\paragraph{The sampler is not the problem.} Before attributing any failure to a
+model family, the reverse diffusion recursion was tested with an
+\textbf{oracle denoiser} that returns the exact forward-process noise. The
+deterministic reverse pass then recovers $x_0$ with a maximum absolute error of
+$1.1\times10^{-10}$, and the stochastic pass has relative RMSE 0.06, the expected
+posterior-noise floor. Schedule, \texttt{noisy()} and the reverse update are
+therefore correct, and residual failures are optimisation or conditioning
+failures.
+
+\paragraph{Three defects, three outcomes.} Three controlled Charlestown pilots
+isolated one defect each at a common budget (20,000 training windows; 25/30/25
+epochs; CPU, because GPU0 is prohibited and every other GPU was occupied by other
+users).
+
+\begin{enumerate}
+    \item \textbf{Conditional VAE.} The decoder broadcast a single scalar
+    projection of $z$ across all 72 horizon positions, giving rank-1 latent use
+    regardless of latent size, and the class did not subclass \texttt{nn.Module}
+    so every production run silently stayed on CPU. Repair: a linear
+    $z\mapsto$ horizon map plus KL warm-up. \emph{Outcome: refuted.}
+    Reconstruction improves 2.7$\times$ (MSE 0.882 $\rightarrow$ 0.326), but
+    \emph{sample} dispersion worsens from 3.29 to 7.26. Both variants show total
+    posterior collapse (0/32 latent dimensions with posterior std $>0.3$), while
+    sampling draws $z\sim\mathcal{N}(0,I)$. The decoder is trained on a narrow
+    aggregate posterior and then evaluated on a broad prior; giving it a stronger
+    latent path amplifies exactly that mismatch.
+    \item \textbf{TimeGrad.} The denoiser accepted autoregressive memory and then
+    ignored it. Repair: consume the memory and widen the denoiser.
+    \emph{Outcome: partial.} Scale error falls from 10.55 to 6.09, but raw sum
+    memory grows without bound across the 72-step rollout (it reached
+    $1.9\times10^{7}$ at the smaller budget) and mean aggregation collapses the
+    signal, diverging to $1.22\times10^{5}$. Neither aggregation is numerically
+    stable.
+    \item \textbf{Diffusion-TS.} The Fourier regulariser compared the spectrum of
+    the \emph{predicted noise} with the spectrum of the \emph{clean signal}. The
+    repair compares the implied clean signal instead.
+    \emph{Outcome: refuted.} The implied clean signal divides by
+    $\sqrt{\bar\alpha_t}$, which is $0.024$ at the terminal step, amplifying both
+    value and gradient by $\sim$41$\times$; the loss reaches NaN by epoch 24 and
+    the generated set collapses to 99.8\% exact duplicates. The apparent 2$\times$
+    improvement at the smaller budget was an under-training artefact.
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.78\textwidth]{figures/W27_recovery.pdf}
+\caption{Legacy versus repaired configurations against the fidelity band. Two
+of the three proposed repairs make sampling worse; one is partially better and
+still far outside the gate.}
+\label{fig:recovery}
+\end{figure}
+
+The conclusion is deliberately narrow: \emph{no family is shown to be
+intrinsically ineffective}, because every failure was localised to a specific
+line of code; and \emph{two of our three repairs did not work}, which is
+recorded rather than tuned away until it looked positive.
+
+\subsection{Augmentation under corrected event-level inference}
+\label{sec:results-augmentation}
+
+\paragraph{Three defects in the earlier significance analysis.}
+\begin{enumerate}
+    \item Candidates were paired against a baseline of the \emph{other}
+    architecture, so a GRU candidate was compared with a TCN A0.
+    \item The bootstrap p-value used a proportion where a count was required
+    ($p = 2(\text{prop}+1)/(n_\text{boot}+1)$), shrinking p by
+    $\approx 5{,}000\times$. An observed difference of $-0.235$ with 95\% CI
+    $[-0.70, +0.20]$ was reported as $p = 2.3\times10^{-4}$.
+    \item The Monte-Carlo resolution floor $2/(n_\text{boot}+1)$ exceeded the
+    Bonferroni threshold, so survival was arithmetically impossible.
+\end{enumerate}
+
+After within-architecture pairing, 30,000 bootstrap resamples and 30,000 sign
+flips, and a family of 320 tests ($\alpha = 1.563\times10^{-4}$), the corrected
+analysis finds \textbf{zero seed-robust survivors}. Three comparisons survive
+their within-region correction, but each is significant against only one of the
+two A0 seeds; with a 25\% baseline seed spread (SE Australia TCN: 0.0713 versus
+0.0569~m) they are seed-fragile, not findings.
+
+The earlier ``Charleston 5/48 multiplicity-adjusted'' result is withdrawn.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/W27_architecture_region.pdf}
+\caption{Mean extreme-window MAE change versus the same-architecture A0
+baseline, averaged over all candidate configurations within each region.
+Negative values mean augmentation helps.}
+\label{fig:arch}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.90\textwidth]{figures/W27_baseline_seed.pdf}
+\caption{A0 extreme-window MAE for the two baseline seeds of the identical
+recipe. The spread bounds how large an augmentation effect would have to be
+before it could be distinguished from seed noise.}
+\label{fig:seedvar}
+\end{figure}
+
+\paragraph{Architecture dependence.} Aggregating over all 160 comparisons per
+architecture, the GRU improves in 86 and worsens in 74 (mean $-0.17\%$), while
+the TCN improves in 110 and worsens in 50 (mean $-7.08\%$). This reverses the
+earlier claim that architecture effects dwarf augmentation effects: under a
+corrected pairing the TCN responds to augmentation roughly forty times more
+strongly in relative terms. The GRU's better absolute accuracy is a separate
+observation and does not imply insensitivity.
+
+\paragraph{Region dependence.} Table~\ref{tab:region-delta} gives the mean
+change by region. Thames is the one region where augmentation is harmful for
+both forecasters, consistent with its macrotidal regime in which surge is a
+small fraction of total water level.
 
 \begin{table}[htbp]
 \centering
-\caption{Oracle schedule comparison --- same checkpoint, different inference}
-\small
-\begin{tabular}{l c c c c}
+\caption{Mean extreme-window MAE change versus the same-architecture A0
+baseline, by region (\%). Negative means augmentation helps.}
+\begin{tabular}{l r r}
 \toprule
-Schedule & $\bar{\alpha}_T$ & Sample $\sigma$ (m) & Range (m) & Ratio \\
+Region & GRU & TCN \\
 \midrule
-Cosine 64 (historical) & $5.93\times10^{-7}$ & 4.922 & [$-$13.1, $+$16.3] & 22.95$\times$ \\
-Linear 64 & 0.523 & 0.099 & [$-$0.16, $+$0.37] & 0.46$\times$ \\
-Sigmoid 64 & 0.525 & 0.100 & [$-$0.17, $+$0.37] & 0.47$\times$ \\
-\textbf{Cosine 1000$\rightarrow$64} & $\mathbf{5.89\times10^{-4}}$ & \textbf{0.297} & \textbf{[$-$0.69, $+$0.91]} & \textbf{1.38$\times$} \\
-\midrule
-\emph{Train residual} & --- & 0.215 & [$-$1.25, $+$1.53] & 1.00$\times$ \\
+New York Bight       & $-3.41$  & $-13.14$ \\
+US Gulf Coast        & $-2.33$  & $-5.37$  \\
+Charleston           & $-4.30$  & $-0.09$  \\
+Southeast Australia  & $-0.59$  & $-21.69$ \\
+Thames / North Sea   & $+9.78$  & $+4.88$  \\
 \bottomrule
 \end{tabular}
-\noindent\footnotesize Ratio: sample $\sigma$ / train $\sigma$. Amplification = $\sqrt{(1-\bar{\alpha}_T)/\bar{\alpha}_T}$.
-\label{tab:oracle-schedules}
+\label{tab:region-delta}
 \end{table}
 
-Linear and sigmoid schedules both produce physically plausible \emph{ranges} but
-over-shrink the distribution ($\sigma = 0.10$~m, less than half the training standard
-deviation). This is expected: the checkpoint was trained to predict epsilon under
-the cosine schedule's noise levels, and those epsilon predictions do not transfer
-to linear/sigmoid inference without retraining. Strikingly, \textbf{cosine 1000
-subsampled to 64 steps} produces a physically reasonable sample: $\sigma = 0.297$~m
-(1.38$\times$ train, well within the $0.1$--$5.0$ engineering scale screen),
-range [$-$0.69, $+$0.91]~m covering most of the training distribution. The key
-difference is terminal $\bar{\alpha}_{63} \approx 5.89\times10^{-4}$ (41.2$\times$
-amplification) rather than $5.93\times10^{-7}$ (1299$\times$). This probe establishes
-that \textbf{terminal schedule shape is a principal driver of the explosion
-effect}: replacing a cosine schedule with $\bar{\alpha}_T \approx 10^{-7}$ by
-one with $\bar{\alpha}_T \approx 10^{-4}$ reduces sample standard deviation by
-an order of magnitude, without any retraining.
+\paragraph{Multiplicity is under-corrected, not over-corrected.} The 320-test
+family covers A1, A2 and A3 Flow Matching predictions only. Tail-aware A3
+predictions are absent, and discarded ratios, generator hyper-parameters and
+model-selection choices were never materialised as predictions. The true search
+space is larger, so the Bonferroni correction is anti-conservative and every
+surviving claim is exploratory.
 
-\subsection{Reverse-step trace}
-Tracking per-step implied clean standard deviation during reverse sampling
-reveals the explosion dynamics:
+\subsection{Early DDPM pilot: a genuine but historical failure}
+\label{sec:results-pilot}
 
-\begin{table}[htbp]
-\centering
-\caption{Per-step implied clean $\sigma$ during cosine reverse sampler}
-\begin{tabular}{c c c c c}
-\toprule
-Step & $\bar{\alpha}_t$ & Amp & $\epsilon$ RMS & Implied $\sigma$ (m) \\
-\midrule
-63 & $5.93\times10^{-7}$ & 1299$\times$ & 1.140 & \textbf{18.64} \\
-60 & $5.33\times10^{-3}$ & 13.7$\times$ & 1.278 & 5.76 \\
-55 & $3.75\times10^{-2}$ & 5.1$\times$ & 1.082 & 5.05 \\
-48 & $1.28\times10^{-1}$ & 2.6$\times$ & 0.863 & 5.09 \\
-32 & $4.70\times10^{-1}$ & 1.1$\times$ & 0.702 & 4.98 \\
-16 & $8.29\times10^{-1}$ & 0.5$\times$ & 0.582 & 4.94 \\
-\bottomrule
-\end{tabular}
-\label{tab:reverse-trace}
-\end{table}
+An early 27,169-parameter conditional DDPM trained for three epochs produced
+samples with standard deviation 4.47~m against a training reference of 0.215~m,
+a ratio of 22.8, reproduced independently on CPU (4.92~m, 22.9). The failure was
+traced to terminal-step amplification: the cosine schedule terminated at
+$\bar\alpha_{64}\approx5.93\times10^{-7}$, an amplification of 1,299$\times$. A
+subsampled 1000-step schedule terminating at
+$\bar\alpha_{64}\approx5.89\times10^{-4}$ reduced amplification to 41$\times$
+and sample $\sigma$ from 4.92~m to 0.297~m. That probe is a schedule diagnostic,
+not a repair, because the checkpoint's epsilon predictions are schedule-specific.
+This record is retained because it explains why the later benchmark moved to
+Flow Matching; it is superseded by Sections~\ref{sec:results-generators} and
+\ref{sec:results-recovery}.
 
-The implied clean $\sigma$ remains stable at $\approx 5.0$~m for steps 0--48 (amplification
-$\leq 2.6\times$), then \emph{explodes} at steps 55--63 as amplification dominates the
-epsilon-prediction error that grows slowly throughout the reverse chain. This
-pattern rules out a model-conditioning failure or a reversed-schedule-order bug:
-the core issue is terminal-step schedule geometry interacting with imperfect
-epsilon predictions at limited training budget.
+\subsection{Physics-guided Flow Matching}
+\label{sec:results-physics}
 
-\subsection{Engineering validation guards}
-The repaired codebase adds nonfinite rejection at every reverse step and a
-train-reference scale screen. The historical GPU samples fail this screen
-(ratio 22.95 $\gg$ 5.0 threshold), as do the CPU reproductions. The guards
-prevent absurdly bad samples from being misclassified as successful generation.
-These are validation infrastructure, not a model repair.
+Five variants share one architecture, one split and one downstream budget: a
+standard Flow Matching model, a tail-aware variant, and pressure-, wind- and
+combined-physics variants conditioned on ERA5 sea-level pressure and 10\,m wind.
 
-\subsection{Generative model benchmark: Flow Matching vs.\ Diffusion-TS (GPU full-budget)}
-We benchmark two generative frameworks against the same 96$\rightarrow$72
-contract across all five admitted regions with two seeds each (GPU RTX3090,
-Adam lr=1e-3, batch size 256). M2 uses 50 epochs, M4 uses 15 epochs (training
-loss plateaus after epoch 10 on Flow Matching). Both models train to
-convergence; M2 receives 3.3$\times$ more training steps than M4, so the
-comparison is conservative for M2.
+\emph{Placeholder: filled from \texttt{data/results/wave27\_physics\_fm.json}
+when the run completes.}
 
-\begin{itemize}
-    \item \textbf{M4 — Flow Matching / CNF}~\citep{lipman2023flow}. A continuous
-    normalising flow that learns a single velocity-regression loss, no beta
-    schedule and no variance annealing. Straight-line interpolation $x_t = (1-t)x_0
-    + tx_1$ with Euler ODE integration. The VelocityTCN architecture mirrors the
-    DiffusionTS residual denoiser (dilated TCN, 27,937 parameters) for fair
-    architectural control.
+\subsection{Expanded 2015--2024 evaluation}
+\label{sec:results-expanded}
 
-    \item \textbf{M2 — Diffusion-TS decomposition}. Decomposes water level into
-    trend (24h causal MA) + seasonal (sinusoidal regression on M2/K1 tidal
-    periods) + residual. Trend and seasonal are extrapolated deterministically;
-    the DDPM with cosine1000-subsample schedule operates on the residual
-    component only (ResidualDenoiser, 39,425 parameters).
-\end{itemize}
+No existing checkpoint can be evaluated on 2022--2024, because all of them were
+trained through 2022. The expanded protocol therefore retrains from scratch:
+2015--2020 for fitting, 2021 for epoch selection, 2022--2024 touched once.
 
-Both models operate on the same train-only standardized data, per-sample residual
-z-score normalization with history statistics, and forecast 72-hour non-tidal
-residuals. Quality evaluation uses the full \texttt{quality.py} battery:
-Wasserstein-1, PSD deviation, autocorrelation RMSE, scale ratio, peak KS-test,
-tail-exceedance ratio, and duplicate detection. The gate policy uses
-$\text{scale} \in [0.5, 2.0]$, $\text{range} \in [0.3, 3.0]$, and
-$\text{peak-}p > 0.01$.
+The split builder is verified. Charleston and NY Bight both yield 52,441 /
+8,593 / 26,137 windows for train / validation / test. The counts are identical
+and expected: both series are gap-free, so 52,608 training hours give
+$52{,}608-167=52{,}441$ windows, 2021 (8,760~h) gives 8,593 and 2022--2024
+(26,304~h) gives 26,137. The 168~h embargo holds at both boundaries, and the
+test spans contain 40 and 51 independent POT units respectively.
 
-\begin{table}[htbp]
-\centering
-\caption{Generative model benchmark (5 regions, 2 seeds each). M2 DiffusionTS decomposes full water level and generates residual; its forecast is full water level (trend + seasonal + generated residual). M4 Flow Matching generates pure residual. This explains the different real\_q95 values between models — they forecast different targets. Scale ratio = generated std / real std.}
-\small
-\begin{tabular}{lc cccc c}
-\toprule
-Model & Region & Scale ratio & Peak ratio & q95 Gen/Real & q99 Gen/Real & Gate \\
-\midrule
-\multirow{5}{*}{M4 Flow Matching (15ep)}
-    & ny\_bight & 1.078 & 1.336 & 1.148/1.156 & 1.521/1.470 & INCONCLUSIVE \\
-    & thames & 1.032 & 1.232 & 5.321/5.384 & 6.136/6.081 & INCONCLUSIVE \\
-    & gulf & 0.953 & 1.356 & 0.697/0.695 & 1.004/0.951 & INCONCLUSIVE \\
-    & charleston & 1.085 & 1.384 & 0.964/0.974 & 1.195/1.129 & INCONCLUSIVE \\
-    & australia & 1.014 & 1.191 & 1.607/1.587 & 1.806/1.768 & INCONCLUSIVE \\
-\midrule
-\multirow{5}{*}{M2 Diffusion-TS (50ep)}
-    & ny\_bight & 0.156 & 13.87 & 2.21/0.522 & 3.90/0.775 & REJECTED \\
-    & thames & 0.113 & 9.30 & 12.21/3.97 & 17.21/4.28 & REJECTED \\
-    & gulf & 0.185 & 15.27 & 1.43/0.498 & 2.76/0.794 & REJECTED \\
-    & charleston & 0.136 & 24.81 & 1.95/0.448 & 3.14/0.552 & REJECTED \\
-    & australia & 0.300 & 3.77 & 1.72/1.198 & 2.08/1.251 & REJECTED \\
-\bottomrule
-\end{tabular}
-\label{tab:gen-benchmark}
-\end{table}
+Validation-only selection chose epoch 13 in both regions. \textbf{Both retrained
+generators fail the fidelity gate} (scale ratio 3.97 and 4.76 against the
+accepted band 0.5--2.0). Consequently the augmented forecaster degrades
+extreme-window MAE by \textbf{+8.88\%} in Charleston (95\% CI
+[+0.0035, +0.0170]~m, permutation $p=0.0045$) and \textbf{+15.85\%} in NY Bight
+(CI [+0.0183, +0.0262]~m, $p=5.0\times10^{-5}$). Both remain significant at
+$\alpha=0.025$.
 
-\textbf{\emph{P0 critical caveat (2026-11-03 post-hoc audit).}} The Flow
-Matching results in Table~\ref{tab:gen-benchmark} and the downstream A3
-augmentation run below were trained on a \emph{double-subtracted target}.
-\texttt{FORECAST\_TASK\_CONTRACT.md} defines \texttt{water\_level\_m} as the
-already de-tided surge residual ($\text{water\_level\_m} =
-\text{observed\_total} - \text{FES2022\_tide}$, verified MAE $< 10^{-8}$~m
-across all five regions). The FM training script computed
-\texttt{residual = water\_level\_m - tide\_level\_m}, re-subtracting the tide
-component. All FM scale ratios, q95/q99 matches, and downstream A3 metrics in
-this section are \emph{not physically meaningful} — the FM learned to
-generate an oscillatory signal that coincidentally matched bulk residual scale
-because the double-subtraction inflated residual std by tide std ($\sim$0.5~m),
-which FM compensated. A corrected retrain of all ten FM checkpoints
-(GPU RTX3090, 15 epochs each) was completed on 2026-11-03, and A3 augmentation
-reruns with correct residuals are executing as of this draft.
-
-With that caveat, \emph{at the time of the original run}: Flow Matching
-appeared to produce correct scale across all five regions. Scale ratios of
-0.95--1.12 (within $\pm$12\% of the corrupted-training reference), q95/q99
-quantiles within 3\% of reference, and Wasserstein-1 distances of $\leq$0.10
-suggested excellent bulk distribution match. All ten runs passed the scale,
-range, Wasserstein, and autocorrelation gates. The INCONCLUSIVE decisions
-stemmed \emph{exclusively} from peak KS-test $p$-values (peak-magnitude
-distribution mismatch, expected from single-model generation) and
-near-duplicate ratio warnings on the thames and australia regions (mode
-collapse at near\_dup\_ratio $\approx$0.96--1.0); neither triggered a hard
-rejection. Training loss plateaus at $\approx$1.5$\times 10^{-2}$ after 15
-epochs; additional epochs may reduce the near-duplicate issue.
-
-\textbf{Diffusion-TS (DDPM-based) is catastrophically rejected on all ten
-runs, even at 50 epochs.} This supersedes the earlier three-epoch finding.
-Across 5 regions $\times$ 2 seeds $\times$ 50 epochs: scale ratios of
-0.11--0.35 (generated residuals are 3--9$\times$ \emph{under-spread} on the
-bulk distribution) while peak ratios of 2.8--26.4$\times$ mean extreme spikes
-explode beyond physical range. One run (thames, seed 42) collapsed to NaN at
-epoch 31 due to gradient explosion on the high-variance thames data. All ten
-runs \emph{still use the cosine1000-subsample schedule fix} (terminal
-$\bar{\alpha}_T \approx 5.89 \times 10^{-4}$, 41$\times$ theoretical
-amplification). The schedule fix reduces amplification by two orders of
-magnitude from the historical 1299$\times$, but does not eliminate the DDPM's
-reverse-time accumulation of epsilon-prediction error. Increasing training
-budget from 3 to 50 epochs improved scale ratio by only 0.07 on average
-(0.11 at 3 epochs $\rightarrow$ 0.18 at 50 epochs), far from the 0.5 lower
-bound of the gate.
-
-The failure mechanism is architectural, not budgetary. With
-$\bar{\alpha}_T \approx 6 \times 10^{-4}$, the per-step reverse amplification
-is $\sqrt{(1-\bar{\alpha}_t)/\bar{\alpha}_t} \approx 41$, and this amplifies
-the \emph{residual} component of a trend/seasonal decomposition whose scale is
-already small relative to full water level. The decomposition itself works
-correctly; the DDPM reverse sampler on the residual sub-space does not. This
-generalises the E6/E6-CPU finding at full training budget: \textbf{DDPM
-reverse-time error accumulation is not mitigated by schedule tuning or
-training budget for the residual-decomposition architecture}.
-
-Flow Matching (CNF) fundamentally avoids this failure mode by construction:
-the single velocity-regression loss trains a field that transports samples
-from a simple Gaussian prior to the data distribution via straight-line
-interpolation, and inference integrates the learned ODE forward in time
-(Euler, 64 steps). There is no reverse chain and no per-step amplification of
-accumulated error. \emph{However, the FM runs in Table~\ref{tab:gen-benchmark}
-were trained on the double-subtracted target detailed in the P0 caveat above.
-The observed scale-ratio difference between FM and DDPM in that table cannot
-therefore be attributed cleanly to the generative framework.} A corrected
-framework comparison on physically valid targets is deferred to future work.
-
-\textbf{Caution: this does not generalise to ``all DDPMs are bad.''}
-Our finding applies specifically to \emph{DDPM operating on the residual
-component after trend/seasonal decomposition} for tidal surge data at this
-scale and signal-to-noise ratio. A DDPM that operates directly on full water
-level (not decomposed) may behave differently; the decomposition itself
-isolates the residual as a sub-space where DDPM amplification is fatal.
-
-\subsection{A0 Real-only forecasting baselines}
-We evaluate standard forecasting architectures on the held-out test set under
-the 96$\rightarrow$72 contract.
-
-\begin{table}[htbp]
-\centering
-\caption{A0 forecasting baselines on held-out test set}
-\small
-\begin{tabular}{ll cccc}
-\toprule
-Region & Model & MAE & RMSE & q95 Tail MAE & Peak MAE \\
-\midrule
-\multirow{4}{*}{ny\_bight}
-    & Persistence & 0.170 & 0.228 & 0.333 & 0.301 \\
-    & Seasonal & 0.154 & 0.214 & 0.310 & 0.150 \\
-    & GRU & 0.112 & 0.161 & 0.340 & 0.152 \\
-    & TCN & \textbf{0.112} & \textbf{0.158} & \textbf{0.337} & \textbf{0.146} \\
-\midrule
-\multirow{4}{*}{thames}
-    & Persistence & 0.641 & 0.798 & 1.027 & 0.959 \\
-    & Seasonal & 0.442 & 0.579 & 0.653 & 0.239 \\
-    & GRU & \textbf{0.207} & 0.286 & 0.592 & 0.389 \\
-    & TCN & 0.218 & \textbf{0.297} & \textbf{0.576} & \textbf{0.355} \\
-\midrule
-\multirow{4}{*}{gulf}
-    & Persistence & 0.137 & 0.189 & 0.248 & 0.205 \\
-    & Seasonal & 0.131 & 0.186 & 0.253 & \textbf{0.131} \\
-    & GRU & \textbf{0.098} & \textbf{0.142} & 0.264 & 0.122 \\
-    & TCN & 0.103 & 0.150 & \textbf{0.280} & 0.126 \\
-\midrule
-\multirow{4}{*}{charleston}
-    & Persistence & 0.176 & 0.222 & 0.221 & 0.308 \\
-    & Seasonal & 0.149 & 0.191 & 0.182 & \textbf{0.098} \\
-    & GRU & \textbf{0.095} & \textbf{0.129} & 0.178 & 0.107 \\
-    & TCN & 0.096 & 0.130 & \textbf{0.185} & 0.101 \\
-\midrule
-\multirow{4}{*}{australia}
-    & Persistence & 0.051 & 0.066 & 0.074 & 0.079 \\
-    & Seasonal & 0.055 & 0.070 & 0.084 & 0.054 \\
-    & GRU & 0.046 & \textbf{0.061} & 0.112 & 0.061 \\
-    & TCN & \textbf{0.046} & 0.060 & \textbf{0.107} & \textbf{0.056} \\
-\bottomrule
-\end{tabular}
-\label{tab:a0-baselines}
-\end{table}
-
-GRU and TCN reduce MAE by 30--50\% over persistence and seasonal baselines on
-all regions except the low-variance australia region (where all methods converge
-to $\approx$0.05~m MAE). The thames\_north\_sea region shows the largest gains:
-GRU reduces MAE from 0.64 (persistence) to 0.21, a 68\% improvement. Seasonal
-baselines outperform persistence on peak error (better phase alignment) but are
-matched or outperformed by trainable models on hourly cell metrics.
-
-\subsection{Wave 1.7 augmentation benchmark (190 predictions, P0-validated)}
-\label{subsec:wave17-benchmark}
-Following the P0 target-semantics correction (\texttt{fc45703}) and 10 FM
-checkpoint retrains on the correct residual target, we execute a full
-augmentation benchmark across 5 groups $\times$ 5 regions $\times$ 2 models
-$\times$ 2 seeds = 190 prediction archives. All runs use physically valid
-\texttt{water\_level\_m} residuals, train-only scalers, and identical
-chronological 8:1:1 splits. Bootstrap confidence intervals use
-\emph{calendar-day pseudo-events} (301--360 per region), resampling groups
-of forecast windows that share the same day rather than overlapping windows.
-
-\begin{table}[htbp]
-\centering
-\caption{Wave 1.7 augmentation benchmark (GRU, seed-averaged). Best A3 config per region highlighted in \textbf{bold}. $\Delta\%$ = (candidate $-$ A0) / A0 $\times$ 100.}
-\small
-\begin{tabular}{lc c c c c}
-\toprule
-Region & Group & tw\_MAE (m) & $\Delta$\% vs A0 & Pseudo-events & Verdict \\
-\midrule
-\multirow{5}{*}{ny\_bight (360)}
-    & A0 real-only & 0.127 & --- & 360 & baseline \\
-    & A1 oversampling & 0.144 & +13.4 & 360 & \textcolor{red}{worse} \\
-    & A2 history-noise & 0.120 & $-$5.4 & 360 & mixed \\
-    & \textbf{A3 best (s99/0.5)} & \textbf{0.108} & \textbf{$-$15.3} & 360 & \textcolor{green}{\textbf{better}} \\
-    & Persistence & 0.170 & +33.7 & 360 & worse \\
-\midrule
-\multirow{5}{*}{us\_gulf (360)}
-    & A0 real-only & 0.113 & --- & 360 & baseline \\
-    & A1 oversampling & 0.117 & +3.3 & 360 & \textcolor{red}{worse} \\
-    & A2 history-noise & 0.106 & $-$6.3 & 360 & better \\
-    & \textbf{A3 best (s42/0.5)} & \textbf{0.099} & \textbf{$-$12.4} & 360 & \textcolor{green}{\textbf{better}} \\
-    & Persistence & 0.137 & +20.8 & 360 & worse \\
-\midrule
-\multirow{5}{*}{charleston (360)}
-    & A0 real-only & 0.104 & --- & 360 & baseline \\
-    & A1 oversampling & 0.111 & +6.3 & 360 & \textcolor{red}{worse} \\
-    & A2 history-noise & 0.096 & $-$8.0 & 360 & better \\
-    & \textbf{A3 best (s99/0.25)} & \textbf{0.095} & \textbf{$-$8.9} & 360 & \textcolor{green}{\textbf{better}} \\
-    & Persistence & 0.176 & +68.6 & 360 & worse \\
-\midrule
-\multirow{5}{*}{australia (360)}
-    & A0 real-only & 0.047 & --- & 360 & baseline \\
-    & A1 oversampling & 0.049 & +4.3 & 360 & \textcolor{red}{worse} \\
-    & A2 history-noise & 0.048 & +2.1 & 360 & neutral \\
-    & \textbf{A3 best (s99/0.5)} & \textbf{0.047} & \textbf{$-$0.3} & 360 & \textit{negligible} \\
-    & Persistence & 0.051 & +8.5 & 360 & worse \\
-\midrule
-\multirow{5}{*}{thames (301)}
-    & A0 real-only & 0.179 & --- & 301 & baseline \\
-    & A1 oversampling & 0.184 & +2.7 & 301 & \textcolor{red}{worse} \\
-    & A2 history-noise & 0.188 & +5.1 & 301 & \textcolor{red}{worse} \\
-    & \textbf{A3 best (s42/0.1)} & \textbf{0.184} & \textbf{+2.8} & 301 & \textcolor{red}{\textbf{worse}} \\
-    & Persistence & 0.641 & +258 & 301 & worse \\
-\bottomrule
-\end{tabular}
-\label{tab:wave17-augmentation}
-\end{table}
-
-\begin{itemize}
-    \item \textbf{A3 FM augmentation is region-dependent}. The best-performing
-    A3 configuration improves GRU total-water MAE by 8.9--15.3\% on three
-    regions, shows negligible effect ($-$0.3\%) on southeast australia, and
-    \emph{hurts} (+2.8\%) the Thames. Bootstrap confidence intervals
-    ($n_{\text{boot}}=500$, event-level pseudo-event resampling) confirm
-    these verdicts: A3 is better in 11/12, 11/12, and 12/12 comparisons on
-    ny\_bight, us\_gulf, and charleston respectively, worse in all 12 on
-    Thames, and mixed (2 better, 4 worse, 6 neutral) on australia.
-
-    \item \textbf{A1 oversampling never helps}. Across all 5 regions
-    $\times$ 2 models $\times$ 2 seeds = 20 comparisons, A1 oversampling
-    degrades MAE relative to A0 in every single case. This negative result
-    is confirmed at full budget: oversampling identical training storms
-    does not produce the diversity needed to improve test generalization.
-
-    \item \textbf{GRU consistently outperforms TCN}. GRU wins 38/38
-    per-region comparisons against TCN across all augmentation groups.
-    Architecture choice dominates augmentation strategy.
-
-    \item \textbf{Tidal range correlation is a hypothesis, not a finding}.
-    Pearson $r(5) = 0.66$ between regional tidal range and best-A3
-    $\Delta\%$ does not reach significance at $N=5$. Charleston
-    (2.52~m tide range, $-$8.9\% A3 effect) contradicts a simple
-    tide-dominance story.
-\end{itemize}
-
-\textbf{Data quality note}. The Thames source timeline has 2,296 NaN residual
-rows (24.7\% of 87,672 rows) from NOAA \texttt{qc\_flag} gauge gaps. The
-pipeline filters these before prediction, so the test set is NaN-free, but
-the incomplete source data explains part of why Thames is the only region
-where all A3 configurations fail. Southeast Australia has 31 NaN rows but
-otherwise clean data. All other regions have 0 NaN residuals.
+This is a negative result about \emph{readiness}, not about generative
+augmentation. An over-dispersed generator supplies training windows that are
+systematically outside the data manifold, and the forecaster pays for it. The
+production Flow Matching checkpoints reach scale 0.945--1.116; these retrained
+models were fitted for 15 CPU epochs and do not. The run therefore establishes
+that the split, selection and event-level machinery works end-to-end, that the
+retrained models are under-fitted rather than over-fitted (validation loss is
+still falling at the selected epoch), and that the cost of over-dispersion exceeds
+any benefit observed in the corrected Wave 2.6 grid. It does \emph{not} test H1.
+Selecting on validation loss subject to a fidelity constraint is the required
+next control and was not implemented here.

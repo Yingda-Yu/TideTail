@@ -1,47 +1,56 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We investigated whether conditional diffusion augmentation can generate physically
-plausible extreme coastal water-level residuals that improve downstream forecasting
-on independent real storm events. The answer is \emph{not yet}: our pilot DDPM
-produced samples whose standard deviation is approximately 23 times the training
-target SD, with magnitudes exceeding $\pm 16$ metres. This failure is reproduced
-on both CUDA and CPU, and traced to terminal-step amplification in the cosine
-noise schedule combined with imperfect epsilon prediction at a limited training
-budget.
+We asked when generative augmentation helps extreme coastal water-level
+forecasting. The evidence assembled here does not answer ``yes'' or ``no''; it
+identifies the conditions under which the question can be answered at all, and
+shows that several previously reported answers were artefacts of the
+measurement.
 
-The oracle schedule comparison (Table~\ref{tab:oracle-schedules}) further isolates
-the terminal schedule shape as the principal driver: replacing a 64-step cosine
-schedule whose terminal $\bar{\alpha}_{64} \approx 5.93 \times 10^{-7}$ by a
-subsampled 1000-step schedule with $\bar{\alpha}_{64} \approx 5.89 \times 10^{-4}$
-reduces sample $\sigma$ from 4.92~m to 0.297~m (1.38$\times$ the training reference).
-This probe is not a scientific fix --- the checkpoint's epsilon predictions are
-schedule-specific --- but it establishes that \emph{terminal schedule geometry}
-is a structural cause of the explosion, not merely a symptom of insufficient
-training budget.
+Three results are established. \textbf{First}, the independent-event census for
+five regions over 2015--2024 is 679 units, not 707: 634 POT clusters and 73
+tropical cyclones overlap in 28 peaks, and the 2024 test split contains 59
+window-eligible extreme units with no duplicate timestamps or cross-split
+leakage. \textbf{Second}, of four conditional generators trained under one
+contract, only Flow Matching reproduces the target dispersion (scale ratio
+0.945--1.116, Wasserstein-1 0.047); the VAE and TimeGrad are under-dispersed by
+factors of 2.3 and 12 and Diffusion-TS is rejected in all ten runs. An
+oracle-denoiser test proves the reverse diffusion recursion correct to
+$1.1\times10^{-10}$, so these are implementation failures, not family verdicts.
+\textbf{Third}, under corrected event-level inference --- within-architecture
+pairing, a repaired bootstrap p-value, and a Monte-Carlo resolution floor below
+the correction threshold --- no augmentation effect survives a 320-test
+Bonferroni family, and baseline seed variance alone reaches 25\%.
 
-More importantly, this work establishes \emph{what is needed} before diffusion
-augmentation can be meaningfully evaluated for coastal water-level forecasting,
-and implements it:
-\begin{enumerate}
-    \item A frozen data protocol (FORECAST\_TASK\_CONTRACT v1) with 96h$\rightarrow$72h
-    main task, train-only scalers/thresholds, and full-support embargo-safe event
-    splitting. Five regions are admitted; Hong Kong is excluded pending signoff.
-    \item Strong neural forecasting baselines on the formal contract: GRU encoder-decoder
-    and TCN with matched parameter budgets, plus persistence and seasonal baselines.
-    \item A balanced oversampler (A1) and physics-justified training-set augmentation
-    (A2, residual noise + tidal phase shift).
-    \item A controlled retraining of the diffusion model (A3/A4) with schedule
-    investigation, followed by downstream forecasting evaluation on independent
-    real storm events with paired bootstrap confidence intervals.
-\end{enumerate}
+Two results are negative about our own proposed fixes and are preserved as such:
+the repaired VAE samples worse than the legacy version, and the repaired
+Diffusion-TS diverges to NaN once it actually fits the data. Reporting these as
+failures is a substantive part of the contribution, because the alternative ---
+re-tuning until the number moves in the expected direction --- is precisely how
+this literature acquires effects that do not replicate.
 
-The \texttt{trae/research-recovery-20261030} branch now contains 127 passing
-unit tests, zero Ruff warnings, and 7 committed builds over the original
-recovery merge. The frozen data protocol, embargo-safe splitting, training-set
-augmentation, and evaluation infrastructure prevent reintroduction of known
-leakage and generation-quality failures in future work. The claim in
-\texttt{paper/CLAIMS\_LEDGER.md} remains exactly as it was: H1 and H2 are
-\textbf{untested hypotheses}. The contribution of this paper is to record
-honestly what we have found, what we have ruled out, what infrastructure now
-exists, and what remains to be done.
+Three observations constrain the search for a positive result. The response is
+\emph{architecture-dependent}: the TCN improves in 110 of 160 comparisons
+(mean $-7.08\%$) against 86 of 160 for the GRU (mean $-0.17\%$). It is
+\emph{region-dependent}: Thames is harmed for both architectures, consistent
+with a macrotidal regime in which surge is a small fraction of total water
+level. And it is \emph{fragile}: the three comparisons that survive their
+within-region correction each hold against only one of two baseline seeds.
+
+What would move H1 from untested to established is therefore specific, and none
+of it is optional. An event-level design with at least 30--40 independent units
+per region in the test window, which requires expanding the test period beyond
+2022--2024. Baselines reported across multiple seeds, with the seed spread
+entering the uncertainty budget rather than being averaged away. A multiplicity
+family that enumerates the actual search, including tail-aware and discarded
+configurations. A generator whose sampling path is verified against the reverse
+recursion, with a learned or free-bits prior so that training and sampling share
+one distribution. And, if physical priors are to be claimed, a causal
+reanalysis-conditioned design with a downscaling step that closes the 0.25$^\circ$
+representativeness gap.
+
+The infrastructure needed to run that study now exists in this repository: the
+frozen contract, the verified census, the fidelity gate, the corrected paired
+statistics and a from-scratch three-year split protocol. The contribution of
+this paper is to have built it, to have used it to remove several results that
+did not survive it, and to have reported that plainly.

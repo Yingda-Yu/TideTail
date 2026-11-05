@@ -46,17 +46,25 @@ class VelocityTCN(nn.Module):
     """
 
     def __init__(self, context: int = 96, horizon: int = 72,
-                 width: int = 32, hidden_blocks: Sequence[int] = (1, 2, 4, 8)):
+                 width: int = 32, hidden_blocks: Sequence[int] = (1, 2, 4, 8),
+                 physics_dim: int = 0):
         super().__init__()
         self.context = context
         self.horizon = horizon
         self.width = width
+        self.physics_dim = physics_dim
 
         self.history_enc = nn.Sequential(
             nn.Linear(context, width), nn.SiLU(), nn.Linear(width, width)
         )
         self.time_enc = nn.Sequential(
             nn.Linear(width, width), nn.SiLU(), nn.Linear(width, width)
+        )
+        # Optional causal physics prior (only covariates known at forecast start)
+        self.physics_enc = (
+            nn.Sequential(nn.Linear(physics_dim, width), nn.SiLU(),
+                          nn.Linear(width, width))
+            if physics_dim > 0 else None
         )
         self.input_proj = nn.Conv1d(1, width, 3, padding=1)
         self.blocks = nn.ModuleList([
@@ -67,13 +75,16 @@ class VelocityTCN(nn.Module):
         )
 
     def forward(self, x_t: torch.Tensor, t: torch.Tensor,
-                history: torch.Tensor) -> torch.Tensor:
-        """Predict velocity at (x_t, t) given history context.
+                history: torch.Tensor, physics: torch.Tensor | None = None
+                ) -> torch.Tensor:
+        """Predict velocity at (x_t, t) given history and optional physics.
 
         Args:
             x_t: (batch, 1, horizon) — current state along the interpolation
             t: (batch,) scalar time ∈ [0, 1]
             history: (batch, context) — conditioning history
+            physics: (batch, physics_dim) — causal covariates known at
+                     forecast start (NOT future reanalysis)
         Returns:
             v: (batch, 1, horizon) — predicted velocity field
         """
@@ -89,6 +100,10 @@ class VelocityTCN(nn.Module):
 
         h_emb = self.history_enc(history)
         emb = t_emb + h_emb
+        if self.physics_enc is not None:
+            if physics is None:
+                raise ValueError("physics tensor required for physics_dim > 0")
+            emb = emb + self.physics_enc(physics)
 
         x = self.input_proj(x_t)
         for block in self.blocks:
@@ -138,7 +153,8 @@ class FlowMatching:
         self.device = device
 
     def training_loss(self, history: torch.Tensor, target: torch.Tensor,
-                      velocity_net: nn.Module) -> torch.Tensor:
+                      velocity_net: nn.Module,
+                      physics: torch.Tensor | None = None) -> torch.Tensor:
         """Conditional Flow Matching loss — single regression objective.
 
         Sample t ~ Uniform(0, 1), noise x_0 ~ N(0, I), interpolate
@@ -154,12 +170,13 @@ class FlowMatching:
         x_t = (1 - t) * x_0 + t * x_1
         target_vel = x_1 - x_0
 
-        v_pred = velocity_net(x_t, t.squeeze(-1).squeeze(-1), history)
+        v_pred = velocity_net(x_t, t.squeeze(-1).squeeze(-1), history, physics)
         return F.mse_loss(v_pred, target_vel)
 
     @torch.no_grad()
     def sample(self, history: torch.Tensor, velocity_net: nn.Module,
-               seed: int = 42, euler_steps: int | None = None) -> torch.Tensor:
+               seed: int = 42, euler_steps: int | None = None,
+               physics: torch.Tensor | None = None) -> torch.Tensor:
         """Integrate ODE dx/dt = v(x, t, history) from t=0 to t=1 (Euler).
 
         Args:
@@ -167,6 +184,7 @@ class FlowMatching:
             velocity_net: trained VelocityTCN
             seed: RNG seed for initial noise
             euler_steps: override default integration steps
+            physics: optional (batch, physics_dim) causal covariates
 
         Returns:
             forecast: (batch, horizon)
@@ -183,7 +201,7 @@ class FlowMatching:
         for i in range(steps):
             t = torch.full((history.shape[0],), (i + 0.5) * dt,
                            device=device)
-            v = velocity_net(x, t, history)
+            v = velocity_net(x, t, history, physics)
             x = x + v * dt
 
         return x.squeeze(1)

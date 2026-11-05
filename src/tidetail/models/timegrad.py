@@ -44,19 +44,22 @@ class TimeGradDenoiser(nn.Module):
       - noisy residual scalar at step i
       - sinusoidal diffusion timestep embedding
       - history context (96h)
-      - previously generated horizon values (0..i-1) concatenated
+      - autoregressive memory built from horizon values 0..i-1
     Predicts epsilon for that scalar.
 
-    For TideTail we keep this intentionally small (~15K params, fewer
-    than M2/M4) so the autoregressive rollout cost per training epoch
-    is manageable — 72 DDPM passes per sample × 69970 train windows.
+    ``use_ar_memory=True`` (default) feeds the autoregressive memory into the
+    aggregator. ``use_ar_memory=False`` reproduces the legacy Wave 2.0 bug
+    where ``ar_memory`` was ignored and the *noisy scalar* was projected in
+    its place; that flag exists only to load old checkpoints.
     """
 
-    def __init__(self, context: int = 96, horizon: int = 72, width: int = 24):
+    def __init__(self, context: int = 96, horizon: int = 72, width: int = 24,
+                 use_ar_memory: bool = True):
         super().__init__()
         self.context = context
         self.horizon = horizon
         self.width = width
+        self.use_ar_memory = use_ar_memory
 
         # Time embedding
         self.time_enc = nn.Sequential(
@@ -66,10 +69,17 @@ class TimeGradDenoiser(nn.Module):
         self.history_enc = nn.Sequential(
             nn.Linear(context, width), nn.SiLU(), nn.Linear(width, width)
         )
-        # Autoregressive memory (sum over previously generated points)
-        self.memory_proj = nn.Linear(1, width)  # project single noisy scalar
+        # Project the scalar input used in the aggregator
+        self.memory_proj = nn.Linear(1, width)
+        if use_ar_memory:
+            # Separate projection for the noisy value so both signals survive
+            self.noisy_proj = nn.Linear(1, width)
+            agg_in = width * 4
+        else:
+            self.noisy_proj = None
+            agg_in = width * 3
         self.aggregator = nn.Sequential(
-            nn.Linear(width * 3, width), nn.SiLU(), nn.Linear(width, width)
+            nn.Linear(agg_in, width), nn.SiLU(), nn.Linear(width, width)
         )
         self.output = nn.Linear(width, 1)
 
@@ -82,8 +92,7 @@ class TimeGradDenoiser(nn.Module):
             noisy_scalar: (batch, 1) current noisy value
             timestep: (batch,) long tensor of diffusion steps
             history: (batch, context) conditioning history
-            ar_memory: (batch,) previously generated horizon values
-                       (concatenated into a single sum/scalar per step)
+            ar_memory: (batch, 1) summary of previously generated values
         Returns:
             eps: (batch, 1) predicted noise
         """
@@ -98,9 +107,14 @@ class TimeGradDenoiser(nn.Module):
         )
 
         h_emb = self.history_enc(history)
-        m_emb = self.memory_proj(noisy_scalar)
-
-        agg = self.aggregator(torch.cat([t_emb, h_emb, m_emb], dim=1))
+        if self.use_ar_memory:
+            m_emb = self.memory_proj(ar_memory)
+            n_emb = self.noisy_proj(noisy_scalar)
+            agg = self.aggregator(torch.cat([t_emb, h_emb, m_emb, n_emb], dim=1))
+        else:
+            # Legacy behaviour: project the noisy scalar, ignore ar_memory.
+            m_emb = self.memory_proj(noisy_scalar)
+            agg = self.aggregator(torch.cat([t_emb, h_emb, m_emb], dim=1))
         return self.output(agg)
 
 
@@ -127,12 +141,14 @@ class TimeGrad:
         self.device = device
 
     def training_loss(self, history: torch.Tensor, target: torch.Tensor,
-                      denoiser: TimeGradDenoiser) -> torch.Tensor:
+                      denoiser: TimeGradDenoiser,
+                      ar_mode: str = "sum") -> torch.Tensor:
         """Autoregressive epsilon loss on random horizon steps.
 
-        Randomly pick one horizon step per training sample, diffuse it,
-        and predict epsilon. Backpropagates through both timestep and
-        AR memory conditioning.
+        ``ar_mode``:
+          * ``"sum"``  — legacy: sum of preceding values (unbounded under rollout)
+          * ``"mean"`` — bounded running mean, matching inference
+          * ``"last"`` — most recent preceding value
         """
         B = history.shape[0]
         device = history.device
@@ -151,7 +167,16 @@ class TimeGrad:
         ar_memory = torch.zeros(B, 1, device=device)
         for i in range(B):
             hi = h_idx[i].item()
-            ar_memory[i, 0] = tgt_norm[i, :hi].sum() if hi > 0 else 0.0
+            if hi == 0:
+                ar_memory[i, 0] = 0.0
+            elif ar_mode == "sum":
+                ar_memory[i, 0] = tgt_norm[i, :hi].sum()
+            elif ar_mode == "mean":
+                ar_memory[i, 0] = tgt_norm[i, :hi].mean()
+            elif ar_mode == "last":
+                ar_memory[i, 0] = tgt_norm[i, hi - 1]
+            else:
+                raise ValueError(f"unknown ar_mode {ar_mode!r}")
 
         t = torch.randint(0, self.diffusion.steps, (B,), device=device)
         eps = torch.randn(B, 1, device=device)
@@ -163,7 +188,8 @@ class TimeGrad:
 
     @torch.no_grad()
     def forecast(self, history: torch.Tensor,
-                 denoiser: TimeGradDenoiser, seed: int = 42) -> torch.Tensor:
+                 denoiser: TimeGradDenoiser, seed: int = 42,
+                 ar_mode: str = "sum") -> torch.Tensor:
         """Autoregressive rollout — generates horizon[0], then horizon[1], etc."""
         denoiser.eval()
         device = history.device
@@ -180,8 +206,14 @@ class TimeGrad:
             # AR memory = sum of previously generated horizon steps
             if h == 0:
                 ar_mem = torch.zeros(B, 1, device=device)
-            else:
+            elif ar_mode == "sum":
                 ar_mem = horizon_out[:, :h].sum(dim=1, keepdim=True)
+            elif ar_mode == "mean":
+                ar_mem = horizon_out[:, :h].mean(dim=1, keepdim=True)
+            elif ar_mode == "last":
+                ar_mem = horizon_out[:, h - 1:h]
+            else:
+                raise ValueError(f"unknown ar_mode {ar_mode!r}")
 
             # DDPM denoise from x_T ~ N(0,1) to x_0 for this horizon step
             x = torch.randn(B, 1, device=device, generator=rng)

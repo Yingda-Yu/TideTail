@@ -292,8 +292,13 @@ class DiffusionTS:
     # --- Training loss -------------------------------------------------------
     def training_loss(self, history_x: torch.Tensor, target_x: torch.Tensor,
                       denoiser: nn.Module,
-                      fourier_weight: float = 0.1) -> torch.Tensor:
+                      fourier_weight: float = 0.1,
+                      fourier_target: str = "x0") -> torch.Tensor:
         """Denoiser epsilon loss + optional Fourier spectrum matching.
+
+        ``fourier_target="x0"`` compares the implied clean-signal spectrum with
+        the clean target. ``"noise_legacy"`` reproduces the Wave 2.0 defect
+        (noise spectrum vs clean spectrum) for diagnostic comparison only.
 
         Residuals are z-score normalized *per-sample* using history
         statistics so that DDPM input (history residual) and target
@@ -328,7 +333,17 @@ class DiffusionTS:
 
         loss = F.mse_loss(eps_pred, eps)
         if fourier_weight > 0:
-            pred_fft = torch.fft.rfft(eps_pred, dim=1).abs().log().clamp(-10, 10)
+            if fourier_target == "x0":
+                # Compare the *implied clean residual* spectrum against the
+                # clean target spectrum (correct).
+                bar_t = self.diffusion.bar[t][:, None]
+                x0_pred = (noisy.squeeze(1) - (1 - bar_t).sqrt() * eps_pred) / bar_t.sqrt()
+                pred_fft = torch.fft.rfft(x0_pred, dim=1).abs().log().clamp(-10, 10)
+            elif fourier_target == "noise_legacy":
+                # Wave 2.0 defect: noise spectrum vs clean spectrum.
+                pred_fft = torch.fft.rfft(eps_pred, dim=1).abs().log().clamp(-10, 10)
+            else:
+                raise ValueError(f"unknown fourier_target {fourier_target!r}")
             tgt_fft = torch.fft.rfft(tgt_res_norm, dim=1).abs().log().clamp(-10, 10)
             loss = loss + fourier_weight * F.mse_loss(pred_fft, tgt_fft)
         return loss

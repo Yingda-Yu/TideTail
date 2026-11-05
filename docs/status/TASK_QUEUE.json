@@ -1,212 +1,249 @@
 {
-  "queue_version": "2.1-wave2-execution",
+  "queue_version": "2.7-wave27",
   "created": "2026-11-02",
+  "last_updated": "2026-11-05",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "1fe2222",
+  "head_sha": "242093a+wave2.7",
   "pr": 23,
-  "active_gpu_policy": "GPU0 PROHIBITED (llama-server + starvla-policy). GPUs 1,3 have starvla-policy loaded (18.5 GB each). GPU4 runs tail-aware A3 + starvla-policy (97% util, 22.9/24.5 GB). GPU2 comfy-h3 at 0% util. GPUs 5-9 fully occupied by others. All models ≤61K params — 5 GB free GPU is more than enough.",
-  "disk": "203 GB free (98% used). TIGHT — monitor before downloads.",
-  "last_updated": "2026-11-03",
+  "pr_state": "DRAFT — do not merge main",
+  "active_gpu_policy": "GPU0 PROHIBITED. All other GPUs were occupied by other users at Wave 2.7 launch (checked with nvidia-smi). Wave 2.7 ran CPU-only with torch.set_num_threads(<=8). No GPU job was started, duplicated or terminated.",
+  "disk": "monitor before downloads; ERA5 is complete so no further bulk downloads are planned",
   "scientific_framework": {
-    "independent_unit_definition": "168h Coles 2001 POT + canonical TC overlay (Wave 2.0 CORRECTED)",
-    "target_semantics": "water_level_m IS ALREADY de-tided surge residual — never double-subtract tide",
-    "key_corrections": [
-      "Wave 1.9 under-counted independent units by ignoring POT declustering — only counted canonical TCs",
-      "Wave 2.0 POT+TC combined: 6–17 independent units per region in 2024 alone; 3/5 regions POWERED (≥12)",
-      "Anchor station IDs corrected (were using short codes NOAA_8518750, now full NOAA_8518750_The_Battery)"
+    "independent_unit_definition": "168h POT q95 declustering + canonical TC overlay, deduplicated by one-to-one peak matching",
+    "target_semantics": "water_level_m IS ALREADY the non-tidal residual; total observed = residual + tide; never double-subtract",
+    "corrections_applied_in_wave27": [
+      "Event union is 679, not 707: 634 POT + 73 TC - 28 matched. Previous totals were added without the intersection.",
+      "2024 test split independent units = 59 (60 union members minus 1 window-ineligible).",
+      "POT cluster ids are encoded as -(cluster_id+1) and restart yearly; labels must be year-unique.",
+      "The Wave 2.6 'Charleston 5/48 multiplicity-adjusted findings' is WITHDRAWN. Root causes: cross-architecture pairing; bootstrap p used a proportion where a count was required (inflated ~5000x); Monte-Carlo resolution floor exceeded Bonferroni alpha.",
+      "Corrected family = 320 tests, alpha = 1.563e-4. Result: 0 seed-robust survivors; 3 seed-fragile nominal survivors (all TCN, each vs only one A0 seed).",
+      "The production four-generator benchmark is NOT single-target: Diffusion-TS used the _wl series, the others used the residual. Its row is scored against its own target."
     ]
   },
   "stages": {
-    "S0": "P0 Environment & Repo Audit — COMPLETE (2026-10-30)",
-    "S1": "P1 Data Integrity & Multi-Year Cohort — COMPLETE (2026-11-02, d7fdb5a)",
-    "S2": "P2 Total-Water Evaluation — COMPLETE (2026-11-01, fc45703)",
-    "S3": "P3 Storm Events + POT Declustering — COMPLETE (2026-11-02, d7fdb5a)",
-    "S4": "P4 Physics — P0/P1 COMPLETE; P2 ERA5 BLOCKED",
-    "S5": "P5 Generative Benchmark — 31/61 checkpoints; tail-aware A3 RUNNING on GPU4; VAE/TimeGrad pending",
-    "S6": "P6 Independent-Unit Evaluation — D02 COMPLETE (2026-11-03, 67500b8): charleston ✅ significant, ny_bight/gulf numeric improvement, thames harm",
-    "S7": "P7/P8 Publication & Reproducibility — PENDING"
+    "W27-P1": "Verify Wave 2.6 — COMPLETE (2026-11-05)",
+    "W27-P2": "ERA5 completion + readiness — COMPLETE (600/600 partitions)",
+    "W27-P3": "Generative baselines diagnostic pilots — COMPLETE",
+    "W27-P4": "Physics-guided Flow Matching — RUNNING (CPU, 5 variants x 2 regions)",
+    "W27-P5": "Expanded 2015-2020/2021/2022-2024 evaluation — COMPLETE (negative readiness result)",
+    "W27-P6": "Manuscript + figures — COMPLETE (PDF compiled)",
+    "W27-P7": "Status/queue sync, tests, commit, push — IN PROGRESS"
   },
   "tasks": [
     {
-      "task_id": "W20-D01",
-      "stage": "S1",
-      "description": "Multi-year observational cohort: POT+TC declustering, 3 split variants, feasibility analysis, census CSV, split manifest.",
+      "task_id": "W27-A01",
+      "stage": "W27-P1",
+      "description": "Independent rerun of the event-set audit from raw cluster artifacts; correct union arithmetic; verify 2024 counts and absence of duplicate events or window leakage.",
       "priority": "HIGH",
       "status": "COMPLETE",
-      "dependencies": [],
       "gpu": false,
-      "commit_sha": "d7fdb5a",
       "result_paths": [
-        "docs/data/STORM_EVENT_CENSUS.csv",
-        "docs/data/INDEPENDENT_TEST_FEASIBILITY.md",
-        "data/manifests/multiyear_declustering.json",
-        "data/manifests/multiyear_split_manifest.json"
-      ]
-    },
-    {
-      "task_id": "W20-D02",
-      "stage": "S6",
-      "description": "Re-evaluate E16a (A3 augmentation verdicts) using Wave 2.0 POT+TC independent-unit counts (6–17 units/region 2024, 15–35 2023-2024). Prior E16a bootstrap used calendar-day pseudo-events then 168h-only observ segments — now use POT+TC combined. Generate updated event-level CIs.",
-      "priority": "HIGH",
-      "status": "COMPLETE",
-      "dependencies": ["W20-D01"],
-      "gpu": false,
-      "estimated_runtime_hours": 1,
-      "commit_sha": "67500b8",
-      "required_data": [
-        "data/manifests/multiyear_declustering.json",
-        "data/predictions/v2/*.npz"
+        "data/results/wave27_event_set_audit.json",
+        "docs/audits/WAVE25_EVENT_COUNT_RECONCILIATION.md",
+        "docs/audits/WAVE26_EVENT_SET_AUDIT.md"
       ],
-      "result_paths": ["data/results/wave20_pot_storm_bootstrap.json"],
-      "acceptance_criteria": [
-        "Independent unit = POT cluster OR canonical TC",
-        "Per-region n clearly stated",
-        "CIs wider for low-count regions (se_aus=6, thames=10) vs powered (gulf=17, ny_bight=16, charleston=15)",
-        "Verdict updated in CLAIMS_LEDGER",
-        "Not marked VERIFIED POSITIVE unless ALL 5 regions show consistent improvement"
-      ],
+      "tests": ["tests/test_event_set_arithmetic.py"],
       "actual_findings": {
-        "charleston": "✅ 4 significant A3 improvements (CI entirely below A0), best -16.0% Δ",
-        "ny_bight": "📉 Numeric -14.5% Δ but CI overlaps at n=16",
-        "us_gulf": "📉 Numeric -10.3% Δ but CI overlaps at n=16",
-        "se_aus": "📉 Descriptive -6.7% Δ, underpowered n=7",
-        "thames": "❌ Significant harm (+35% worst config), consistent +1-15% harm"
+        "union_2015_2024": 679,
+        "pot": 634,
+        "tc": 73,
+        "matched": 28,
+        "units_2024": 59,
+        "duplicate_timestamps": 0,
+        "test_windows": "8601 in four regions; 6968 Thames",
+        "per_region_union": {"ny_bight": 178, "us_gulf_coast": 138, "south_atlantic_charleston": 143, "southeast_australia": 101, "thames_north_sea": 119}
       }
     },
     {
-      "task_id": "W20-G01",
-      "stage": "S5",
-      "description": "Tail-aware FM downstream A3 augmentation: frozen flow_matching_tailaware checkpoints (10 exist, correct target), generate synthetic residuals at 10/25/50% ratios, train GRU/TCN forecasters with Protocol F1 equal-steps budget, compare vs standard FM.",
-      "priority": "HIGH",
-      "status": "RUNNING",
-      "dependencies": [],
-      "gpu": true,
-      "estimated_runtime_hours": 2,
-      "gpu_pid": 1729408,
-      "gpu_card": "GPU4",
-      "started_utc": "2026-11-02T18:27:00",
-      "required_data": [
-        "data/checkpoints/flow_matching_tailaware_{region}_seed{42,99}.pt",
-        "data/checkpoints/flow_matching_{region}_seed{42,99}.pt (standard FM for comparison)"
-      ],
-      "required_gpu": "GPU3 or 4 — verify nvidia-smi first",
-      "result_paths": ["data/results/a3_tailaware_vs_standard_v2.json"],
-      "acceptance_criteria": [
-        "Same Protocol F1 as Wave 1.7 A3 (equal optimizer steps)",
-        "Tail-aware vs standard FM comparison per region, per ratio",
-        "Independent-unit bootstrap CI per region",
-        "Scale_ratio / q95 / q99 fidelity metrics for tail-aware FM samples",
-        "Negative findings preserved if tail-aware FM does not help"
-      ]
-    },
-    {
-      "task_id": "W20-G02",
-      "stage": "S5",
-      "description": "Conditional VAE full training: 5 regions × 2 seeds × ≥100 epochs with KL annealing. Only ny_bight seed42 trained (15 epochs, insufficient). Need KL annealing schedule implementation.",
-      "priority": "HIGH",
-      "status": "PENDING",
-      "dependencies": [],
-      "gpu": true,
-      "estimated_runtime_hours": 36,
-      "required_gpu": "GPU3",
-      "acceptance_criteria": [
-        "VAE training loss converged (reconstruction ≈ diffusive models)",
-        "KL weight annealing from 0 to 1 over first 30 epochs",
-        "Posterior collapse monitored (KL divergence vs epoch)",
-        "Scale_ratio within [0.8, 1.2]",
-        "5 regions × 2 seeds checkpoints saved"
-      ]
-    },
-    {
-      "task_id": "W20-G03",
-      "stage": "S5",
-      "description": "Diffusion-TS target verification + retrain if needed. Checkpoints were loaded with observed_total_water_level_m (correct for DDPM decomposition). VERIFIED CORRECT — train_gen_bench.py train_diffusion_ts() uses train_hist_wl/train_tgt_wl = observed_total_water_level_m.",
+      "task_id": "W27-A02",
+      "stage": "W27-P1",
+      "description": "Rerun paired significance with within-architecture pairing, corrected bootstrap p-value, and Monte-Carlo resolution below the correction threshold; add baseline-seed robustness.",
       "priority": "HIGH",
       "status": "COMPLETE",
-      "dependencies": [],
       "gpu": false,
-      "commit_sha": "1fe2222",
-      "verification": "Diffusion-TS checkpoint keys: ['state_dict', 'history', 'model_config']. train_diffusion_ts() loads data['train_hist_wl'] = observed_total_water_level_m — correct target for DDPM which is designed to decompose full water levels. 10/10 checkpoints exist, 15 epochs each, final loss ~0.816."
+      "result_paths": [
+        "data/results/paired_significance_wave27.json",
+        "docs/audits/WAVE26_PAIRED_SIGNIFICANCE_AUDIT.md",
+        "docs/audits/WAVE26_POWER_REASSESSMENT.md"
+      ],
+      "tests": ["tests/test_paired_stats.py"],
+      "actual_findings": {
+        "family_size": 320,
+        "bonferroni_alpha": 0.00015625,
+        "seed_robust_survivors": 0,
+        "seed_fragile_nominal_survivors": 3,
+        "architecture": {"gru": "86/160 improved, mean -0.17%", "tcn": "110/160 improved, mean -7.08%"},
+        "region_mean_delta_pct": {"ny_bight": "-3.41 / -13.14", "us_gulf_coast": "-2.33 / -5.37", "south_atlantic_charleston": "-4.30 / -0.09", "southeast_australia": "-0.59 / -21.69", "thames_north_sea": "+9.78 / +4.88"},
+        "max_baseline_seed_spread": "25% (se_aus TCN 0.0713 vs 0.0569 m)",
+        "coverage": "320-test family does not enumerate tail-aware predictions or discarded hyper-parameters; correction is anti-conservative"
+      }
     },
     {
-      "task_id": "W20-G04",
-      "stage": "S5",
-      "description": "TimeGrad training: 5 regions × 2 seeds × ≥50 epochs. Autoregressive scalar diffusion — expensive rollout (72 × 64 denoiser calls/sample). CPU smoke test works (scale=15.8 at 2 epochs — expected, needs GPU). 6,553 params denoiser.",
-      "priority": "MEDIUM",
-      "status": "PENDING",
-      "dependencies": [],
-      "gpu": true,
-      "estimated_runtime_hours": 72,
-      "required_gpu": "GPU3+4 (autoregressive is slow)"
-    },
-    {
-      "task_id": "W20-G05",
-      "stage": "S5",
-      "description": "WGAN-GP implementation + training. Code module needed first (conditional generator + discriminator with gradient penalty). Then 5 regions × 2 seeds × ≥100 epochs.",
-      "priority": "MEDIUM",
-      "status": "PENDING",
-      "dependencies": [],
-      "gpu": true,
-      "estimated_runtime_hours": 36,
-      "required_gpu": "GPU3"
-    },
-    {
-      "task_id": "W20-G06",
-      "stage": "S5",
-      "description": "GP-prior / TSFlow-style Flow Matching. Design stochastic interpolant between Gaussian prior and data. Implement if scientifically justified.",
-      "priority": "LOW",
-      "status": "PENDING",
-      "dependencies": ["W20-G01"],
-      "gpu": true,
-      "estimated_runtime_hours": 24,
-      "required_gpu": "GPU4"
-    },
-    {
-      "task_id": "W20-P01",
-      "stage": "S4",
-      "description": "Physics-prior FM variants: pressure-only, wind-only, bathymetry-conditioned, combined tail+physics. Requires ERA5 (BLOCKED) + GEBCO (not downloaded).",
-      "priority": "MEDIUM",
-      "status": "BLOCKED",
-      "blocked_by": "ERA5 CDS credentials missing, GEBCO not downloaded",
-      "required_action": "Owner: create ~/.cdsapirc with CDS API key",
-      "gpu": true,
-      "estimated_runtime_hours": 40,
-      "required_gpu": "GPU3+4"
-    },
-    {
-      "task_id": "W20-M01",
-      "stage": "S7",
-      "description": "Manuscript audit + Wave 2.0 revision. Replace Wave 1.6 exploratory DDPM-pilot framing with Wave 2.0 multi-year POT framework. Add: §Data (multi-year split), §Independent Units, §Generative Benchmark protocol. Keep result sections provisional until experiments complete.",
+      "task_id": "W27-E01",
+      "stage": "W27-P2",
+      "description": "Finish and verify ERA5: partition completeness, decode, timestamps, CRS, units, station alignment; build five-region readiness matrix.",
       "priority": "HIGH",
-      "status": "READY",
-      "dependencies": ["W20-D01"],
+      "status": "COMPLETE",
       "gpu": false,
-      "estimated_runtime_hours": 12
+      "result_paths": ["data/results/era5_readiness_matrix.json", "docs/experiments/WAVE27_PHYSICS_FM.md"],
+      "actual_findings": {
+        "partitions": "600/600",
+        "hours_per_region": "87672/87672",
+        "month_failures": 0,
+        "continuity": "119/119",
+        "grid": "0.25 deg regular_ll 17x17",
+        "variables": "u10, v10 (m/s); msl (Pa); expver 0001",
+        "anchor_km": {"ny_bight": 4.5, "us_gulf_coast": 9.1, "south_atlantic_charleston": 11.7, "southeast_australia": 11.0, "thames_north_sea": 6.6},
+        "all_regions_integrity_ok": true
+      }
     },
     {
-      "task_id": "W20-M02",
-      "stage": "S7",
-      "description": "Publication figures F1-F14 + tables. Generate from actual experiment outputs only. No fabricated measurements.",
-      "priority": "MEDIUM",
-      "status": "PENDING",
-      "dependencies": ["W20-G01", "W20-G02", "W20-G03", "W20-G04", "W20-G05"]
+      "task_id": "W27-R01",
+      "stage": "W27-P3",
+      "description": "Controlled diagnostic pilots for Conditional VAE, TimeGrad and Diffusion-TS: isolate one defect per family, compare legacy vs repaired at two budgets, preserve negative results.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": ["data/results/wave27_model_recovery.json", "docs/experiments/WAVE27_MODEL_RECOVERY.md"],
+      "tests": ["tests/test_wave27_model_fixes.py"],
+      "actual_findings": {
+        "oracle_sampler_max_abs_error": 1.1e-10,
+        "vae": "legacy scale 3.29, repaired 7.26; 0/32 active dims both -> repair REFUTED",
+        "timegrad": "legacy 10.55, repaired sum 6.09, repaired mean 1.22e5 -> PARTIAL, still failing",
+        "diffusion_ts": "legacy 10.98, repaired NaN at epoch 24 -> repair REFUTED",
+        "scope": "single region (Charleston), CPU, 20k train windows; family-level verdicts explicitly withheld"
+      }
     },
     {
-      "task_id": "W20-A01",
-      "stage": "S5",
-      "description": "Persistent autonomous execution framework: worker lock, heartbeat, dependency resolution, crash recovery, bounded retries, GPU validation. Test restart recovery with CPU task.",
+      "task_id": "W27-PH01",
+      "stage": "W27-P4",
+      "description": "Physics-guided Flow Matching: standard, tail-aware, pressure-prior, wind-prior and combined variants on verified ERA5, with causal history-only features and a fixed downstream budget.",
+      "priority": "HIGH",
+      "status": "RUNNING",
+      "gpu": false,
+      "running_pid": 244877,
+      "started_utc": "2026-11-05T22:32:00",
+      "result_paths": ["data/results/wave27_physics_fm.json", "docs/experiments/WAVE27_PHYSICS_FM.md"],
+      "tests": ["tests/test_physics_causality.py"],
+      "acceptance_criteria": [
+        "Physics features read only the 96h conditioning history, never the 72h target horizon",
+        "Train-only normalisation statistics",
+        "Identical downstream budget across A0 and all variants",
+        "Fidelity gate reported per variant",
+        "Bathymetry variant NOT claimed: GEBCO not downloaded",
+        "Retrospective reanalysis conditioning labelled as such, not as an operational forecast"
+      ]
+    },
+    {
+      "task_id": "W27-X01",
+      "stage": "W27-P5",
+      "description": "Expanded 2015-2020 train / 2021 val / 2022-2024 test protocol with from-scratch Standard FM vs A0 in Charleston and NY Bight; validation-only selection; event-level paired uncertainty.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": ["data/results/wave27_expanded_evaluation.json", "docs/experiments/WAVE27_EXPANDED_EVALUATION.md"],
+      "actual_findings": {
+        "windows": "52441 / 8593 / 26137 both regions (expected for gap-free series)",
+        "embargo_ok": true,
+        "selected_epoch": 13,
+        "fidelity": "REJECTED both (scale 3.97 / 4.76)",
+        "delta_extreme_mae_pct": {"south_atlantic_charleston": 8.88, "ny_bight": 15.85},
+        "verdict": "negative readiness result; DOES NOT test H1 because the retrained generators fail the fidelity gate"
+      },
+      "required_followup": "select the FM epoch on validation fidelity subject to the scale gate, then rerun"
+    },
+    {
+      "task_id": "W27-M01",
+      "stage": "W27-P6",
+      "description": "Revise the manuscript around the provisional framing (architecture dependence, physical priors, independent-event validation); regenerate figures from artifacts only; compile and inspect the PDF.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "paper/main.tex",
+        "paper/sections/1-introduction.tex",
+        "paper/sections/6-results.tex",
+        "paper/sections/7-discussion.tex",
+        "paper/sections/8-conclusion.tex",
+        "paper/figures/W27_fidelity_gate.pdf",
+        "paper/figures/W27_architecture_region.pdf",
+        "paper/figures/W27_event_census.pdf",
+        "paper/figures/W27_recovery.pdf",
+        "paper/figures/W27_baseline_seed.pdf",
+        "paper/figures/W27_schematic.pdf",
+        "paper/main.pdf"
+      ],
+      "tests": ["scripts/make_wave27_figures.py"]
+    },
+    {
+      "task_id": "W27-S01",
+      "stage": "W27-P7",
+      "description": "Reconcile queue with real processes, update claims ledger, run the CPU pytest gate, commit and push to PR #23 without touching main.",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "gpu": false
+    },
+    {
+      "task_id": "W27-N01",
+      "stage": "NEXT",
+      "description": "Fidelity-aware FM epoch selection for the expanded protocol (select on validation loss subject to scale ratio in [0.5,2.0]), then rerun the 2022-2024 comparison.",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "gpu": false,
+      "dependencies": ["W27-X01"]
+    },
+    {
+      "task_id": "W27-N02",
+      "stage": "NEXT",
+      "description": "VAE free-bits / latent-dropout / learned conditional prior so that training and sampling share one distribution; the current posterior-collapse repair is refuted.",
       "priority": "MEDIUM",
       "status": "PENDING",
+      "gpu": false,
+      "dependencies": ["W27-R01"]
+    },
+    {
+      "task_id": "W27-N03",
+      "stage": "NEXT",
+      "description": "Diffusion-TS with a numerically stable parameterisation (predict x0 or v with SNR weighting) instead of dividing by sqrt(alpha_bar); the current x0-spectrum repair diverges.",
+      "priority": "MEDIUM",
+      "status": "PENDING",
+      "gpu": false,
+      "dependencies": ["W27-R01"]
+    },
+    {
+      "task_id": "W27-N04",
+      "stage": "NEXT",
+      "description": "Bathymetry-conditioned physics FM once GEBCO is downloaded and approved; not claimed in Wave 2.7.",
+      "priority": "LOW",
+      "status": "BLOCKED",
+      "blocked_by": "GEBCO not downloaded; requires approval for the data volume",
       "gpu": false
     }
   ],
-  "checkpoints_total": 31,
-  "predictions_total": 190,
+  "superseded_claims": [
+    {
+      "claim": "W20-D02: charleston 4 significant A3 improvements, best -16.0%",
+      "status": "WITHDRAWN",
+      "reason": "cross-architecture pairing, bootstrap p-value inflated ~5000x, multiplicity family incomplete"
+    },
+    {
+      "claim": "W20-G03: Diffusion-TS target verified correct",
+      "status": "CONFIRMED WITH COMPARABILITY LIMIT",
+      "reason": "the target is observed total water level by design (guarded by test_target_semantics_contract); the residual would be wrong for this model. The limit is that its scale ratio is scored against a different target from the VAE/TimeGrad/Flow Matching rows, so the four rows must not be ranked as a single-target benchmark"
+    },
+    {
+      "claim": "Event union 707",
+      "status": "CORRECTED",
+      "reason": "28 TC peaks already lie inside POT clusters; union is 679"
+    },
+    {
+      "claim": "Wave 2.6 Charleston 5/48 multiplicity-adjusted findings",
+      "status": "WITHDRAWN",
+      "reason": "0 seed-robust survivors after correction"
+    }
+  ],
   "acceptance_gate": {
-    "wave2_0": "EXPECTED 2026-11-03: G01 tail-aware downstream + D02 POT bootstrap re-evaluation",
-    "wave2_1": "EXPECTED 2026-11-05: G02 VAE + G03 Diffusion-TS + G04 TimeGrad",
-    "wave2_2": "EXPECTED 2026-11-07: G05 WGAN-GP + G06 GP-prior FM",
-    "wave2_3": "EXPECTED 2026-11-10: P01 Physics (if ERA5 authorized)",
-    "wave2_4": "EXPECTED 2026-11-14: M01–M02 Manuscript + figures + tables"
+    "wave2_7": "physics FM artifact + docs finalised; manuscript PDF compiled; pytest green on CPU; PR #23 updated (draft)",
+    "next": "fidelity-aware expansion rerun (W27-N01), then VAE prior fix (W27-N02) and stable Diffusion-TS objective (W27-N03)"
   }
 }

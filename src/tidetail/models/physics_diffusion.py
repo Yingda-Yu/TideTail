@@ -78,6 +78,7 @@ class PhysicsAwareResidualDenoiser(nn.Module):
 
 
 def physics_loss(tgt_res_norm: torch.Tensor, eps_pred: torch.Tensor,
+                 eps_true: torch.Tensor,
                  noisy_residual: torch.Tensor,
                  history_residual_norm: torch.Tensor,
                  peak_w: float = 0.1, rate_w: float = 0.05) -> torch.Tensor:
@@ -86,6 +87,7 @@ def physics_loss(tgt_res_norm: torch.Tensor, eps_pred: torch.Tensor,
     Args:
         tgt_res_norm: (batch, horizon) normalized target residuals
         eps_pred: (batch, 1, horizon) predicted noise
+        eps_true: (batch, horizon) the actual sampled noise (NOT a fresh draw)
         noisy_residual: (batch, 1, horizon) noisy residual at this timestep
         history_residual_norm: (batch, context) normalized history residual
         peak_w: weight for peak-magnitude matching loss
@@ -93,21 +95,20 @@ def physics_loss(tgt_res_norm: torch.Tensor, eps_pred: torch.Tensor,
 
     Returns:
         scalar loss = eps_loss + peak_w * peak_loss + rate_w * rate_loss
+
+    The Wave 2.0 implementation drew ``torch.randn_like`` inside this function
+    and regressed against it, so the epsilon term carried no learning signal.
+    ``eps_true`` is now passed through explicitly.
     """
     _B, _H = tgt_res_norm.shape
 
-    # Primary: standard epsilon MSE
-    eps = torch.randn_like(tgt_res_norm).unsqueeze(1)
-    eps_loss = F.mse_loss(eps_pred, eps)
+    # Primary: standard epsilon MSE against the noise that was actually added
+    eps_loss = F.mse_loss(eps_pred.squeeze(1), eps_true.squeeze(1))
 
     # --- Peak magnitude matching (physics: surge amplitude consistency) ---
     tgt_peak = tgt_res_norm.abs().amax(dim=1, keepdim=True)  # (B, 1)
-    noisy_residual.squeeze(1).abs().amax(dim=1, keepdim=True)
-    # Use noisy residual denoised by subtracting eps * sqrt(1-ᾱ)/β: not exact,
-    # but here we penalize large peak deviation in the CURRENT noisy space
-    # Simplified: peak consistency between history and target (not noisy)
-    hist_peak = history_residual_norm.abs().amax(dim=1, keepdim=True)
     # Physics: target peak SHOULD correlate with history peak (same storm)
+    hist_peak = history_residual_norm.abs().amax(dim=1, keepdim=True)
     peak_loss = F.mse_loss(tgt_peak, hist_peak)
 
     # --- Rate-of-change smoothness (physics: 1D continuity equation proxy) ---
@@ -197,14 +198,8 @@ class PhysicsDiffusionTS(DiffusionTS):
             history_seasonal=hist_seasonal,
         )
 
-        F.mse_loss(eps_pred.squeeze(1), eps)
-        physics_loss(
-            tgt_res_norm, eps_pred, noisy, hist_res_norm,
-            peak_w=peak_weight, rate_w=rate_weight
-        )
-        # Replace eps_loss in physics_loss with our denoiser's actual
         return physics_loss(
-            tgt_res_norm, eps_pred, noisy, hist_res_norm,
+            tgt_res_norm, eps_pred, eps, noisy, hist_res_norm,
             peak_w=peak_weight, rate_w=rate_weight
         )
 

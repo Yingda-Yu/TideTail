@@ -1,72 +1,78 @@
 \section{Audit Evidence}
 \label{sec:audit}
 
-This appendix records the traceable evidence basis for all factual claims in this
-paper. Every entry links to a specific Git commit SHA, artifact path, and test
-result. All evidence was re-verified in the \texttt{trae/research-recovery-20261030}
-audit session (2026-10-30).
+This appendix records the traceable evidence basis for the factual claims in this
+paper. Each entry names the artifact, the producing command, and the test that
+guards it. Nothing in the main text is asserted without a row here.
 
-\subsection{Repository reconciliation}
-Before the audit, the repository existed on two independent branch chains:
+\subsection{Repository state}
+
+Work is on branch \texttt{trae/global-data-generative-research-20261031},
+continuing from commit \texttt{242093a}. Pull request \#23 remains a draft and
+\texttt{main} is not modified. Raw licensed datasets, credentials and checkpoints
+are never committed; only derived result artifacts and code are.
+
+\subsection{Evidence table}
+
+Each claim in the main text maps to exactly one artifact. All result artifacts
+live in \texttt{data/results/}; only file names are listed. Artifacts are
+committed, checkpoints and raw data are not.
+
 \begin{itemize}
-    \item \textbf{Data/Baseline chain}:
-    \texttt{main} $\rightarrow$ \texttt{feature/data-integrity-split-leakage} $\rightarrow$
-    \texttt{feature/g2-real-data-baselines} $\rightarrow$ \texttt{audit/18-cpu-integrity-c00664ed}
-    (PR \#19, SHA \texttt{3244c5c}, 55 tests).
-    \item \textbf{Diffusion chain}: \texttt{main} $\rightarrow$ \texttt{spartina/f1cff330}
-    $\rightarrow$ \texttt{fix/6-cpu-sampling-440c95e0} (PR \#21, SHA \texttt{577af1d},
-    19 tests).
-\end{itemize}
-Merging strategy: select PR \#19 as base (most complete code, 55 tests), then
-cherry-pick PR \#21 unique files via \texttt{git checkout origin/pr-21 -- <paths>}.
-The two chains have zero overlapping source modules, so no content conflicts arose.
-Result: \textbf{69 tests pass} (commit \texttt{6187be4}).
-
-\subsection{Embargo fix}
-PR \#19 audit report recorded: ``Embargo FAIL as general guarantee''. The probe
-\texttt{embargo\_filter(np.array([0]), embargo=1)(EventGroup('x', 0, 100))}
-incorrectly returned \texttt{True} (midpoint 50 far from 0). The repaired
-implementation (commit \texttt{210a985}) checks every group index against every
-protected index, returning \texttt{False} for this dangerous probe.
-Additionally, \texttt{embargo\_full\_support\_filter} was added to enforce the
-full-support constraint $o \geq \text{split\_block\_start} + L$ and
-$o \leq \text{split\_block\_end} - H$ for all forecast origins.
-
-\subsection{Checkpoint verification}
-Historical checkpoint at
-\texttt{/data/yingda/spartina-agent/worktrees/spartina/f1cff330/outputs/issue6-gpu4-pilot-7164/checkpoint.pt}
-was re-verified in this session: SHA256
-\texttt{dee516cf74b50a0ca8aff8ab05815c7ed36a32ea6c49b9dc81d5b532d39ebb68},
-size 444,971 bytes. Matches PR \#20/21 historical records.
-
-\subsection{Fresh CPU diagnosis}
-Running \texttt{scripts/diagnose\_ddpm\_cpu.py} in this session confirmed:
-\begin{itemize}
-    \item CPU sample range: $-13.079$ to $+16.277$ metres, SD 4.922~m.
-    \item Original CUDA sample range: $-16.910$ to $+7.940$ metres, SD 4.474~m.
-    \item CPU/CUDA maximum absolute difference: 29.85~m (different RNG streams).
-    \item Scale screen outcome: \texttt{accepted=false}, std ratio 22.95.
-\end{itemize}
-All values match the PR \#21 recovery report, confirming the failure is not an
-artifact of any single run.
-
-\subsection{Test and lint status}
-Commit \texttt{b1ff164} resolved all 11 remaining Ruff warnings. Current status:
-\begin{itemize}
-    \item 69 pytest tests pass on every full run.
-    \item \texttt{ruff check src tests} — all checks passed (0 errors).
-    \item \texttt{python3 -m compileall -q src} — no syntax errors.
-    \item \texttt{git diff --check} — no whitespace issues.
+  \item \textbf{Union $=679$; 2024 units $=59$.}
+  \texttt{wave27\_event\_set\_audit.json}; guarded by
+  \texttt{test\_event\_set\_arithmetic.py}.
+  \item \textbf{No duplicate timestamps; 8,601 test windows.} Same artifact,
+  fields \texttt{window\_integrity} and \texttt{periods}.
+  \item \textbf{Zero robust augmentation survivors.}
+  \texttt{paired\_significance\_wave27.json}; guarded by
+  \texttt{test\_paired\_stats.py}.
+  \item \textbf{Generator scale ratios and gate outcomes.} The four
+  \texttt{*\_96\_72.json} files, scored by \texttt{tidetail.quality.evaluate}.
+  \item \textbf{DDPM sampler exactness.} Oracle-denoiser test in
+  \texttt{wave27\_model\_recovery.py}; max absolute error $1.1\times10^{-10}$.
+  \item \textbf{Two of three repairs refuted.} \texttt{wave27\_model\_recovery.json};
+  guarded by \texttt{test\_wave27\_model\_fixes.py}.
+  \item \textbf{ERA5 $=600/600$ partitions.} \texttt{era5\_readiness\_matrix.json};
+  produced by \texttt{verify\_era5\_readiness.py}.
+  \item \textbf{Physics features are causal.} \texttt{wave27\_physics\_fm.py};
+  guarded by \texttt{test\_physics\_causality.py}.
+  \item \textbf{Expanded split has no leakage.}
+  \texttt{wave27\_expanded\_evaluation.json}; boundary fields plus unit counts.
+  \item \textbf{Residual identity.} \texttt{test\_target\_semantics\_contract.py}:
+  MAE $=0$, $r=1$.
 \end{itemize}
 
-\subsection{GPU hardware}
-At audit time (2026-10-30 22:54 UTC+8), 10 RTX 3090 cards were present: GPUs 1, 2,
-5, 6, 7, 8, 9 occupied by other users' compute processes; GPUs 0, 3, 4 idle
-(memory $<$ 25~MiB, 0\% utilization). GPU usage is opt-in per \texttt{AGENTS.md};
-no GPU training was performed in this session.
+\subsection{Known discrepancies retained}
 
-\subsection{TeX Live verification}
-Minimal LaTeX document compiled successfully with \texttt{latexmk -pdf} to produce
-an 85,963-byte PDF using TeX Live 2022/dev/Debian. Full paper compilation used
-\texttt{latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error
--outdir=build main.tex}.
+Two discrepancies are recorded rather than resolved, because resolving them
+would require re-running experiments that the evidence already disqualifies.
+
+\begin{enumerate}
+    \item \textbf{The 707 event count.} Wave 2.5/2.6 documents added POT and TC
+    totals without computing the intersection. The corrected union is 679. The
+    old number appears in superseded audit files, which are annotated, not
+    deleted, so that the error remains traceable.
+    \item \textbf{The Diffusion-TS target.} The production Diffusion-TS run
+    consumes observed total water level by design (its decomposition is defined
+    on the full signal, enforced by
+    \texttt{test\_train\_generative\_model\_loader\_patches\_total\_water}),
+    whereas the other generators consume the residual. Its row in
+    Table~\ref{tab:generators} is therefore scored against its own target and is
+    not ranked against the other generators. This is a comparability limit, not
+    a defect.
+\end{enumerate}
+
+\subsection{Reproduction}
+
+\begin{verbatim}
+python3 -m pytest tests/ -q                     # CPU PR gate
+python3 scripts/event_set_audit.py
+python3 scripts/paired_significance_test.py
+python3 scripts/verify_era5_readiness.py
+python3 scripts/wave27_model_recovery.py --region south_atlantic_charleston
+python3 scripts/wave27_physics_fm.py
+python3 scripts/wave27_expanded_eval.py
+python3 scripts/make_wave27_figures.py
+cd paper && latexmk -pdf main.tex
+\end{verbatim}

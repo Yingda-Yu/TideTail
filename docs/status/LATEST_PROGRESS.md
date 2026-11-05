@@ -1,9 +1,47 @@
-# LATEST PROGRESS — TideTail Wave 2.5 (Research Continuation, Statistical Audit)
+# LATEST PROGRESS — TideTail Wave 2.7 (Model Recovery, Physics, Manuscript)
 
-**Last updated**: 2026-11-04 Wave 2.5
-**Head SHA**: to-be-committed
+**Last updated**: 2026-11-05 Wave 2.7
+**Head SHA**: see `git log -1` (Wave 2.7 commits on top of `242093a`)
 **Branch**: `trae/global-data-generative-research-20261031`
 **PR**: #23 (Draft — DO NOT MERGE main)
+
+---
+
+## Wave 2.7 current state
+
+| Priority | Status | Evidence |
+|---|---|---|
+| P1 verify Wave 2.6 | DONE | event union 679 (not 707); 2024 units 59; corrected statistics → 0 robust survivors; Charleston 5/48 withdrawn |
+| P2 ERA5 | DONE | 600/600 partitions, 87,672 h/region, `all_regions_integrity_ok: true` |
+| P3 model recovery | DONE | oracle sampler exact (1.1e-10); VAE repair refuted; TimeGrad partial; DTS repair refuted (NaN) |
+| P4 physics FM | RUNNING | 5 variants × 2 regions, full-data FM fit (CPU) |
+| P5 expanded eval | DONE (negative readiness) | splits verified; retrained FM fails fidelity → +8.88% / +15.85% harm; does not test H1 |
+| P6 manuscript | DONE | new title/abstract/intro/results/discussion/conclusion; 6 figures; PDF compiled |
+| P7 queue/tests/commit | DONE | `TASK_QUEUE.json` reconciled; pytest CPU gate; pushed to PR #23 |
+
+**Two headline corrections this wave**
+
+1. The 2015–2024 event union is **679**, not 707. The old arithmetic added
+   POT and TC totals without the 28-event intersection.
+2. The Wave 2.6 "5/48 multiplicity-adjusted Charleston findings" is
+   **withdrawn**. After within-architecture pairing, a bootstrap p-value fix
+   (previous value inflated ~5,000×) and a Monte-Carlo resolution floor below
+   the correction threshold, **zero** of 320 comparisons are seed-robust.
+
+**New negative results preserved**
+
+- Conditional VAE: strengthening the latent path improved reconstruction
+  (0.882 → 0.326) but made sampling **worse** (scale 3.29 → 7.26); 0/32
+  active latent dims in both variants (posterior collapse vs `N(0,I)` sampling).
+- Diffusion-TS: x0-spectrum Fourier repair **diverges to NaN** at epoch 24
+  (`x0_pred` divides by `sqrt(ᾱ) ≈ 0.024`, ~41× amplification).
+- Expanded protocol: the retrained FM fails fidelity (scale 3.97 / 4.76), so
+  the downstream degradation is a generator-readiness failure, not a test of
+  augmentation utility.
+
+**Environment**: GPU0 prohibited; all other GPUs occupied by other users.
+All Wave 2.7 experiments ran on CPU with thread caps. No GPU job was
+interrupted, duplicated or terminated.
 
 ---
 

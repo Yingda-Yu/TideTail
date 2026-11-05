@@ -104,15 +104,28 @@ class ConditionalVAEEncoder(nn.Module):
 # ---------------------------------------------------------------------------
 
 class ConditionalVAEDecoder(nn.Module):
-    """Decodes (history, z) → target reconstruction."""
+    """Decodes (history, z) → target reconstruction.
+
+    ``z_init="linear"`` (default) maps the full latent vector to a per-hour
+    initial signal, so all ``latent_dim`` directions can influence the
+    forecast. ``z_init="scalar"`` reproduces the legacy Wave 2.0 decoder,
+    which collapsed z to one scalar broadcast over the horizon and left
+    ``latent_dim`` effectively rank-1; that option exists only to load
+    old checkpoints.
+    """
 
     def __init__(self, context: int = 96, horizon: int = 72,
-                 width: int = 32, latent_dim: int = 32):
+                 width: int = 32, latent_dim: int = 32,
+                 z_init: str = "linear"):
         super().__init__()
         self.context = context
         self.horizon = horizon
         self.width = width
         self.latent_dim = latent_dim
+        if z_init not in ("linear", "scalar"):
+            raise ValueError(f"z_init must be 'linear' or 'scalar', got {z_init!r}")
+        self.z_init = z_init
+        self.z_to_seq = nn.Linear(latent_dim, horizon) if z_init == "linear" else None
 
         # History context embedding
         self.history_enc = nn.Sequential(
@@ -150,10 +163,16 @@ class ConditionalVAEDecoder(nn.Module):
         z_emb = self.latent_proj(z)
         cond = self.cond_proj(torch.cat([h_emb, z_emb], dim=1))
 
-        # Start from broadcast latent signal: use z as initial input
-        # We project z to horizon length via a tiny head
-        init_signal = z @ torch.ones(z.shape[1], self.horizon, device=z.device) / math.sqrt(self.horizon)
-        x = self.input_proj(init_signal.unsqueeze(1))  # (B, width, horizon)
+        if self.z_init == "linear":
+            # (B, horizon) -> (B, 1, horizon); every latent dim contributes
+            init_signal = self.z_to_seq(z).unsqueeze(1)
+        else:
+            # Legacy rank-1 broadcast
+            init_signal = (z @ torch.ones(z.shape[1], self.horizon,
+                                        device=z.device)
+                           / math.sqrt(self.horizon)).unsqueeze(1)
+
+        x = self.input_proj(init_signal)  # (B, width, horizon)
         for block in self.blocks:
             x = block(x, cond)
         recon = self.output(x).squeeze(1)  # (B, horizon)
@@ -164,7 +183,7 @@ class ConditionalVAEDecoder(nn.Module):
 # Full Conditional VAE model
 # ---------------------------------------------------------------------------
 
-class ConditionalVAE:
+class ConditionalVAE(nn.Module):
     """Conditional VAE for 96h→72h tide forecasting.
 
     Usage:
@@ -179,7 +198,9 @@ class ConditionalVAE:
 
     def __init__(self, context: int = 96, horizon: int = 72,
                  width: int = 32, latent_dim: int = 32,
-                 beta: float = 0.001, device: str = "cpu"):
+                 beta: float = 0.001, device: str = "cpu",
+                 z_init: str = "linear"):
+        super().__init__()
         self.context = context
         self.horizon = horizon
         self.width = width
@@ -188,7 +209,8 @@ class ConditionalVAE:
         self.device = device
 
         self.encoder = ConditionalVAEEncoder(context, horizon, width, latent_dim).to(device)
-        self.decoder = ConditionalVAEDecoder(context, horizon, width, latent_dim).to(device)
+        self.decoder = ConditionalVAEDecoder(context, horizon, width, latent_dim,
+                                             z_init=z_init).to(device)
 
     def training_loss(self, history: torch.Tensor, target: torch.Tensor,
                       encoder: ConditionalVAEEncoder | None = None,

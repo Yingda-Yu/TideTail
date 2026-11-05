@@ -1,15 +1,22 @@
-"""Proper paired event-level significance testing for TideTail.
+"""Wave 2.7 paired event-level significance testing (corrected).
 
-Corrects Wave 2.0 bootstrap which only checked candidate CI against A0 point estimate.
-This script computes actual per-event paired differences and runs:
-  1. Paired bootstrap of event-level differences
-  2. Paired randomization test (permute group labels)
-  3. Multiplicity correction
-  4. Explicit confirmation/exploration labeling
+Fixes two defects in the Wave 2.6 script:
+
+1. It paired every A3 candidate against a **GRU** A0 baseline, including TCN
+   candidates. That confounds architecture with augmentation. Here candidates
+   are paired only against A0 runs of the SAME forecaster.
+2. It silently included the background unit (``-999``, ~6k of 8.6k windows) in
+   the event-level mean. Here the primary cohort is **extreme units only**
+   (``event_id != -999``); the all-units result is retained as secondary.
+
+Multiplicity is reported for the explicit family actually tested, and the
+claim is labelled exploratory unless it survives the family-wide correction.
 
 Usage:
-    python3 scripts/paired_significance_test.py --region south_atlantic_charleston
     python3 scripts/paired_significance_test.py --region all
+
+Outputs:
+    data/results/paired_significance_wave27.json
 """
 from __future__ import annotations
 
@@ -19,267 +26,300 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-DATA_ROOT = Path("/data/yingda/tidetail-data/prime-formal-2015-2024/derived/prime_coast")
 PREDS_DIR = ROOT / "data" / "predictions" / "v2"
 RESULTS_DIR = ROOT / "data" / "results"
-RESULTS_DIR.mkdir(exist_ok=True)
+
+REGIONS = [
+    "ny_bight",
+    "us_gulf_coast",
+    "south_atlantic_charleston",
+    "southeast_australia",
+    "thames_north_sea",
+]
+AUGMENT_GROUPS = ("A1_oversampling", "A2_history_noise")
 
 
-def load_prediction(npz_path: Path) -> dict:
-    """Load prediction file with event_ids already assigned by wave20 bootstrap."""
-    with np.load(npz_path, allow_pickle=True) as d:
-        tw_pred = d["pred_residual"] + d["future_tide"]
-        tw_obs = d["obs_residual"] + d["future_tide"]
-        errors = np.abs(tw_pred - tw_obs)
-        event_ids = d["event_ids"] if "event_ids" in d else d["canonical_storm_ids"]
+def load_prediction(path: Path) -> dict:
+    with np.load(path, allow_pickle=True) as d:
+        # target semantics: total = residual + tide
+        errors = np.abs(
+            (d["pred_residual"] + d["future_tide"]) - (d["obs_residual"] + d["future_tide"])
+        )
+        event_ids = d["event_ids"].astype(np.int64)
         meta = json.loads(d["meta_json"].item()) if "meta_json" in d else {}
-    return {
-        "errors": errors,
-        "event_ids": event_ids,
-        "meta": meta,
-    }
+    return {"errors": errors, "event_ids": event_ids, "meta": meta}
 
 
-def compute_per_unit_mae(data: dict) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Compute per-event MAE. Returns (unique_event_ids, per_unit_mae, window_counts)."""
-    errors = data["errors"]
-    event_ids = data["event_ids"]
-    unique_ids = np.sort(np.unique(event_ids))
-    per_unit = np.array([
-        np.mean(errors[event_ids == uid]) for uid in unique_ids
-    ])
-    counts = np.array([
-        int(np.sum(event_ids == uid)) for uid in unique_ids
-    ])
-    return unique_ids, per_unit, counts
+def per_unit_mae(errors: np.ndarray, ids: np.ndarray, extreme_only: bool) -> tuple[np.ndarray, np.ndarray]:
+    keep = ids != -999 if extreme_only else np.ones(len(ids), dtype=bool)
+    e, g = errors[keep], ids[keep]
+    unique = np.sort(np.unique(g))
+    mae = np.array([e[g == u].mean() for u in unique])
+    counts = np.array([int((g == u).sum()) for u in unique])
+    return unique, mae, counts
 
 
-def paired_bootstrap(a_mae: np.ndarray, b_mae: np.ndarray,
-                     n_boot: int = 10000, seed: int = 42) -> dict:
-    """Bootstrap of paired differences (b - a).
+def paired_bootstrap(diffs: np.ndarray, n_boot: int, seed: int) -> dict:
+    """Vectorised paired bootstrap.
 
-    a = A0 baseline, b = A3 candidate. H0: μ(b-a) = 0.
+    The Monte-Carlo resolution must be fine enough to reach the family
+    Bonferroni threshold: with ``n_boot`` resamples the smallest attainable
+    two-sided p-value is ``2/(n_boot+1)``. For a 320-comparison family
+    (alpha = 1.56e-4) we therefore need ``n_boot >= ~13,000``.
     """
-    assert len(a_mae) == len(b_mae), "Must be paired!"
-    n = len(a_mae)
-    diffs = b_mae - a_mae  # positive = A3 WORSE than A0 (MAE is error)
-
+    n = len(diffs)
     rng = np.random.default_rng(seed)
-    boot_diffs = np.zeros(n_boot)
-    for i in range(n_boot):
-        idx = rng.integers(0, n, size=n)
-        boot_diffs[i] = np.mean(diffs[idx])
-
-    mean_diff = np.mean(diffs)
-    ci_low = np.percentile(boot_diffs, 2.5)
-    ci_high = np.percentile(boot_diffs, 97.5)
-
-    # p-value: 2-sided, proportion of bootstrap differences crossing zero
-    if mean_diff > 0:
-        # A3 WORSE — p = proportion where boot_diff < 0
-        p = 2 * np.mean(boot_diffs < 0)
-    else:
-        # A3 BETTER — p = proportion where boot_diff > 0
-        p = 2 * np.mean(boot_diffs > 0)
-    p = min(p, 1.0)
-
+    idx = rng.integers(0, n, size=(n_boot, n))
+    boot = diffs[idx].mean(axis=1)
+    observed = float(diffs.mean())
+    ci_low, ci_high = np.percentile(boot, [2.5, 97.5])
+    # Tail mass in the direction opposite to the observed effect.
+    tail = float(np.mean(boot < 0)) if observed > 0 else float(np.mean(boot > 0))
+    hits = tail * n_boot          # count-style, NOT a proportion
+    # bounded Monte-Carlo two-sided p-value; never report a literal zero
+    p = min(1.0, 2.0 * (hits + 1.0) / (n_boot + 1.0))
     return {
-        "n_units": n,
-        "mean_diff_a3_minus_a0": float(mean_diff),
-        "mean_relative_diff_pct": float(mean_diff / np.mean(a_mae) * 100),
-        "bootstrap_ci_low": float(ci_low),
-        "bootstrap_ci_high": float(ci_high),
-        "boot_p_value_2sided": float(p),
-        "diffs": diffs.tolist(),
+        "mean_diff_a3_minus_a0": observed,
+        "ci95_low": float(ci_low),
+        "ci95_high": float(ci_high),
+        "ci_excludes_zero": bool(ci_low > 0 or ci_high < 0),
+        "p_value": float(p),
+        "n_boot": n_boot,
+        "resolution_floor": float(2.0 / (n_boot + 1.0)),
     }
 
 
-def paired_randomization_test(a_mae: np.ndarray, b_mae: np.ndarray,
-                               n_perm: int = 10000, seed: int = 42) -> dict:
-    """Randomization test: randomly swap labels within pairs.
-
-    Under H0, A0 and A3 are exchangeable within each pair.
-    """
-    assert len(a_mae) == len(b_mae)
-    n = len(a_mae)
-    observed = np.mean(b_mae - a_mae)
-
+def paired_randomization(diffs: np.ndarray, n_perm: int, seed: int) -> dict:
+    """Vectorised paired sign-flip randomization test."""
+    n = len(diffs)
+    observed = abs(float(diffs.mean()))
     rng = np.random.default_rng(seed)
-    perm_stats = np.zeros(n_perm)
-    for i in range(n_perm):
-        swap = rng.random(n) < 0.5
-        swapped_a = np.where(swap, b_mae, a_mae)
-        swapped_b = np.where(swap, a_mae, b_mae)
-        perm_stats[i] = np.mean(swapped_b - swapped_a)
-
-    # 2-sided p-value
-    p = 2 * np.mean(np.abs(perm_stats) >= np.abs(observed))
-    p = min(p, 1.0)
-
-    return {
-        "n_perm": n_perm,
-        "observed_diff": float(observed),
-        "min_perm_diff": float(np.min(perm_stats)),
-        "max_perm_diff": float(np.max(perm_stats)),
-        "perm_p_value_2sided": float(p),
-    }
+    signs = rng.choice([-1.0, 1.0], size=(n_perm, n))
+    hits = int(np.sum(np.abs((diffs * signs).mean(axis=1)) >= observed))
+    p = (hits + 1.0) / (n_perm + 1.0)
+    return {"observed_abs_diff": observed, "p_value": p, "n_perm": n_perm,
+            "resolution_floor": float(1.0 / (n_perm + 1.0))}
 
 
-def find_baseline_predictions(region: str, model: str = "gru") -> dict[Path, dict]:
-    """Find all A0 baseline prediction files for a region."""
-    results = {}
-    for pf in sorted(PREDS_DIR.glob(f"{region}_A0_real_only_{model}_seed*.npz")):
-        seed = int(pf.stem.split("_")[-1].replace("seed", ""))
-        results[seed] = pf
-    return results
+def discover(region: str) -> tuple[dict, dict]:
+    baselines: dict[str, dict[int, Path]] = {}
+    candidates: dict[str, Path] = {}
+    for path in sorted(PREDS_DIR.glob(f"{region}_*.npz")):
+        if path.stem.endswith(("persistence", "seasonal_24h")):
+            continue
+        meta = load_prediction(path)["meta"]
+        group = meta.get("group", "")
+        model = meta.get("model")
+        seed = meta.get("seed")
+        if group == "A0_real_only" and model and seed is not None:
+            baselines.setdefault(model, {})[int(seed)] = path
+        elif group in AUGMENT_GROUPS or group.startswith("A3_fm") or group.startswith("A3_flow_matching"):
+            candidates[path.stem] = path
+    return baselines, candidates
 
 
-def find_a3_predictions(region: str) -> dict[str, Path]:
-    """Find all A3 FM augmentation prediction files."""
-    results = {}
-    for pf in sorted(PREDS_DIR.glob(f"{region}_A3_fm_*.npz")):
-        # Extract config from filename
-        parts = pf.stem.split("_")
-        # Something like: charleston_A3_fm_s42_ratio_0.25_gru_seed42
-        results[pf.stem] = pf
-    return results
-
-
-def test_region(region: str, n_boot: int = 10000, n_perm: int = 10000) -> list[dict]:
-    """Run all paired comparisons for a single region."""
-    baselines = find_baseline_predictions(region)
-    a3_files = find_a3_predictions(region)
+def compare_region(region: str, n_boot: int, n_perm: int) -> dict:
+    baselines, candidates = discover(region)
+    if not baselines:
+        return {"region": region, "comparisons": [], "note": "no A0 baselines"}
 
     comparisons = []
-    total_comparisons = len(a3_files) * len(baselines)
-
-    print(f"\n{'='*80}")
-    print(f"PAIRED SIGNIFICANCE: {region} — {len(baselines)} baselines × {len(a3_files)} A3 configs")
-    print(f"{'='*80}")
-
-    for a3_name, a3_path in sorted(a3_files.items()):
-        # Parse A3 config
-        a3_data = load_prediction(a3_path)
-        a3_meta = a3_data["meta"]
-
-        for seed, a0_path in sorted(baselines.items()):
-            a0_data = load_prediction(a0_path)
-
-            # Must use SAME event_ids for pairing
-            # Wave20 bootstrap ensures same assignment
-            if not np.array_equal(a0_data["event_ids"], a3_data["event_ids"]):
-                print(f"  SKIP {a3_name} vs A0_seed{seed}: event_ids mismatch")
+    for name, path in candidates.items():
+        cand = load_prediction(path)
+        model = cand["meta"].get("model")
+        if model not in baselines:
+            continue
+        for a0_seed, a0_path in sorted(baselines[model].items()):
+            a0 = load_prediction(a0_path)
+            if len(a0["event_ids"]) != len(cand["event_ids"]):
+                continue
+            if not np.array_equal(a0["event_ids"], cand["event_ids"]):
                 continue
 
-            a0_ids, a0_mae, _ = compute_per_unit_mae(a0_data)
-            a3_ids, a3_mae, _ = compute_per_unit_mae(a3_data)
-
-            # Verify exact pair matching
-            if not np.array_equal(a0_ids, a3_ids):
-                # Intersect
-                common_ids = np.intersect1d(a0_ids, a3_ids)
-                a0_mae = a0_mae[np.isin(a0_ids, common_ids)]
-                a3_mae = a3_mae[np.isin(a3_ids, common_ids)]
-                n_units = len(common_ids)
-            else:
-                n_units = len(a0_ids)
-
-            # Run tests
-            boot = paired_bootstrap(a0_mae, a3_mae, n_boot=n_boot, seed=42)
-            perm = paired_randomization_test(a0_mae, a3_mae, n_perm=n_perm, seed=42)
-
-            comparison = {
+            record = {
                 "region": region,
-                "a3_config": a3_name,
-                "a0_seed": seed,
-                "n_independent_units": n_units,
-                "a0_mean_mae": float(np.mean(a0_mae)),
-                "a3_mean_mae": float(np.mean(a3_mae)),
-                "delta_pct": float((np.mean(a3_mae) - np.mean(a0_mae)) / np.mean(a0_mae) * 100),
-                "bootstrap": boot,
-                "randomization": perm,
+                "candidate": name,
+                "candidate_group": cand["meta"].get("group"),
+                "model": model,
+                "candidate_train_seed": cand["meta"].get("seed"),
+                "baseline_seed": a0_seed,
             }
-            comparisons.append(comparison)
+            for cohort, extreme_only in (("extreme_units", True), ("all_units", False)):
+                a0_ids, a0_mae, _ = per_unit_mae(a0["errors"], a0["event_ids"], extreme_only)
+                c_ids, c_mae, _ = per_unit_mae(cand["errors"], cand["event_ids"], extreme_only)
+                assert np.array_equal(a0_ids, c_ids)
+                diffs = c_mae - a0_mae  # >0 means augmentation is worse
+                record[cohort] = {
+                    "n_units": int(len(a0_ids)),
+                    "a0_mean_mae": float(a0_mae.mean()),
+                    "a3_mean_mae": float(c_mae.mean()),
+                    "delta_pct": float(diffs.mean() / a0_mae.mean() * 100.0),
+                    "bootstrap": paired_bootstrap(diffs, n_boot, 42),
+                    "randomization": paired_randomization(diffs, n_perm, 42),
+                }
+            comparisons.append(record)
 
-            # Print immediately
-            verdict_strength = ""
-            if boot["boot_p_value_2sided"] < 0.05 / total_comparisons:
-                verdict_strength = "BONFERRONI ✅"
-            elif boot["boot_p_value_2sided"] < 0.05:
-                verdict_strength = "RAW ✅"
-            elif boot["mean_diff_a3_minus_a0"] > 0:
-                verdict_strength = "A3 WORSE ❌"
-            else:
-                verdict_strength = "NOT SIGNIFICANT"
-
-            print(f"  {a3_name:45s} vs A0_s{seed}: n={n_units:2d}, "
-                  f"Δ={comparison['delta_pct']:+.1f}%, "
-                  f"CI95=[{boot['bootstrap_ci_low']:.4f}, {boot['bootstrap_ci_high']:.4f}], "
-                  f"p_boot={boot['boot_p_value_2sided']:.4f}, "
-                  f"p_perm={perm['perm_p_value_2sided']:.4f} {verdict_strength}")
-
-    return comparisons
+    return {
+        "region": region,
+        "baselines_per_model": {m: sorted(s) for m, s in baselines.items()},
+        "n_candidates": len(candidates),
+        "comparisons": comparisons,
+    }
 
 
-def main():
+def annotate(result: dict, family_size: int, alpha_family: float) -> dict:
+    survivors = []
+    for record in result["comparisons"]:
+        ext = record["extreme_units"]
+        p_boot = ext["bootstrap"]["p_value"]
+        p_perm = ext["randomization"]["p_value"]
+        improves = ext["bootstrap"]["mean_diff_a3_minus_a0"] < 0
+        record["directional_improvement"] = bool(improves)
+        record["raw_p_boot"] = p_boot
+        record["raw_p_perm"] = p_perm
+        record["ci_excludes_zero"] = bool(ext["bootstrap"].get("ci_excludes_zero", False))
+        record["bonferroni_alpha"] = alpha_family
+        record["bonferroni_significant_boot"] = bool(p_boot < alpha_family and improves)
+        record["bonferroni_significant_perm"] = bool(p_perm < alpha_family and improves)
+        # Survivor requires BOTH tests, a CI excluding zero, and an improvement.
+        if (record["bonferroni_significant_boot"] and record["bonferroni_significant_perm"]
+                and record["ci_excludes_zero"]):
+            survivors.append(record["candidate"] + f"|A0seed{record['baseline_seed']}")
+    result["family_size"] = family_size
+    result["family_bonferroni_alpha"] = alpha_family
+    result["bonferroni_survivors"] = survivors
+    result["verdict"] = (
+        "EXPLORATORY — survives within-region family correction"
+        if survivors
+        else "NO CONFIRMATORY EVIDENCE under family-wide correction"
+    )
+    return result
+
+
+def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--region", default="south_atlantic_charleston",
-                    help="Region name or 'all'")
-    ap.add_argument("--n-boot", type=int, default=10000)
-    ap.add_argument("--n-perm", type=int, default=10000)
+    ap.add_argument("--region", default="all")
+    ap.add_argument("--n-boot", type=int, default=30000,
+                    help="bootstrap resamples; floor 2/(n+1) must be below alpha")
+    ap.add_argument("--n-perm", type=int, default=30000,
+                    help="sign-flip permutations; floor 1/(n+1) must be below alpha")
     args = ap.parse_args()
 
-    regions = {
-        "all": ["ny_bight", "us_gulf_coast", "south_atlantic_charleston",
-                "southeast_australia", "thames_north_sea"],
-    }.get(args.region, [args.region])
-
-    all_results = {}
-    total_comparisons = 0
-
+    regions = REGIONS if args.region == "all" else [args.region]
+    results = {}
+    total = 0
     for region in regions:
-        results = test_region(region, n_boot=args.n_boot, n_perm=args.n_perm)
-        all_results[region] = results
-        total_comparisons += len(results)
+        res = compare_region(region, args.n_boot, args.n_perm)
+        results[region] = res
+        total += len(res.get("comparisons", []))
 
-    # Save
-    out_path = RESULTS_DIR / "paired_significance_wave26.json"
-    out_path.write_text(json.dumps(all_results, indent=2, default=str))
-    print(f"\nSaved {total_comparisons} paired comparisons → {out_path}")
+    # Family = every candidate-vs-baseline comparison actually tested.
+    alpha = 0.05 / total if total else float("nan")
+    print("=" * 78)
+    print(f"PAIRED SIGNIFICANCE (within-architecture, extreme-unit primary)")
+    print(f"Total comparisons tested (family): {total}   Bonferroni alpha: {alpha:.6f}")
+    print("=" * 78)
 
-    # Summary
-    print(f"\n{'='*80}")
-    print("SUMMARY — BONFERRONI α_PER_COMPARISON = 0.05 / "
-          f"{total_comparisons if total_comparisons > 0 else '?'} = "
-          f"{0.05/max(total_comparisons,1):.5f}")
-    print(f"{'='*80}")
+    all_survivors = []
+    for region, res in results.items():
+        res = annotate(res, total, alpha)
+        print(f"\n{region}: {len(res.get('comparisons', []))} comparisons")
+        for rec in res["comparisons"]:
+            ext = rec["extreme_units"]
+            flag = "SIG" if rec["bonferroni_significant_boot"] and rec["bonferroni_significant_perm"] else "   "
+            print(
+                f"  [{flag}] {rec['model']:3s} {rec['candidate_group']:24s} "
+                f"{rec['candidate']:48s} A0s{rec['baseline_seed']} "
+                f"n={ext['n_units']:2d} d={ext['delta_pct']:+6.1f}% "
+                f"p_boot={rec['raw_p_boot']:.5f} p_perm={rec['raw_p_perm']:.5f}"
+            )
+            if flag == "SIG":
+                all_survivors.append((region, rec["candidate"], rec["baseline_seed"]))
+        print(f"  survivors: {res['bonferroni_survivors']}")
 
-    bonf_alpha = 0.05 / max(total_comparisons, 1)
-    sig_count = 0
-    nonsig_count = 0
-    worse_count = 0
+    # Baseline-seed robustness: a finding that survives against only one A0
+    # seed is confounded by baseline quality, not augmentation.
+    from collections import defaultdict
+    by_candidate = defaultdict(list)
+    for region, res in results.items():
+        for rec in res.get("comparisons", []):
+            by_candidate[(region, rec["candidate"])].append(rec)
+    robust = []
+    seed_fragile = []
+    for key, recs in by_candidate.items():
+        sig = [r for r in recs if r["bonferroni_significant_boot"]
+               and r["bonferroni_significant_perm"] and r["ci_excludes_zero"]
+               and r["directional_improvement"]]
+        if recs and len(sig) == len(recs):
+            robust.append(key)
+        elif sig:
+            seed_fragile.append([key[0], key[1],
+                                 [r["baseline_seed"] for r in sig],
+                                 [r["baseline_seed"] for r in recs]])
+    print(f"\nRobust across all A0 seeds: {len(robust)}   seed-fragile: {len(seed_fragile)}")
+    seed_robust_survivors = [[r, c] for r, c in robust]
+    for item in seed_fragile:
+        print(f"  seed-fragile: {item[0]} {item[1]} sig_vs={item[2]} of {item[3]}")
+    print("\nArchitecture summary (extreme units, directional):")
+    arch = {}
+    for model in ("gru", "tcn"):
+        n = better = worse = 0
+        deltas = []
+        for res in results.values():
+            for rec in res.get("comparisons", []):
+                if rec["model"] != model:
+                    continue
+                n += 1
+                deltas.append(rec["extreme_units"]["delta_pct"])
+                if rec["extreme_units"]["delta_pct"] < 0:
+                    better += 1
+                else:
+                    worse += 1
+        if n:
+            print(f"  {model}: n={n}, improved={better}, worsened={worse}, "
+                  f"mean_delta={np.mean(deltas):+.2f}%")
+            arch[model] = {"n": n, "improved": better, "worsened": worse,
+                           "mean_delta_pct": float(np.mean(deltas),
+                                                   )}
+            print(f"  {model} by region: " + ", ".join(
+                f"{r}={np.mean([x['extreme_units']['delta_pct'] for x in res['comparisons'] if x['model']==model]):+.2f}%"
+                for r, res in results.items()))
 
-    for region, results in all_results.items():
-        for r in results:
-            p = r["bootstrap"]["boot_p_value_2sided"]
-            if p < bonf_alpha and r["bootstrap"]["mean_diff_a3_minus_a0"] < 0:
-                sig_count += 1
-                print(f"  ✅ {region}: {r['a3_config']} vs A0_s{r['a0_seed']} "
-                      f"(p={p:.4f} < {bonf_alpha:.5f}, Δ={r['delta_pct']:+.1f}%)")
-            elif r["bootstrap"]["mean_diff_a3_minus_a0"] > 0:
-                worse_count += 1
-            else:
-                nonsig_count += 1
-
-    print(f"\n  Survived Bonferroni: {sig_count}")
-    print(f"  Not significant (A3 better but p > α): {nonsig_count}")
-    print(f"  A3 WORSE than A0: {worse_count}")
-    print(f"  TOTAL: {total_comparisons}")
+    payload = {
+        "audit_version": "wave27_v1",
+        "primary_cohort": "extreme independent units (event_id != -999)",
+        "pairing": "within-architecture (candidate model == A0 model)",
+        "family_size": total,
+        "bonferroni_alpha": alpha,
+        "regions": results,
+        "architecture_summary": arch,
+        "survivors_global": seed_robust_survivors,
+        "seed_fragile_survivors": seed_fragile,
+        "nominal_survivors_ignoring_baseline_seed": all_survivors,
+        "resolution_floor_boot": 2.0 / (args.n_boot + 1.0),
+        "resolution_floor_perm": 1.0 / (args.n_perm + 1.0),
+        "resolution_sufficient": bool(
+            2.0 / (args.n_boot + 1.0) <= alpha and 1.0 / (args.n_perm + 1.0) <= alpha),
+        "coverage_note": (
+            "Family covers all A1/A2/A3_fm candidate runs available in "
+            "data/predictions/v2 for the listed regions: A1 oversampling (2 seeds), "
+            "A2 history noise (2 seeds), A3 FM (2 generator seeds x ratios 0.1/0.25/0.5), "
+            "each paired against A0 of the SAME forecaster (2 seeds). That is "
+            "16 candidates x 2 baselines x 2 architectures x 5 regions = 320 tests. "
+            "It does NOT enumerate the full historical search space: tail-aware A3 "
+            "predictions are absent, and discarded ratios, generator hyperparameters "
+            "and model-selection choices are not recorded as predictions. "
+            "Bonferroni over 320 is therefore anti-conservative for the true search."
+        ),
+    }
+    RESULTS_DIR.mkdir(exist_ok=True)
+    out = RESULTS_DIR / "paired_significance_wave27.json"
+    out.write_text(json.dumps(payload, indent=2))
+    print(f"\nSaved → {out}")
 
 
 if __name__ == "__main__":

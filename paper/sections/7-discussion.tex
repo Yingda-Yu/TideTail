@@ -1,144 +1,162 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{The DDPM residual amplification mechanism is fundamental, not budgetary}
-Our 50-epoch full-budget retraining definitively rules out ``insufficient
-training'' as an explanation for the M2 failure. Across 5 regions $\times$ 2
-seeds $\times$ 50 epochs: scale ratios of 0.11--0.35 (all below the 0.5 gate
-threshold), peak ratios of 2.8--26.4$\times$ (all above the 2.5 upper bound),
-and one NaN gradient collapse at epoch 31 on the high-variance thames region.
+\subsection{Why Flow Matching produces plausible samples}
+\label{subsec:why-fm}
 
-The failure mechanism is architectural. The cosine1000-subsample schedule fixes
-the terminal $\bar{\alpha}_T$ from $5.93 \times 10^{-7}$ (1299$\times$
-amplification) to $5.89 \times 10^{-4}$ (41$\times$ amplification). This is
-a 30$\times$ reduction, but 41$\times$ amplification is still enough that the
-reverse chain's accumulated epsilon-prediction error gets amplified into
-physically implausible residuals. Increasing training budget from 3 to 50
-epochs improved mean scale ratio from 0.11 to 0.18 — a 64\% relative
-improvement, still 3$\times$ below the 0.5 gate threshold.
+Flow Matching is the only generator in our benchmark whose sample dispersion
+matches the data (Table~\ref{tab:generators}). Three structural differences
+explain it, and each is a mechanism rather than an empirical coincidence.
 
-The critical insight is that this finding applies specifically to \emph{DDPM
-operating on residual components after trend/seasonal decomposition}. The
-decomposition isolates the residual as a small-variance sub-space where
-amplification is fatal. A DDPM operating directly on full water level (not
-decomposed) may behave differently; the decomposition itself may be the
-problem, not DDPM in general.
-
-\subsection{Why Flow Matching appeared to avoid this failure — P0 caveat}
-\emph{All results in this subsection are post-hoc invalidated by the P0
-target-semantics finding (2026-11-03, \texttt{fc45703}).} The original FM
-checkpoints and downstream A3 run were trained on
-\texttt{residual = water\_level\_m - tide\_level\_m}, a double-subtraction of
-the astronomical tide. \texttt{water\_level\_m} is already the de-tided surge
-residual per \texttt{FORECAST\_TASK\_CONTRACT.md} (verified MAE $< 10^{-8}$~m
-across all five regions). The FM scale ratios, q95/q99 matches, and the
-putative architecture comparison with DDPM in Section~\ref{sec:results} are
-\emph{not physically meaningful}.
-
-The corrected retrain of all ten FM checkpoints (5 regions $\times$ 2 seeds,
-GPU RTX3090, 15 epochs each) was completed on 2026-11-03. A3 downstream
-augmentation reruns on correct residuals are executing concurrently with this
-draft revision. The DDPM negative result (10 full-budget runs, scale ratio
-0.11--0.35, all REJECTED) \emph{remains valid}: the DDPM was trained on the
-same corrupted target, yet still failed catastrophically on all metrics. This
-suggests that the DDPM failure mechanism (reverse-time accumulation on a
-small-variance residual sub-space) is real and robust to target variations.
-Whether Flow Matching produces comparable scale-correctness on physically
-valid targets awaits the corrected A3 reruns.
-
-From a purely architectural perspective, Flow Matching (CNF) avoids reverse
-chain accumulation by construction: the single velocity-regression loss
-trains a field that transports samples from a simple Gaussian prior to the
-data distribution via straight-line interpolation, and inference integrates
-the learned ODE forward in time (Euler, 64 steps). There is no per-step
-amplification and no accumulated error chain. This architectural analysis
-remains valid as a theoretical contrast, but the empirical evidence in this
-paper for it is retracted.
-
-\subsection{Data and protocol limitations}
-\begin{itemize}
-    \item \textbf{ERA5 CDS authentication missing}. Wind stress (U10, V10) and
-    mean sea-level pressure forcing are not yet available because
-    \texttt{~/.cdsapirc} is not configured. This blocks the full surge prior
-    calibration (\texttt{physics.py}) and physics-guided model variants.
-    Owner action required (register at \texttt{cds.climate.copernicus.eu},
-    configure API token).
-
-    \item \textbf{NOAA gauge expansion incomplete}. Three verified CO-OPS
-    stations (8518750, 8665530, 8761724) provide 10 years of hourly
-    observations, but only cover the US east coast. Expanding to 10--30
-    stations across all five regions would strengthen the real-event
-    generalization test.
-
-    \item \textbf{DDPM vs.\ FM comparison not on physically valid targets}.
-    See P0 caveat above. A corrected framework comparison is deferred.
-
-    \item \textbf{Hong Kong region excluded pending signoff}. 134 NaN rows
-    in the prime-formal data, datum and license signoff incomplete.
-
-    \item \textbf{Disk space constrained} (97\% used on \texttt{/data}).
-    Limits large dataset downloads and multiple checkpoint retention.
-\end{itemize}
-
-\subsection{Augmentation utility --- verified and region-dependent}
-\label{subsec:aug-verified}
-The Wave 1.7 benchmark (190 predictions, event-level bootstrap CI with
-calendar-day pseudo-events, 301--360 independent groups per region)
-establishes that \emph{Flow Matching synthetic augmentation improves
-forecasting accuracy in three of five regions} under physically valid
-target residuals. The effect sizes (8.9--15.3\% total-water MAE reduction
-on GRU) are substantial. However:
-
-\begin{itemize}
-    \item The Thames \emph{fundamentally differs} from the other four
-    regions. With a 6.32~m tidal range (the largest in the study,
-    2.5$\times$ the next-largest region), 24.7\% NaN source-data gaps,
-    and a macrotidal regime where surge represents a small fraction of
-    total water level, the Thames cannot be augmented by current synthetic
-    approaches. Whether this reflects tide-dominance, data completeness,
-    or storm-climatology differences remains unresolved.
-
-    \item Southeast Australia is a low-variance regime where the GRU A0
-    baseline already achieves 0.047~m MAE; there is essentially no room
-    for augmentation to improve, and the near-zero residual variance
-    ($\sigma = 0.097$~m) makes generative modeling difficult.
-
-    \item The tidal-range correlation ($r=0.66$, $N=5$) is presented as
-    a hypothesis, not a finding. Five regions cannot support a
-    statistically significant correlation.
-
-    \item \emph{All 12 A3 configurations are reported}. The ``best per
-    region'' table in Section~\ref{subsec:wave17-benchmark} is explicitly
-    post-hoc. No test-set hyperparameter selection occurred.
-\end{itemize}
-
-\textbf{A1 oversampling is a definitively negative result.} Twenty
-comparisons (5 regions $\times$ 2 models $\times$ 2 seeds) $\rightarrow$
-zero improvements over A0. Simply duplicating training storm windows does
-not improve test generalization. This should inform future augmentation
-designs: diversity matters more than quantity.
-
-\textbf{GRU dominates TCN}. Architecture choice is the single largest
-variation source in this study (38/38 wins on GRU vs TCN). Augmentation
-strategies are secondary. Future generative benchmarks should hold the
-forecasting architecture constant while varying synthesis approaches.
-
-\subsection{What this \emph{is}}
-Despite containing a clear negative result and a post-hoc target-semantics
-correction, this work provides:
 \begin{enumerate}
-    \item A fully documented and leakage-safe research protocol frozen at the
-    96$\rightarrow$72 contract with train-only scalers and chronological 8:1:1
-    splits, now with verified total-water reconstruction MAE $< 10^{-8}$~m.
-    \item A definitive diagnosis of \emph{DDPM residual-decomposition
-    amplification} as an architectural failure mode for tidal surge
-    generation, confirmed across 10 full-budget runs (50 epochs each).
-    \item \emph{Post-hoc correction} of the M4 Flow Matching benchmark result
-    — the original run trained on a double-subtracted target and cannot
-    support the claimed framework-choice attribution. A corrected FM retrain
-    and A3 augmentation rerun are executing as of this revision.
-    \item Reproducible data download manifest with SHA256 hashes for verified
-    real NOAA CO-OPS (3 gauges, 10 years), HURDAT2 (2,004 storms), and
-    IBTrACS v04r01 (5,013 storms) sources.
-    \item 268 passing pytest tests and ruff-clean code as PR gate.
+    \item \textbf{One regression, one ODE.} The training objective is a single
+    velocity-regression loss on straight-line interpolants between a Gaussian
+    prior and the data. Inference integrates the learned field forward with a
+    fixed-step Euler solver. There is no chain of 64 conditional updates whose
+    errors compound, so the failure mode that dominates DDPM --- amplification of
+    terminal-step epsilon error --- simply does not exist.
+    \item \textbf{No small-variance sub-space.} Diffusion-TS first decomposes the
+    signal into trend, seasonal and residual components and diffuses the
+    residual, which concentrates the problem into a low-variance sub-space where
+    a fixed absolute epsilon error is relatively enormous. Flow Matching diffuses
+    nothing: it transports the full conditional residual distribution, so the
+    signal-to-noise ratio of the regression target stays constant across
+    training.
+    \item \textbf{Conditioning enters as a feature, not as an additive bias.} The
+    velocity network is a temporal convolutional network that consumes the
+    history (and, in our physics variants, causal ERA5 summaries) directly, so
+    conditioning cannot be lost through a rank deficiency such as the scalar
+    latent broadcast that crippled the VAE.
 \end{enumerate}
+
+This does not make Flow Matching \emph{sufficient}: every FM run is formally
+inconclusive because peak-tail agreement is not established at ten runs. It
+makes it the only generator that is currently \emph{eligible} for a downstream
+test.
+
+\subsection{Why the other three implementations struggled}
+\label{subsec:why-others}
+
+None of the three failures is a property of its model family.
+
+\paragraph{Conditional VAE: a sampling-path mismatch.}
+The original defect (a scalar latent projection) was real and worth fixing, but
+fixing it made sampling \emph{worse}. The reason is that the VAE samples from
+$\mathcal{N}(0,I)$ while training fits a conditional posterior whose aggregate
+has collapsed to a narrow distribution (0/32 active dimensions). The decoder is
+therefore always evaluated slightly off-manifold, and a stronger
+$z\mapsto$horizon path amplifies the discrepancy. The correct remedy is to make
+training and sampling share a distribution --- free-bits KL, latent dropout, or a
+learned conditional prior --- none of which we ran. Posterior collapse worsened
+with training length (16/32 active dimensions at 4,000 windows versus 0/32 at
+20,000), which is the standard dynamic and not a dataset property.
+
+\paragraph{TimeGrad: an unstable autoregressive state.}
+Consuming the ignored memory was necessary and helped (scale 10.55 $\rightarrow$
+6.09), but the memory definition itself is unstable. A raw cumulative sum grows
+monotonically across 72 horizon steps and was never seen during teacher-forced
+training, so it diverges ($1.9\times10^{7}$ in the smaller pilot). A mean
+aggregation removes the growth but also removes the signal, and the recursion
+diverges in the opposite direction ($1.22\times10^{5}$). A bounded or decayed
+memory is the obvious next hypothesis; we did not test it.
+
+\paragraph{Diffusion-TS: numerical amplification in the objective.}
+The original Fourier defect (noise spectrum versus clean spectrum) was real. The
+repair replaced it with the implied clean signal, which requires dividing by
+$\sqrt{\bar\alpha_t}$. At the terminal step this factor is $\approx0.024$, so
+both the value and its gradient are amplified roughly $41\times$; the run reaches
+NaN. The lesson is that an objective which is algebraically correct can still be
+numerically unusable at a schedule's endpoint, and that a 2$\times$ improvement
+observed at a small budget can reverse once the model actually fits the data.
+
+\subsection{Why GRU and TCN respond differently}
+\label{subsec:why-arch}
+
+Under corrected within-architecture pairing, the TCN improves in 110 of 160
+comparisons (mean $-7.08\%$) while the GRU improves in 86 of 160 (mean
+$-0.17\%$; Figure~\ref{fig:arch}). This is a large relative difference and it
+reverses the earlier, incorrectly paired conclusion that architecture effects
+dwarf augmentation effects.
+
+We can state the comparison and bound the explanation, but we cannot yet prove
+the mechanism. The most plausible account is capacity allocation: the TCN's
+dilated receptive field integrates the full 96\,h history through stacked
+convolutions, and synthetic windows add high-frequency, storm-like variability
+that the convolutional filters can exploit as data-driven regularisation. The
+GRU's gating saturates on the same inputs, so extra samples shift the operating
+point rather than the effective receptive field. An alternative account is that
+the GRU is already closer to its achievable error floor on these splits, leaving
+less head for augmentation to recover. Both accounts predict the observed
+direction; discriminating between them requires a receptive-field ablation and a
+learning-curve study that we did not run, and we therefore present them as
+hypotheses rather than findings.
+
+\subsection{Why some regions benefit and others do not}
+\label{subsec:why-region}
+
+Thames is the only region where augmentation harms both architectures
+(+9.78\% GRU, +4.88\% TCN; Figure~\ref{fig:arch}). The physical reading is
+straightforward: Thames is macrotidal (approximately 6.3~m range) and surge is a
+small fraction of total water level, so the residual signal has low
+signal-to-noise ratio. A generator fitted to that residual produces samples whose
+statistical structure is dominated by noise, and appending them adds variance
+without adding storm information. Thames also has 24.7\% NaN gaps in its source
+series, which further weakens the fit.
+
+Southeast Australia shows the largest TCN gain ($-21.69\%$) yet essentially no
+GRU gain ($-0.59\%$), with a baseline MAE already near 0.05~m. A large
+\emph{relative} change on a small absolute error is easy to obtain and should not
+be read as a large operational benefit. NY Bight and the Gulf show moderate
+gains for both architectures; Charleston, the region where the withdrawn
+``significant'' claim originated, shows $-4.30\%$ for the GRU and $-0.09\%$ for
+the TCN under correction.
+
+A single cross-region correlation (tidal range versus gain, $N=5$) cannot
+support a causal claim, and we do not make one.
+
+\subsection{What independent-event evaluation changes}
+\label{subsec:why-events}
+
+Three things change, and all three move in the conservative direction.
+
+First, \textbf{the effective sample size collapses}. A 2024 test split supplies
+6--15 extreme units per region, not thousands of windows, so the standard error
+of an extreme-window MAE is an order of magnitude larger than a window-level
+analysis implies. Second, \textbf{multiplicity becomes binding}. A 320-test
+family at $\alpha=1.563\times10^{-4}$ is not satisfied by any of the 320
+comparisons once pairing is fixed. Third, \textbf{baseline variability becomes
+comparable to the effect}. Identical A0 recipes differ by up to 25\% across seeds
+(Figure~\ref{fig:seedvar}), which is the same order as the mean augmentation
+effect in most regions. Any claim resting on a single baseline seed is therefore
+unsupported, whether or not it clears a nominal p-value.
+
+One honest limitation remains: the 320-test family does not cover the full search
+space, because tail-aware predictions and discarded hyper-parameters were never
+materialised. The correction is anti-conservative, which strengthens rather than
+weakens the conclusion that nothing survives.
+
+\subsection{Do physical priors help?}
+\label{subsec:why-physics}
+
+\emph{Placeholder: completed from the physics pilot artifact.}
+
+\subsection{Limitations}
+\label{subsec:limitations}
+
+\begin{itemize}
+    \item \textbf{Resolution.} ERA5 is 0.25$^\circ$; the Charleston anchor is
+    11.7~km from its cell centre, so near-coastal pressure and wind are cell
+    averages. No downscaling was attempted.
+    \item \textbf{Causality.} Physics covariates are causal (history only), but
+    the forcing is reanalysis. This is a reanalysis-conditioned experiment, not
+    an operational forecast experiment.
+    \item \textbf{Event units.} The expanded 2022--2024 units are POT-only, since
+    the canonical-TC overlay is absent from the existing prediction archives.
+    \item \textbf{Checkpoint reuse.} No existing checkpoint can be evaluated on
+    2022--2024; the expanded protocol required retraining from scratch.
+    \item \textbf{Compute.} All recovery pilots are single-region CPU runs;
+    GPU0 is prohibited and every other GPU was occupied. Conclusions are
+    correspondingly scoped.
+    \item \textbf{Thames data quality.} 24.7\% of the source timeline is NaN,
+    which both reduces its unit count and weakens any generator fitted to it.
+\end{itemize}

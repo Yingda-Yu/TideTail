@@ -83,3 +83,23 @@ For charleston with 5 surviving configs: we ran 48 pairwise comparisons (2 A0 se
 ---
 *Wave 2.6 Power Reassessment — corrected 2026-11-04*
 *Script: scripts/power_audit.py*
+
+## WAVE 2.7 CORRECTION (2026-11-05)
+
+Two numbers above are superseded by the independent rerun
+(`docs/audits/WAVE26_PAIRED_SIGNIFICANCE_AUDIT.md`, section "WAVE 2.7"):
+
+1. **σ_diff ≈ 11% is withdrawn.** It was derived from five "surviving"
+   Charleston configs that do not survive the corrected paired test. Actual
+   event-level differences in the corrected analysis show region- and
+   seed-level variation larger than any claimed effect.
+2. **"All regions fully powered at Δ > 7%" for the expanded cohort** remains
+   hypothetical and must not be cited as evidence. The expanded cohort has
+   never been trained.
+
+The power tables below are retained only as a *design* calculation for
+planning the 2015–2020 / 2022–2024 protocol. They are not results.
+
+Additionally, the Wave 2.6 multiplicity arithmetic (48 comparisons) is
+replaced by the correct family of **320** (5 regions × 2 architectures ×
+16 candidates × 2 A0 seeds), α = 1.563e-4.
