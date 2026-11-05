@@ -1,0 +1,24 @@
+{
+  "steps": 1641,
+  "first_loss": 1.1002330780029297,
+  "last_loss": 0.15035490691661835,
+  "first_100_mean": 0.3112751978635788,
+  "last_100_mean": 0.17070269092917442,
+  "epoch_mean_losses": {
+    "1": 0.21986265259861293,
+    "2": 0.18040444264682162,
+    "3": 0.17202923352910135
+  },
+  "loss_min": 0.1250763088464737,
+  "loss_max": 1.1002330780029297,
+  "all_finite": true,
+  "resource_samples": 84,
+  "max_gpu_used_mib": 428,
+  "max_gpu_temperature_c": 34,
+  "gpu_utilization_percent_range": [
+    0,
+    19
+  ],
+  "max_cuda_peak_allocated_mib": 52.94677734375,
+  "max_rss_kib": 1918132
+}

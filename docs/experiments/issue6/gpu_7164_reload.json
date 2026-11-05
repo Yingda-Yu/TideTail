@@ -1,0 +1,32 @@
+{
+  "checkpoint_sha256": "dee516cf74b50a0ca8aff8ab05815c7ed36a32ea6c49b9dc81d5b532d39ebb68",
+  "steps": 1641,
+  "optimizer_state_steps": [
+    1641
+  ],
+  "examples": 209838,
+  "reload_on_cuda": true,
+  "shape": [
+    8,
+    1,
+    24
+  ],
+  "finite": true,
+  "repeat_exact": true,
+  "matches_saved_samples": true,
+  "conditional_sensitivity_standardized": 30.84644889831543,
+  "sample_residual_m_min": -16.909624099731445,
+  "sample_residual_m_max": 7.940377712249756,
+  "sample_residual_m_mean": -1.2253550291061401,
+  "sample_residual_m_std": 4.473741054534912,
+  "gpu_status": {
+    "physical_index": 4,
+    "uuid": "GPU-6be030f8-625e-c4e7-a2fb-1309a673664b",
+    "name": "NVIDIA GeForce RTX 3090",
+    "total_mib": 24576,
+    "used_mib": 358,
+    "utilization_percent": 0,
+    "temperature_c": 32
+  },
+  "torch_version": "2.13.0+cu130"
+}

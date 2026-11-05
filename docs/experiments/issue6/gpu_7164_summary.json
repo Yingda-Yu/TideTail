@@ -1,0 +1,28 @@
+{
+  "steps": 1641,
+  "session_steps": 1636,
+  "finished_utc": "2026-10-25T13:01:17.505885+00:00",
+  "examples_seen": 209838,
+  "complete_epochs": 3,
+  "next_offset": 0,
+  "timebox_reached": false,
+  "wall_seconds": 41.477407876984216,
+  "process_cpu_seconds": 18.782000145999998,
+  "mean_process_cpu_percent": 45.28248294036262,
+  "sensitivity_mean_abs": 30.84644889831543,
+  "nearest_train_rmse_standardized": [
+    0.16976720094680786,
+    9.192726135253906,
+    19.939701080322266,
+    0.23239797353744507,
+    1.0361398458480835,
+    41.74372100830078,
+    26.183544158935547,
+    0.3074738383293152
+  ],
+  "exact_or_near_copies_1e_minus_4": 0,
+  "generated_samples": 8,
+  "independent_storm_count": null,
+  "claim": "Engineering smoke only; no generalization or predictive-skill evidence",
+  "checkpoint_sha256": "dee516cf74b50a0ca8aff8ab05815c7ed36a32ea6c49b9dc81d5b532d39ebb68"
+}

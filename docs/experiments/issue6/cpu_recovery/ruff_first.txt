@@ -1,0 +1,84 @@
+RUF100 [*] Unused `noqa` directive (non-enabled: `E402`)
+  --> scripts/diagnose_ddpm_cpu.py:15:21
+   |
+13 |     os.environ[name] = "2"
+14 |
+15 | import numpy as np  # noqa: E402
+   |                     ^^^^^^^^^^^^
+16 | import torch  # noqa: E402
+   |
+help: Remove unused `noqa` directive
+   |
+14 |
+   - import numpy as np  # noqa: E402
+15 + import numpy as np
+16 | import torch  # noqa: E402
+   |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E402`)
+  --> scripts/diagnose_ddpm_cpu.py:16:15
+   |
+15 | import numpy as np  # noqa: E402
+16 | import torch  # noqa: E402
+   |               ^^^^^^^^^^^^
+17 |
+18 | from tidetail.pilot_data import digest, prepare, safe_file  # noqa: E402
+   |
+help: Remove unused `noqa` directive
+   |
+15 | import numpy as np  # noqa: E402
+   - import torch  # noqa: E402
+16 + import torch
+17 |
+   |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E402`)
+  --> scripts/diagnose_ddpm_cpu.py:18:61
+   |
+16 | import torch  # noqa: E402
+17 |
+18 | from tidetail.pilot_data import digest, prepare, safe_file  # noqa: E402
+   |                                                             ^^^^^^^^^^^^
+19 | from tidetail.torch_diffusion import Diffusion, TemporalDenoiser, sample_diagnostics  # noqa: E402
+   |
+help: Remove unused `noqa` directive
+   |
+17 |
+   - from tidetail.pilot_data import digest, prepare, safe_file  # noqa: E402
+18 + from tidetail.pilot_data import digest, prepare, safe_file
+19 | from tidetail.torch_diffusion import Diffusion, TemporalDenoiser, sample_diagnostics  # noqa: E402
+   |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E402`)
+  --> scripts/diagnose_ddpm_cpu.py:19:87
+   |
+18 | from tidetail.pilot_data import digest, prepare, safe_file  # noqa: E402
+19 | from tidetail.torch_diffusion import Diffusion, TemporalDenoiser, sample_diagnostics  # noqa: E402
+   |                                                                                       ^^^^^^^^^^^^
+20 |
+21 | RUN = Path("/data/yingda/spartina-agent/worktrees/spartina/f1cff330/outputs/"
+   |
+help: Remove unused `noqa` directive
+   |
+18 | from tidetail.pilot_data import digest, prepare, safe_file  # noqa: E402
+   - from tidetail.torch_diffusion import Diffusion, TemporalDenoiser, sample_diagnostics  # noqa: E402
+19 + from tidetail.torch_diffusion import Diffusion, TemporalDenoiser, sample_diagnostics
+20 |
+   |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E402`)
+ --> tests/test_sampling_integrity.py:7:49
+  |
+6 | torch = pytest.importorskip("torch")
+7 | from tidetail.torch_diffusion import Diffusion  # noqa: E402
+  |                                                 ^^^^^^^^^^^^
+help: Remove unused `noqa` directive
+  |
+6 | torch = pytest.importorskip("torch")
+  - from tidetail.torch_diffusion import Diffusion  # noqa: E402
+7 + from tidetail.torch_diffusion import Diffusion
+8 |
+  |
+
+Found 5 errors.
+[*] 5 fixable with the `--fix` option.

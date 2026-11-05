@@ -1,0 +1,4736 @@
+{
+  "environment": {
+    "python": "3.10.12",
+    "numpy": "2.0.2",
+    "pytest": "9.1.1"
+  },
+  "audit_base_sha": "584094cffd94bb7d806ca25d889c955dd483c0af",
+  "data_root": "/data/yingda/tidetail-data/prime-formal-2015-2024",
+  "file_count": 350,
+  "bytes": 471109529,
+  "migration_manifest_present": false,
+  "inventory": {
+    "database_manifest.json": {
+      "bytes": 1831,
+      "sha256": "f982321b56b740ecdb44029ce909d55d864aa4ba3a89136d74b4b82338920f3a"
+    },
+    "derived/prime_coast/ny_bight/event_table_v1.csv": {
+      "bytes": 277514,
+      "sha256": "bc9db6a4cc29cbaa849c63a141e61fab1fcc5932031fca97d04bf101199b3fcb"
+    },
+    "derived/prime_coast/ny_bight/forcing_build_metadata.json": {
+      "bytes": 7933,
+      "sha256": "afc3e75a78b96210d5dba511a83547ea982cf00f0294f2674437114336ce2938"
+    },
+    "derived/prime_coast/ny_bight/forcing_timeline_v1.csv": {
+      "bytes": 9041484,
+      "sha256": "af0670d05aa8d3d460b6dfa1a9eff0feb51e2be3c2d1d45c3e642d21e9a70532"
+    },
+    "derived/prime_coast/ny_bight/region_manifest_v1.json": {
+      "bytes": 1763,
+      "sha256": "dfaa9324105468c43de95f44fe954711d5d9e8214dbb6498ce02717becc06999"
+    },
+    "derived/prime_coast/ny_bight/static_pack_v1.json": {
+      "bytes": 1412,
+      "sha256": "66c6ab340a71c3c9d55de22a89cce08434943ead4e3aeaea3d927f7e29427d86"
+    },
+    "derived/prime_coast/ny_bight/static_pack_v1.npz": {
+      "bytes": 26416,
+      "sha256": "49a27f2883ef719b8f5c8465366401961107153bca2a65148944a0277ac32747"
+    },
+    "derived/prime_coast/ny_bight/target_tide_build_metadata.json": {
+      "bytes": 1151,
+      "sha256": "70146c8e85f8c2fd9918cacc28fb3a914d0023afba0436715e9f9f31d4be0b58"
+    },
+    "derived/prime_coast/ny_bight/target_timeline_v1.csv": {
+      "bytes": 9439504,
+      "sha256": "498a9c79d280fb91d3a84421e6d58219b0b6cb992a65d2971692f8748eeb59e7"
+    },
+    "derived/prime_coast/ny_bight/tide_timeline_v1.csv": {
+      "bytes": 7057816,
+      "sha256": "f80a98057109dcfad4ac753840231a7c9052f083cb497d1207ab4bad12355424"
+    },
+    "derived/prime_coast/ny_bight/train_only_metadata_v1.json": {
+      "bytes": 1407,
+      "sha256": "8862b0410eabb83eb53583edb8b80a35049489b38fc8fb9027e092a355ae0233"
+    },
+    "derived/prime_coast/ny_bight/window_index_v1.npz": {
+      "bytes": 595439,
+      "sha256": "8b9aa0bd50914238d613d591f1313239d750b66e4f648d6778bb4b02c6bd5ab2"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/event_table_v1.csv": {
+      "bytes": 204448,
+      "sha256": "0d2c50ce4b77a802688ed5444f7cf3cc05f20f1e06742662b90a3e9981e2b5da"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/forcing_build_metadata.json": {
+      "bytes": 8423,
+      "sha256": "1d8fa80340be16f5f248f59ede31b0a977ba35e9773aff7a7da405986e3fb6b3"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/forcing_timeline_v1.csv": {
+      "bytes": 9079560,
+      "sha256": "6a665d275c13104d189cf7495615bef3989adeee32cea10552955a49f7434340"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/region_manifest_v1.json": {
+      "bytes": 2019,
+      "sha256": "02eb3230cb25538f190ccd1e493956959ce985a9922fa7424fb15af6d92dc248"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/static_pack_v1.json": {
+      "bytes": 1436,
+      "sha256": "16fa3cba9194e57987946257fb96c5d616b7c2207f81bff788b2b64c60f03719"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/static_pack_v1.npz": {
+      "bytes": 22037,
+      "sha256": "ab0e031fa3e0fcbe12f269de90c7ce3d0d6a21710af167c7c5c4975321c15f79"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/target_tide_build_metadata.json": {
+      "bytes": 1288,
+      "sha256": "dd9a57d3469ed012f12cfe9218e658dbe04bb2095be2025010cb073e5a53b88e"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/target_timeline_v1.csv": {
+      "bytes": 9555688,
+      "sha256": "a760ffa69e7c96516f354b2369c3b4a66a969dbc6270a1960eacb707258c44e7"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/tide_timeline_v1.csv": {
+      "bytes": 7060680,
+      "sha256": "3e51b3f19a2ef0882b19433fe04c3565837c129c1cb1d235382c7c690770b51d"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/train_only_metadata_v1.json": {
+      "bytes": 1398,
+      "sha256": "50570cbfd82fd51f27574a323f2de456a07cc2a49eb8f1c275a56420c7f186ec"
+    },
+    "derived/prime_coast/pearl_river_hong_kong/window_index_v1.npz": {
+      "bytes": 590413,
+      "sha256": "91a6d3918ee648780cb5e72728e07c72e8660ad32075ffab741ddc48484e4386"
+    },
+    "derived/prime_coast/south_atlantic_charleston/event_table_v1.csv": {
+      "bytes": 299404,
+      "sha256": "8396753dc02ecba0497129819f8c1c772e5f285080f313b9bb3d70c04cb6493e"
+    },
+    "derived/prime_coast/south_atlantic_charleston/forcing_build_metadata.json": {
+      "bytes": 8594,
+      "sha256": "6148fddd95d1f227e5ef6ed66cc53b3c134da3388647f82101d15c0ca823967c"
+    },
+    "derived/prime_coast/south_atlantic_charleston/forcing_timeline_v1.csv": {
+      "bytes": 9064453,
+      "sha256": "e27d2f7c2c977d0842e022ec8c9b9430187285fb478388dddb298783ccd35c84"
+    },
+    "derived/prime_coast/south_atlantic_charleston/region_manifest_v1.json": {
+      "bytes": 1797,
+      "sha256": "8954eaae4228acae63f13d17912e079cd3c0378636d271ed19c1a8d7b33096c4"
+    },
+    "derived/prime_coast/south_atlantic_charleston/static_pack_v1.json": {
+      "bytes": 1459,
+      "sha256": "6eb0945d84264952e221d5583a5c65f39abce29730369180ef704cc84c8f06a5"
+    },
+    "derived/prime_coast/south_atlantic_charleston/static_pack_v1.npz": {
+      "bytes": 28933,
+      "sha256": "5a0957d9d975cfd59eacaa8443c4b63935d79aa5a4aaad5939aaa66d8d1db265"
+    },
+    "derived/prime_coast/south_atlantic_charleston/target_tide_build_metadata.json": {
+      "bytes": 1184,
+      "sha256": "7f101a2c7487c3d0a1a482144d74267a2a9e04b9ad22a8571c03321f2560b821"
+    },
+    "derived/prime_coast/south_atlantic_charleston/target_timeline_v1.csv": {
+      "bytes": 9349845,
+      "sha256": "88039673e29042b13f34356b0c22b6a9dd5a3b6ec2040ac4e3340efffe62c50a"
+    },
+    "derived/prime_coast/south_atlantic_charleston/tide_timeline_v1.csv": {
+      "bytes": 7057835,
+      "sha256": "4755df5deefe8f5f43c677dd7c50ebca045e687cbe6aa97488b7c0d74a09297f"
+    },
+    "derived/prime_coast/south_atlantic_charleston/train_only_metadata_v1.json": {
+      "bytes": 1411,
+      "sha256": "13104d13c63cc42dc8be2e6f792ddd7974ed3d69c6e45752884834982a4069e7"
+    },
+    "derived/prime_coast/south_atlantic_charleston/window_index_v1.npz": {
+      "bytes": 595439,
+      "sha256": "8b9aa0bd50914238d613d591f1313239d750b66e4f648d6778bb4b02c6bd5ab2"
+    },
+    "derived/prime_coast/southeast_australia/event_table_v1.csv": {
+      "bytes": 279122,
+      "sha256": "5d61936be0f9e4cbcd0fcf117c7675c99bc82301a536da5763f40ddc7996f818"
+    },
+    "derived/prime_coast/southeast_australia/forcing_build_metadata.json": {
+      "bytes": 8343,
+      "sha256": "7b21692e4b6757b5f1473cf2d111f5f534024f3d58756cab437a8ed514eede32"
+    },
+    "derived/prime_coast/southeast_australia/forcing_timeline_v1.csv": {
+      "bytes": 9099255,
+      "sha256": "03b0975e608701ae88d14107eeff2964cad965ac63f8c5bbbc634789f138b22a"
+    },
+    "derived/prime_coast/southeast_australia/region_manifest_v1.json": {
+      "bytes": 1807,
+      "sha256": "1fa8670aab947015f9067d21fcde69f94d8f1dbe3b80e053a22f9f9da6212d93"
+    },
+    "derived/prime_coast/southeast_australia/static_pack_v1.json": {
+      "bytes": 1446,
+      "sha256": "af80c07b8614dea0c1800f2ec2d4003079ff67eed53f04aa7f6cee310eecca6f"
+    },
+    "derived/prime_coast/southeast_australia/static_pack_v1.npz": {
+      "bytes": 32653,
+      "sha256": "40e5e3f44cac2af1541bf052f7003ef85edc8c7a41f6e383f0e850d2d14ac305"
+    },
+    "derived/prime_coast/southeast_australia/target_tide_build_metadata.json": {
+      "bytes": 1211,
+      "sha256": "50e03b6cb92685f10e23d1c5c5452a40f9ab9e29e62c61a16543c64a34765237"
+    },
+    "derived/prime_coast/southeast_australia/target_timeline_v1.csv": {
+      "bytes": 9468553,
+      "sha256": "30900a173006d2b739a76df52966a62300788e8653b61821023975e838b65f06"
+    },
+    "derived/prime_coast/southeast_australia/tide_timeline_v1.csv": {
+      "bytes": 7058311,
+      "sha256": "c33f71d574897ed7b3cd0e1f69b6f5f220f92c2db83907ed9a8c962bde196f5a"
+    },
+    "derived/prime_coast/southeast_australia/train_only_metadata_v1.json": {
+      "bytes": 1398,
+      "sha256": "b9ca0116103509a8e2712afc22a768fff17b3f39acd9de9be599a87baeb23a64"
+    },
+    "derived/prime_coast/southeast_australia/window_index_v1.npz": {
+      "bytes": 595138,
+      "sha256": "78b96ba4d8385e624229848827c7210c8c54fb608264950c3b6a3673a38b80bf"
+    },
+    "derived/prime_coast/static_pack_manifest.json": {
+      "bytes": 9777,
+      "sha256": "6236693b02142fe3c72535acb52d5a9fdc0e332d22cd9c2b39c4a82180b9c3dd"
+    },
+    "derived/prime_coast/thames_north_sea/event_table_v1.csv": {
+      "bytes": 436163,
+      "sha256": "abed71d7d526a2e1d1b5f3a2c53e049b0d2a40aab9f2bd0af8e08c9a2b9902ef"
+    },
+    "derived/prime_coast/thames_north_sea/forcing_build_metadata.json": {
+      "bytes": 8247,
+      "sha256": "f03fdf4771cd86f65c7ddbb26739bc48463351c5e0bbb288dbccc79624b35a03"
+    },
+    "derived/prime_coast/thames_north_sea/forcing_timeline_v1.csv": {
+      "bytes": 9046862,
+      "sha256": "ec1a9f6d2f68017dcf558f3a67fa5cf88a56fd055f67c1368c98852c4909643e"
+    },
+    "derived/prime_coast/thames_north_sea/region_manifest_v1.json": {
+      "bytes": 1799,
+      "sha256": "9ce530ccaea0cd6eca022cf431dba9a631e6174cd875e9306f373f1b08bc7dc6"
+    },
+    "derived/prime_coast/thames_north_sea/static_pack_v1.json": {
+      "bytes": 1426,
+      "sha256": "e3e6f062f481d08425ea7656109a6ed1ec3fd2aa8d75055d51d90d76fd871f02"
+    },
+    "derived/prime_coast/thames_north_sea/static_pack_v1.npz": {
+      "bytes": 19660,
+      "sha256": "230764e65fc09cd068c465e27a837ea97c8516b6a6debb1e47e8b4f92bec909a"
+    },
+    "derived/prime_coast/thames_north_sea/target_tide_build_metadata.json": {
+      "bytes": 1236,
+      "sha256": "743001c9602a17d6b5a0b112084d7949a9161019e3d1928745b313568f7ac83a"
+    },
+    "derived/prime_coast/thames_north_sea/target_timeline_v1.csv": {
+      "bytes": 9194196,
+      "sha256": "e8bc1e2fe55e1eb3b9e8fd01bdd65875030b09b9f595597095ec5e6480f215f6"
+    },
+    "derived/prime_coast/thames_north_sea/tide_timeline_v1.csv": {
+      "bytes": 7057603,
+      "sha256": "d89a789cb2053a5428836472d3a39451b230ccb95d4be7fd70d9f7e1cedceb3a"
+    },
+    "derived/prime_coast/thames_north_sea/train_only_metadata_v1.json": {
+      "bytes": 1406,
+      "sha256": "b401f087b205e6e3c8c2f5de2aac6dd3fe5e959d10f656026a46269c315e3881"
+    },
+    "derived/prime_coast/thames_north_sea/window_index_v1.npz": {
+      "bytes": 559644,
+      "sha256": "ca433592d2e64a6f7364d7589a39270e4aa23a9325c8587f8da798dd74ad3c6a"
+    },
+    "derived/prime_coast/us_gulf_coast/event_table_v1.csv": {
+      "bytes": 90576,
+      "sha256": "15c3403c389816e8c0d31ce61e04279b08489f903399c60cf5c0ab3cc8dae2e7"
+    },
+    "derived/prime_coast/us_gulf_coast/forcing_build_metadata.json": {
+      "bytes": 8096,
+      "sha256": "51f8e5caabdb1bccbf3fb9d77a825be990ff4de1752b4b3320ee9301286bc940"
+    },
+    "derived/prime_coast/us_gulf_coast/forcing_timeline_v1.csv": {
+      "bytes": 9082581,
+      "sha256": "7c25694033b184c2d2fbc68ca9919ec080933d5b3b4dd08d6b1cfd14bf061881"
+    },
+    "derived/prime_coast/us_gulf_coast/region_manifest_v1.json": {
+      "bytes": 1772,
+      "sha256": "362ac74d34895ab982e111b33ba437b4568543270c9959254fcd0f1609fd14f2"
+    },
+    "derived/prime_coast/us_gulf_coast/static_pack_v1.json": {
+      "bytes": 1434,
+      "sha256": "dc602e44c60a603df4817b98f50c2a2f09ad336b77bd079a9d67b00e25649caf"
+    },
+    "derived/prime_coast/us_gulf_coast/static_pack_v1.npz": {
+      "bytes": 23735,
+      "sha256": "72b06802916d99d98327a6dfd336711975ddfa906c85a04a291387532a1b6f5e"
+    },
+    "derived/prime_coast/us_gulf_coast/target_tide_build_metadata.json": {
+      "bytes": 1191,
+      "sha256": "d75cc1d273a4f9d4e2967dcd52ab1ee614a34068a5a89b3a1f5f2721e875fc10"
+    },
+    "derived/prime_coast/us_gulf_coast/target_timeline_v1.csv": {
+      "bytes": 9933766,
+      "sha256": "17f9c4075c5921240414a573d82c7f0615afb329bff0bd2ab54742b7f8f57626"
+    },
+    "derived/prime_coast/us_gulf_coast/tide_timeline_v1.csv": {
+      "bytes": 7051246,
+      "sha256": "58d21f0f3d773e7ac555cdb28453e4c628d1a118c4414ae832d23914a909af0a"
+    },
+    "derived/prime_coast/us_gulf_coast/train_only_metadata_v1.json": {
+      "bytes": 1402,
+      "sha256": "17212578e875a16b7280c26995058b924f80693d009aaf15bdc98f8e624addf8"
+    },
+    "derived/prime_coast/us_gulf_coast/window_index_v1.npz": {
+      "bytes": 595439,
+      "sha256": "8b9aa0bd50914238d613d591f1313239d750b66e4f648d6778bb4b02c6bd5ab2"
+    },
+    "exclusion_register.json": {
+      "bytes": 1804,
+      "sha256": "47ae5621304d55fb3124248985c5d4a60b010a4cb56c1803a23c9725ae8e981e"
+    },
+    "file_inventory_sha256.json": {
+      "bytes": 61125,
+      "sha256": "e45364d77cd2d813fc36186b931a15b33aa82e7a0d3a8766f2af01b01b75d9c0"
+    },
+    "raw/era5/.misplaced_archive_20260721/era5_u10_v10_mslp_2015_Q1_south_atlantic_charleston.nc": {
+      "bytes": 2783598,
+      "sha256": "d633160c3a2cbfcb8e8c49908b728dd67ab77944a4401fd53952a20c116da05d"
+    },
+    "raw/era5/.misplaced_archive_20260721/era5_u10_v10_mslp_2015_Q1_us_gulf_coast.nc": {
+      "bytes": 2069637,
+      "sha256": "a3c51b576a7a81bc886ac5beb1f833d64a54a9d78de73876b110511d7f16700d"
+    },
+    "raw/era5/.misplaced_archive_20260721/era5_u10_v10_mslp_2015_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 2114826,
+      "sha256": "6ac15a3e0be7e2da9ab6d8611ce728387970f38481497ff46810de34227056da"
+    },
+    "raw/era5/.misplaced_archive_20260721/era5_u10_v10_mslp_2015_Q2_southeast_australia.nc": {
+      "bytes": 2947770,
+      "sha256": "2908a3b9ac713ed00802da1af8154e3ac58e44d64ad662efe6522009c6ea2f59"
+    },
+    "raw/era5/.misplaced_archive_20260721/era5_u10_v10_mslp_2015_Q2_thames_north_sea.nc": {
+      "bytes": 2213371,
+      "sha256": "7c539d61167baf8b2c192366f26827d737798b4793e0b97ca590f6f661ef2711"
+    },
+    "raw/era5/.misplaced_archive_20260721/era5_u10_v10_mslp_2016_Q2_ny_bight.nc": {
+      "bytes": 1801720,
+      "sha256": "b6e3a937adec709abf2cae099cc7b9b8fce4dbf3cb9b38810c6b8eb2964b3aa8"
+    },
+    "raw/era5/arco_fill_manifest_m0_v1.json": {
+      "bytes": 36446,
+      "sha256": "3c200be4fef11f868badcbc933e819b32782007bd72cfac34ad3d576737ecd24"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2015_Q1_ny_bight.nc": {
+      "bytes": 1772523,
+      "sha256": "d5e4bdefb3b4d8eaa5042629564de4e33bb42b399289efcf8d311007f6d19645"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2015_Q2_ny_bight.nc": {
+      "bytes": 1796190,
+      "sha256": "e8806b2f5fc7600059f9cd81137d316084910967497bfe156665e9992190ef16"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2015_Q3_ny_bight.nc": {
+      "bytes": 1800698,
+      "sha256": "a178841c7c8a133d4bfc57e9c0e2f4d0c27947b813a853ce197426546cdaf0a1"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2015_Q4_ny_bight.nc": {
+      "bytes": 1793278,
+      "sha256": "3cc745960d901704f7f530a807cf02f54726c2ed73a329307cd48d064072087d"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2016_Q1_ny_bight.nc": {
+      "bytes": 1794286,
+      "sha256": "0775e3c5f8b835f447e2cce7fa284ad36cecb17b1bf6c8a9023b90a57374579e"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2016_Q2_ny_bight.nc": {
+      "bytes": 1801720,
+      "sha256": "b6e3a937adec709abf2cae099cc7b9b8fce4dbf3cb9b38810c6b8eb2964b3aa8"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2016_Q3_ny_bight.nc": {
+      "bytes": 78671,
+      "sha256": "28481734cf20cf3055040549319cf77bcc40484075606f719e4a8691a075af28"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2016_Q4_ny_bight.nc": {
+      "bytes": 1806537,
+      "sha256": "cf481b0cd9e798030455048c4f9e18494f13533b9bbf750857deb40d3e13abf6"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2017_Q1_ny_bight.nc": {
+      "bytes": 77711,
+      "sha256": "892e3938e81d1e98b8cb634ba2fc5e3f7d852e828e19b7ac669b287ffe7aac2f"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2017_Q2_ny_bight.nc": {
+      "bytes": 78191,
+      "sha256": "4a732045fdb600902b2c259a81d923bd994a715d85ace03ce090fe7286f48c3c"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2017_Q3_ny_bight.nc": {
+      "bytes": 78671,
+      "sha256": "0e49978bf00fd88a2e5a46ad239e6d2678765f2beef8573a632086a3698e9daa"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2017_Q4_ny_bight.nc": {
+      "bytes": 78671,
+      "sha256": "391bed8b8088ad123a780d5a04e9d2524d8f4461a62e103aebad0d0778dae012"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2018_Q1_ny_bight.nc": {
+      "bytes": 77711,
+      "sha256": "02423f912167d22085348e93078498bd591a16e8b3ccfd7c2c4bd33d7a2fdc8f"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2018_Q2_ny_bight.nc": {
+      "bytes": 78191,
+      "sha256": "cee9d62acdca115f061f7994e9bb7c52dff83a992eef4621375a5ace46cdad5a"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2018_Q3_ny_bight.nc": {
+      "bytes": 78671,
+      "sha256": "419cdfa40bd3c4d3df8819ced119c2bb3c60ddc9113db988b618faaff1301211"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2018_Q4_ny_bight.nc": {
+      "bytes": 78671,
+      "sha256": "1a897b3975e2c6d7f4499d7baf71c27c046584c78714e0500628d02af63a3275"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2019_Q1_ny_bight.nc": {
+      "bytes": 77711,
+      "sha256": "9af5d01e771181f1a75b7a84895d825c31f6c37be9651ea6fb6c212f812aeac8"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2019_Q2_ny_bight.nc": {
+      "bytes": 78191,
+      "sha256": "f64336acc06ea9cc30f6bf2644765a22e987cce7ba18679fbe2b2b04ce72c273"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2019_Q3_ny_bight.nc": {
+      "bytes": 78671,
+      "sha256": "df8040a88632507c7dbf7a34534a82a31791b07ded842d4b0d249c09789a7986"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2019_Q4_ny_bight.nc": {
+      "bytes": 78671,
+      "sha256": "238a96861f840e29ec4a1c53723b3a7738c50d0e3b857968b9467303015ba16e"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2020_Q1_ny_bight.nc": {
+      "bytes": 78191,
+      "sha256": "f5846cc45bf2f73c67674e5c93193f0adbfe42723b00e0d83179d1651094f8f8"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2020_Q2_ny_bight.nc": {
+      "bytes": 78191,
+      "sha256": "d1836722a46a2194f0a5541be12d6631ce882a6bad0ff3ab867bdf1839f1be85"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2020_Q3_ny_bight.nc": {
+      "bytes": 78671,
+      "sha256": "3e07a0aeb163f75eb619e14f3506995239f1ebd4bb8b51be13b9a298691cd2f4"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2020_Q4_ny_bight.nc": {
+      "bytes": 78671,
+      "sha256": "8d55a72641113c2ff7e2311ff9934276908a9e7f54d0736949ef12ee0dbc99ff"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2021_Q1_ny_bight.nc": {
+      "bytes": 5707550,
+      "sha256": "f900e5127b2de3d884f361c4fe1968af29a88e5790ca8800761867b6bc68e655"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2021_Q2_ny_bight.nc": {
+      "bytes": 5795062,
+      "sha256": "f1baa117eaf836279d84f0d64c3bc96dfb2f1c037f341c13c4145a821716fc0f"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2021_Q3_ny_bight.nc": {
+      "bytes": 5841227,
+      "sha256": "77218bf889d692cf76ae46d7ffb7be178ebe97f80f63a21655a090f23875a4bc"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2021_Q4_ny_bight.nc": {
+      "bytes": 5831168,
+      "sha256": "f7e909b8912b07f71c154e4d852c67f22035e7c878b0abfc25b1207ccc50f005"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2022_Q1_ny_bight.nc": {
+      "bytes": 5742661,
+      "sha256": "460de6548e243006efabe183ec0d6b685e1078df443508645bbf6b7c30eafee2"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2022_Q2_ny_bight.nc": {
+      "bytes": 5814297,
+      "sha256": "5c9315ec7d87c2a8d3c253a5c4ab9d781b7d69a7c454165ac7509cf21db0f582"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2022_Q3_ny_bight.nc": {
+      "bytes": 5821149,
+      "sha256": "ea530d0ad50f7064887313b5c248f3da9ef179125b440c61a3eefaf3a9d74044"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2022_Q4_ny_bight.nc": {
+      "bytes": 5814203,
+      "sha256": "64a7bb147740ce79c0c1b4039d325cd720e2a24a565e1ba0a79e3247a169c0d6"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2023_Q1_ny_bight.nc": {
+      "bytes": 5750257,
+      "sha256": "0c427a7b0dbdde84aaa8e8b032d0f172f8b36b45b5ccc4cb78ca2fdb3296f38b"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2023_Q2_ny_bight.nc": {
+      "bytes": 5812400,
+      "sha256": "060b5846bfe3fbcfa76274c8385400c6359206f25f76c643e04aa347dfca36d4"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2023_Q3_ny_bight.nc": {
+      "bytes": 5851901,
+      "sha256": "dfa6d3c8a59ebc43073afe50720817fde84e0f7cfab778d52d68fc1387a19c51"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2023_Q4_ny_bight.nc": {
+      "bytes": 5802558,
+      "sha256": "f4aca4b8aea67701429987dabbf3ba79ad7fac946ee24d8d33a15904efbce8b7"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2024_Q1_ny_bight.nc": {
+      "bytes": 5792126,
+      "sha256": "d63d157c12b5750432c7834fb4b91e72328454253dac176ce1fc23342feb3ce3"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2024_Q2_ny_bight.nc": {
+      "bytes": 5816602,
+      "sha256": "135a0accb076e85e3d57a9d72bc4f1f1745b7f80b869cef0a85b9b5de3f280ea"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2024_Q3_ny_bight.nc": {
+      "bytes": 5831835,
+      "sha256": "295044fa42d60d70177bfaa0ba7a8674b6805b30763c0cf4fd67865c4ca8e669"
+    },
+    "raw/era5/ny_bight/era5_u10_v10_mslp_2024_Q4_ny_bight.nc": {
+      "bytes": 5804657,
+      "sha256": "6c3f8679acf4b24fb65bc990c43fa954f9d67455ac03f336b2e3c23d9ecf0a61"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2015_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 2105998,
+      "sha256": "3c09939ca0868f476333acbe3e239c090e04bd6d75634a262db31632ac7127b7"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2015_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 2114826,
+      "sha256": "6ac15a3e0be7e2da9ab6d8611ce728387970f38481497ff46810de34227056da"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2015_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "55d59459e0bf03c626e8040463bd4996365853c44a744375337bcb85ea74cb80"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2015_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "342986e2f13566242aaf115427585206e78767ecbe2dd5db24ed31d243587d1e"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2016_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "8d6a5655c59c94c94febef2b82a62d0c5ae6fe81820e7424a99e070392b798e3"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2016_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "6e9e0bbe406820e6ac4d3827dd3ab9edd4a7092863e7eab2d7389d5e66a983fb"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2016_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "d3b8301e2999df358fb47317e5b98204f7045c5fd3660dda012bc14a50bde1a4"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2016_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "2a0242d7d336e5fb2648f221627f34786fb49b3742062ae4affccc9e113a9d49"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2017_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 77711,
+      "sha256": "389970eee4815bc6678a358d1512a9f3e0820086e761f0f8b447e7eaa80841b2"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2017_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "e60fa10af269027f76390d8e6c9c4f339eb2b8c4caabc99bd5b82e6e7af3febe"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2017_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "891dabca51795f012532619696ccf4009ccf4e19e120e4fa8faf2207fad2e61b"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2017_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "122b9a566427424c517f9250f2c2551a0e2a780fe453371f4989df2ec10006e4"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2018_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 77711,
+      "sha256": "51b78007656a7822c5d889bf6b26c85639b9ae9f240be8c4bb5f9ee2c21f1361"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2018_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "e2d148eafa66b5729da041a5e235a369c414f1c2cdf098def7ed501f96528f93"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2018_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "c1562a33352d8cfa0a512bc93585525eea255599e31e8ff3f78032ad14cb30e6"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2018_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "c539258f790adf68e8a7f4ce4cea339760c7ef38c53c3ecbbc6930f5eb86912d"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2019_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 77711,
+      "sha256": "c781784f085d7967809a233c5be56eecfff200cba1cb8c3231336afb1ee0f5c1"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2019_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "11c84b3206a11f5a7aef7ca611896cf651c8a98931da849ebeacf453885ffd80"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2019_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "ae0c6bc5755ae2ed7173d66d0cafdb48f2fded39209dc1e14b7b6871b46c73a1"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2019_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "3257ec7506e3fa3979909258caca490007573d1b5d046b36bcd14acb8e753272"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2020_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "7cbcb1177e7be8a6bd78c80fbef4667a24dcb48f09aeb6c5a89d7155612c1324"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2020_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "16790aaf4a972d2d830c0ee399ff1ae0f7c3baa75f978b84754fd488caad0d6f"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2020_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "a18f114d65ab5008bee862f6f4dbd546e983c8d2f52d074a95cc232823bc3036"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2020_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "fc47cff0c0958b550c0e4b07b602937739b494c2bc0c3cd9a82e1061310682f1"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2021_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 77711,
+      "sha256": "58c4746eb6ecad0f405bc6d7bf96e7e41e65dcb36e27445b6abfea878b670edd"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2021_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "6bc55a1e07fe4b64b53ddf6b77a59fe8e897343094d3e5aca4d8397b74228b13"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2021_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "67b29d9d012f06437dbfc6a63bf227398689c7aceafaae9ec791659f96596407"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2021_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "e464f9a53889190002c8aee80a701a91e13cfe3fbf708baceccf6bf6e36b05d0"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2022_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 77711,
+      "sha256": "55fcd4ac21c713270ad16ec5be63e9f8681fce1dbf13181ef32269358c7499d0"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2022_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "913f9902ef061c7833e772a9fa5fc2b1a207a6a93a632a63fbc8b5f576d454e4"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2022_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "ccad98c8d6925d8e1fe367cf10ecbc303367227a2ad349c00fedf6f135bbf122"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2022_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "dc53f06108b453841bb36a9296fa9495aca1e3b2130325a67f0aa8ab68c7f682"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2023_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 77711,
+      "sha256": "8f3b14b46631f39006ef6c10083475e7459675855369ebe41d6239f340469494"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2023_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "f70b456dfca39b05796ae11933f10a685e8f71803f361743f7af020ae8bc1d97"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2023_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "e0094279779800630385b0b98fa8df30a954d709f73cff39262231f05509dbec"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2023_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "fdad9a2093c1c46986fa0bb21cfb23bbc56e58071efe46cd021c50e4cac2d44c"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2024_Q1_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "fe29fcc4a889fa4e1060ac388cc4ec8e486ae769c3d70a56d88a61376f0ca59d"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2024_Q2_pearl_river_hong_kong.nc": {
+      "bytes": 78191,
+      "sha256": "55e8429724b45a5919288a3f917030aade777e5bf68f685c2a2fb501dca35d96"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2024_Q3_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "367d1aa79625071f835a8a40c3032ce62304021eb069389d1296328c7562a2ec"
+    },
+    "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2024_Q4_pearl_river_hong_kong.nc": {
+      "bytes": 78671,
+      "sha256": "ca2604bfb9315c1817c39ca3dad9f3029263c758ff53ceaa7bd81aa196706462"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2015_Q1_south_atlantic_charleston.nc": {
+      "bytes": 2783598,
+      "sha256": "d633160c3a2cbfcb8e8c49908b728dd67ab77944a4401fd53952a20c116da05d"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2015_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "bd24bdcc1d91495a170aa2a6a8ff052e25a6ce0f796f4899149147c75d538b45"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2015_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "0ca83275e828e42ccb1a317704481f58bf2986fe03119534831069040d81f592"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2015_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "c499de62661524c5096f59f53442cd8460512602a59ff4de4fd9cd6edfc40081"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2016_Q1_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "95f20e2ac135167071015c101b0c20f75d80a0d0614f1087df48b0374b234d5c"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2016_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "49bb2f78285be7a1791251c5ea1e0afdbf32e8f9589d07b72e4bcd73a5b1b199"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2016_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "8138ed43c362b2610f4b2fadb4d6c4107961359322527cc6c1ff8a2d4127afe2"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2016_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "d37a2a41f9c14d9f8098c6a1e27788fcd1e89d9e05dbae67e5d6c62f022f2d7b"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2017_Q1_south_atlantic_charleston.nc": {
+      "bytes": 77711,
+      "sha256": "f15515cf45a4003d77d6ce8c1b0db13f10131cd0b62eb1d0763585e858c7dad6"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2017_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "d983b4d9e3794b94f60b5f7df08ccb0487ccdb5e39e4e5c9e4c11b93e29d176c"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2017_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "c6736f2b3f132d0afb2f975b0627a988c42c950830f52160eb46f441242b8545"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2017_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "c4f6213c2c19b65d9a99b1930a888a03b08e72e5f9b62b66b0234ebf3d65bb2d"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2018_Q1_south_atlantic_charleston.nc": {
+      "bytes": 77711,
+      "sha256": "3eaae892dd9151363f0155a16a56d1ab2f00fddaf2d9ab91599b29034e2ee06c"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2018_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "c4366ee1c4f1c317e8f413a2cba3cc601c22e62820c7c899c6c90d5615d066e2"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2018_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "3e8a436c0300d5b158ff5a334cb5c18f1c53fb1aea68a6425238d424af376816"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2018_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "561ad34db3d9a4579e880cacff577070688a00536d95a744398fb0fb5dfe6bfc"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2019_Q1_south_atlantic_charleston.nc": {
+      "bytes": 77711,
+      "sha256": "74a50be21d8ed55891c56929d50836f9ad0035a4c839154200140adb940c81e4"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2019_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "918fce54179fc8779e0fe8bf54ae72a473b49c45e5ea211e016f9496a5954654"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2019_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "1fd581842ef62729b5005f41452e054c2283bc72d233076132c47572055bfbef"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2019_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "343b1ed2ee8d5a07eb2593b78bc84227070f66b1fb945f24ad991c47f85a6410"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2020_Q1_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "72b7911eacb5c2f975d2ec7728174a9d44414647387f5f4c0547e8bcfe40bab0"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2020_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "18993413ebae00a3d986de3c09fb353571f3de15dcc03de39dc399d8a293c6c9"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2020_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "ca29e5c4026fb9ec2be39ce833f724419c892164cbdadd1a7d043528dea15733"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2020_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "b57bd9bbe63ee31e049a526c4a6cbd785bcf397b93bfe1d3845b88eaeb2b3bfd"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2021_Q1_south_atlantic_charleston.nc": {
+      "bytes": 77711,
+      "sha256": "22f9953930f92b750e9904c8d784a5c111edf4f611472449c39fe2b263b01a2b"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2021_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "e931b3808aa95f08c1a36e47b818d7cda3568236928b9c91b1d28f4ddcc3bc5f"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2021_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "ade7677fe9e959d3fa7e163d17df2b35fb07089325f847e49413de11df9d9a2d"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2021_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "4adc6ca5a65cdb24f89a2644f59c8f36ae74756c3540b7c19bf1a0999d7a5593"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2022_Q1_south_atlantic_charleston.nc": {
+      "bytes": 77711,
+      "sha256": "3b92cf116c03288648ed54572a76b74df3d9a0e33e46f05d5015f715b200b16a"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2022_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "18b6ee74f4830b6973a6dc79f3ba67790a8b0a162b7e5bbfd1ccfc4aa247c4af"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2022_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "121521ba2417f7e770639d9208cebe1ab364d9db402a2384177bb3c6c15698ab"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2022_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "e8b09697eea3f97f593812407d8c361d8194c6f21f4dca3e647661f9472f1e3d"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2023_Q1_south_atlantic_charleston.nc": {
+      "bytes": 77711,
+      "sha256": "d2230ff39700b2a9937547b83a66b4bbb4cfe0b01fd8e88c8440f7a9d4b61c8a"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2023_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "0bf2fbc53aaaf55d0daa2f068ac958a86725743b204a27869d43368edfe87f25"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2023_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "7bbd63117f678930f9192216679a7f4dadc2550a2c9d4243402226d6fd3fc018"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2023_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "61a05512ece7ad1bbf6b7ec720b2106a6927f93c07d76a8e949f8280b36279f9"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2024_Q1_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "71814853a31f82f662c7fc7d686dcd06e85847a8576ae63e8e4777f3ab3e5744"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2024_Q2_south_atlantic_charleston.nc": {
+      "bytes": 78191,
+      "sha256": "2cbc2dbf2d1a5c8c83eb71c2a0a6aade18565d29b72e4fc8c616771cb58029ed"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2024_Q3_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "8ab96a6fae36c664a67281c6941215ba5a4161d314b8934b6e8a2d6da5f67a88"
+    },
+    "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2024_Q4_south_atlantic_charleston.nc": {
+      "bytes": 78671,
+      "sha256": "d9821b34f6cf56f76371d33dfe9ff906e63d64746a65b613ff105c91e77803a4"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2015_Q1_southeast_australia.nc": {
+      "bytes": 2909218,
+      "sha256": "d0194cb9130ea203b65d0f73ad2afe9da9b0539ec1a674da4247e6c9a8c9db48"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2015_Q2_southeast_australia.nc": {
+      "bytes": 2947770,
+      "sha256": "2908a3b9ac713ed00802da1af8154e3ac58e44d64ad662efe6522009c6ea2f59"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2015_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "f322dcbff20a8595a22e50f5d6f0a2bcf709e9bf95325faf98c1efd9677fc63b"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2015_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "0029ecedcb2550ec3509cb2826446d03773ffc59d9c35282872479dc842b7a9f"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2016_Q1_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "dd51c71f5cbf9270ff44e0d615b51a4ae8840f645af09642c2039e4a6e12eac2"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2016_Q2_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "3de0f402d9cc358e9610d3934ab9c4440cfedcaef4f70a09e238bba17fa38a1a"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2016_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "17cba4b385bb1d934a2bc90846038ca26c2a507766d737b527deb35255decacf"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2016_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "ff76be52e3bd86032eabda4732771dafd569cd798d499233c9c08573925f2b7b"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2017_Q1_southeast_australia.nc": {
+      "bytes": 77711,
+      "sha256": "be1ee09edf5a99aeaf696a0585884a519ed5a81fb643fd82aa5c12d9a0fc13c2"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2017_Q2_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "19f0f60d21a5d8369d8beeac3f4bb9dba188b4036969851a5db9b74c3d5382f5"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2017_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "9bc24e5fdd0899fe5321b405075990a36e271a365b3f6873b9de3fc003b6a558"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2017_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "63787005680e9babac119e91c5e86176afa966d57e931df4f9dfa44529a8d321"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2018_Q1_southeast_australia.nc": {
+      "bytes": 77711,
+      "sha256": "998f87f39d536c7ffc87251f0581155b128cdc6ef6ec2adaf8f20d2c19e808c4"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2018_Q2_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "b5de37ed8cabd9dec186fad226efff0ffaa1e3a50320d6de27f6bedf876b68b9"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2018_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "8509fcd7796d7cad9cdf05a8f5a3f82d549ec1aa92a7c3dd1536afd63577e1d3"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2018_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "f455b6c80c8098f177c170efbc2c94d5751eaa1c54a302f9889879f163d24b1d"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2019_Q1_southeast_australia.nc": {
+      "bytes": 77711,
+      "sha256": "7a956997c7ee8bb06da7036819cea9bc66f7f64850bfd2eb29911e45fec153b0"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2019_Q2_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "10e6e3216e4c25ac19a720d4858372eb5c968d0a98e7a8398f9646f3246d9aa1"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2019_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "e55e9e67866c5f1c0db2fba9fe15156c3223531b649f709ebe5d12d1cc9e5ded"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2019_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "2df5c8f1dac51a8d422a488d734a41db388226ed561c5465252d35629b14a45a"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2020_Q1_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "ec0dab6d8215da363cff5db9e3ccb335c77f00c74e53e1ef6003ec06def6bad6"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2020_Q2_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "40af05a44c87d1abb56ea5c7fb5b6292704e4bcb2663b37658b9c482c29222e9"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2020_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "fdc638f36742048007cbadd342be361fdd7beb46858b81f8f3f728e887858d3f"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2020_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "7f33c0d9be2bdd26e31f6aa18e39772564cacb44004ae1bcdcc9326f3a173b04"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2021_Q1_southeast_australia.nc": {
+      "bytes": 77711,
+      "sha256": "d763f96bb8209732c546f1758cfe11ec45bcd6dd37bcc299af64e7037a53a55e"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2021_Q2_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "773ee6fd164fb8a00cd9b538c9baf881c2098fe8cc4fb7fa29db05108da6fa33"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2021_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "2e7774c2443db73254e13e1aa9a17d1970214a472b991a9671d20bd8ec8eb6b5"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2021_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "0186305ca3309d196399d404520d407c6571ac741a81bc653d532b9a326c6d2b"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2022_Q1_southeast_australia.nc": {
+      "bytes": 77711,
+      "sha256": "cd2cfcb3df7be359ca11b709200ec9a81b65119da282580d2f53950dbcc66336"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2022_Q2_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "03ed6398486f25e38443443c92e88f53df9efcb284a7f23b701acea2ac797d6d"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2022_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "b78e6b04aa537ceefa2312c3c5f8d0ece030afcfea8067f0f97581838c6475cc"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2022_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "1a4685c86692ebd65e2278f282ec97c8354337c96352e9f43d722474493ab089"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2023_Q1_southeast_australia.nc": {
+      "bytes": 77711,
+      "sha256": "3ed3cea6062fcbe4c169e931fa7ca06ccd5d7193d067b40d1340bfee63393850"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2023_Q2_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "8fab1c51ab77d2f445e99717e9d306f43f8a5a0c28961a68c12d0cb80fe350c6"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2023_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "cd5efc24e2baaae654d5136f8d08f4ba8a78fcd7d27a5db706b676319f1a8638"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2023_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "08b4c4ce170ddf9e4c024f237e2029e89aadbf90cf25d5bc0af2be4f5c250d34"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2024_Q1_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "ac094b060055b07fb3c53c4bdd3884707f377144074c6e49d4b6609977fea988"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2024_Q2_southeast_australia.nc": {
+      "bytes": 78191,
+      "sha256": "ef73f88bdbc1d632b527653d6a4f57edb1c9f365775ffbe1ce7c0731f5c84a0b"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2024_Q3_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "fd5899a9446e1124ed01e091ca5f57f31c09ece83d641bc375ae062e89d92155"
+    },
+    "raw/era5/southeast_australia/era5_u10_v10_mslp_2024_Q4_southeast_australia.nc": {
+      "bytes": 78671,
+      "sha256": "213c16d18c472b62a51b30e3f7710868a6ec704a739ad56c4f942ea66d6b8480"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2015_Q1_thames_north_sea.nc": {
+      "bytes": 2190964,
+      "sha256": "dc0a3fa047591109dace9a5299b0a1eed09e73e2e62d180ef9f1bfa5de631bae"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2015_Q2_thames_north_sea.nc": {
+      "bytes": 2213371,
+      "sha256": "7c539d61167baf8b2c192366f26827d737798b4793e0b97ca590f6f661ef2711"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2015_Q3_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "99991efdf82ecda27e7dd0f1e3b300a2075a95e7af08c25dd3d83853d6a71cb9"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2015_Q4_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "a309b7e48959b41459f37cf3f52f8c7161f1d11490dbddb631604e4a6a9162b0"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2016_Q1_thames_north_sea.nc": {
+      "bytes": 78191,
+      "sha256": "bdf5aaa781cf6dc7a15bf3e8bc9588c904fe650c5225414fad6059e93b198c87"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2016_Q2_thames_north_sea.nc": {
+      "bytes": 78191,
+      "sha256": "896350ca3c15a530e8d87b58f7dbca4b209a41b79f4456851b16839e5dbbd45d"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2016_Q3_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "0d46c710720599b9dffacde3786177a3152b3faf36370ed65d384251de4fdc82"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2016_Q4_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "f2b58a575fec6d9eb08d98b7b44bc3ac60a6777ec813d6f9f9700b89e2e8eff3"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2017_Q1_thames_north_sea.nc": {
+      "bytes": 77711,
+      "sha256": "e8d5d2c728c90e540e801f2a39efc59793f6065047c32b29f35ceb89ffe8db9a"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2017_Q2_thames_north_sea.nc": {
+      "bytes": 78191,
+      "sha256": "1c38562ee1aeb13d99234ee732141f051e32b6ae216964d7efc713efd8d7cc6c"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2017_Q3_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "caafe4734be8aa7d29f4e6196cd4f1010e4b36f5b4e7b04c67e9ad99953e6259"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2017_Q4_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "097227dc751c38bf44b15aef6e6e88557df8a4f84fe4c00472ed11b609111493"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2018_Q1_thames_north_sea.nc": {
+      "bytes": 77711,
+      "sha256": "1e85c85929243a9e53902c418d5e8dab06be814471b5e77d26a00655b951e0ab"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2018_Q2_thames_north_sea.nc": {
+      "bytes": 78191,
+      "sha256": "3c2d5eb4f7ecd15196e54ab6d105247efadd7dee7dda0b503a72da1967e3b922"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2018_Q3_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "a794f1bbbe751f6cb3fab475404756a24c3901a8c1dda3dd60c615ebbbbfaae7"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2018_Q4_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "09e65e6371bcc03e2e70932e1100658705a940cc81d0688511d97d8225948062"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2019_Q1_thames_north_sea.nc": {
+      "bytes": 77711,
+      "sha256": "1225a565a058a68509e5264ace1dd0a516334b852084db63a10ea67b88159daa"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2019_Q2_thames_north_sea.nc": {
+      "bytes": 78191,
+      "sha256": "ff6625f73640c54d0e30161bc85acaed4bb6ed6bfc1b09467435c90246c6fcb7"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2019_Q3_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "c1fbc97ba9b735b84afd9814c2c5e6630ce74b17817b2be74d77993f44cd23fe"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2019_Q4_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "7d7156e8145902015a8dbc419ae6776353b0a400c40e436dbe0a0aa5e9146290"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2020_Q1_thames_north_sea.nc": {
+      "bytes": 78191,
+      "sha256": "be4274e92c6a9747e165049ab96cdad5a1897217fdafb1a50faba3309b50ce9f"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2020_Q2_thames_north_sea.nc": {
+      "bytes": 78191,
+      "sha256": "e3760b0edeb3692ad1d73ecddb9fce484c66975c59e831a7550ce8f8e63cfe0d"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2020_Q3_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "f21ee58d80e4d12ec0e1f6da671016c3a104694afe3e26b06b9e3066d0f741e9"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2020_Q4_thames_north_sea.nc": {
+      "bytes": 78671,
+      "sha256": "9a9b6f6dadaaf50e7ef97ab74a4644bb11db135d31d1f5ad12951e31fd5a8487"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2021_Q1_thames_north_sea.nc": {
+      "bytes": 6386441,
+      "sha256": "26242a087da8c3c504bd43b6633a4db33decb7bcf1b3ba4b962f909fb654ce8b"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2021_Q2_thames_north_sea.nc": {
+      "bytes": 6527978,
+      "sha256": "f3c8580ec87d3dc1d9effccf747c3ea4e5f5b37959c60e372e18b865dafb5a2f"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2021_Q3_thames_north_sea.nc": {
+      "bytes": 6536592,
+      "sha256": "fb75be7ad35e374ee1a0fb2779c93ee923750b27c75fbc9e4e5f5ef5341a4af6"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2021_Q4_thames_north_sea.nc": {
+      "bytes": 6572271,
+      "sha256": "d73802fb14ae83dae4d77e1211153d40e131f2997f431990a961bb33b076d6e3"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2022_Q1_thames_north_sea.nc": {
+      "bytes": 6369895,
+      "sha256": "a672c1273d9e6d80736932fad70b7338a7b0c4fd6131f526acf2b6dffd7b6dfc"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2022_Q2_thames_north_sea.nc": {
+      "bytes": 6525876,
+      "sha256": "7d2bb11aef2d1b4ab920800d11c011a6a786bdcaf5148b720ff7d7194a15ccf0"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2022_Q3_thames_north_sea.nc": {
+      "bytes": 6630123,
+      "sha256": "288b66753f5e8f6d31224f5c324462086f94473ebe748dc91289824fbbbff13a"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2022_Q4_thames_north_sea.nc": {
+      "bytes": 6591972,
+      "sha256": "99214222162f8d3fc4be9a82d584b66fad2373409ff9f607c3a780c94eae2b4d"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2023_Q1_thames_north_sea.nc": {
+      "bytes": 6345591,
+      "sha256": "4b827e2439ccad57f7ce6996dfc995a21fcf5b80d4320821749bf890652d3dae"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2023_Q2_thames_north_sea.nc": {
+      "bytes": 6490462,
+      "sha256": "c414f4999d33b6134b5a59c2f456807fb322b1afcb8700422fb9576ce3bd7acf"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2023_Q3_thames_north_sea.nc": {
+      "bytes": 6536478,
+      "sha256": "c4989e0dfee2e14f4b118a0065477ad06053907bda7e6700fe49b6dace67bc46"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2023_Q4_thames_north_sea.nc": {
+      "bytes": 6577412,
+      "sha256": "2d501dc011e6716790d686ba59cebfc588b99a6462daa0aec144fa5aadacb1fc"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2024_Q1_thames_north_sea.nc": {
+      "bytes": 6470027,
+      "sha256": "a7a268335c3e95e29e778b4a2a7d3276a7ab35817e664f36e7cf72b6d81af1f7"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2024_Q2_thames_north_sea.nc": {
+      "bytes": 6503487,
+      "sha256": "2612b90c9c1e677556718f4ba9897975178775c98b11a8ea3861c62447a763dd"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2024_Q3_thames_north_sea.nc": {
+      "bytes": 6567164,
+      "sha256": "b4451c8da115fe3e4643e3e77a7b47034ab4b7ce0608fbbaf74511bcecb00c63"
+    },
+    "raw/era5/thames_north_sea/era5_u10_v10_mslp_2024_Q4_thames_north_sea.nc": {
+      "bytes": 6494793,
+      "sha256": "fec058d7072ba0e99cad0022005b71fa5fad8e057ff21c30ec549f36266fef88"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2015_Q1_us_gulf_coast.nc": {
+      "bytes": 2069637,
+      "sha256": "a3c51b576a7a81bc886ac5beb1f833d64a54a9d78de73876b110511d7f16700d"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2015_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "d8750f347507fc0134da8f0fdff428401c6779e0744c8948f48bd1de6b00b8cb"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2015_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "ecae5a1d1caed3a1d7414bd3f0110f33c763a304d27785ee2f5f02c7f34a005a"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2015_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "27cd437b3c88bbe8542a1dc36139ca2cb3ea2aed7c5f4963d3b300047cce8465"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2016_Q1_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "d9ccdc128d697b41627bdd8190ee49013765855cf84c0cc65c49b68518d7855a"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2016_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "9db5be55992e8f3d29ce769b2c5e82e8a027f47935a82a874d759716bd8dd730"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2016_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "54734ed56ece57b36243e0449b68d8ff882def9c7eb766dc50de9aa5c128b2f1"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2016_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "8d5104f3cc7f6f41616346d9c77e8eb3c49776f4a64ad799a8831d2fccc034fd"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2017_Q1_us_gulf_coast.nc": {
+      "bytes": 77711,
+      "sha256": "90757fa8aa996d11746734e47c6f70e3e48386af6a923562d87cc6c5b8445620"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2017_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "a45d875487803bfeda4df3aaebd19009ba91ece98e04072b9e0b51812c726997"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2017_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "20e293b26ecec1f375034cccaab0f6528cd3207ce754792d9adce9412ce18f47"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2017_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "b0bf56d9b1534aae5da674ed6227b2e4dd6dd65689e14cc0e29673243ec7d658"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2018_Q1_us_gulf_coast.nc": {
+      "bytes": 77711,
+      "sha256": "a722b498c1c0a67b06c70039ead33edcc19aebcb65801f43f3d0bf91e47fdd7c"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2018_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "5114b9830b385efdb0928d17c5201017fccec7d28e059276d159c6729a575162"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2018_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "3ee6651e0a60584e3af7afa181f20b12e7c87a80ff2669396103de414f7673f8"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2018_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "3677a8b2ed989800dffdb864e9b49e94f2156bcf19e221e8f4854507770885d1"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2019_Q1_us_gulf_coast.nc": {
+      "bytes": 77711,
+      "sha256": "e0dd6a12bb440dbba8c88aadd245d1ffed26037c9e984c05b043a619888b8fb1"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2019_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "b99d35db45b59916397045278fc7560f7ee21c114b0fddbca652b3734e416ac6"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2019_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "7390855a1e5ed553a2403acfdccb25932c5d4b427a35475b9ec0cec12fd9c2d6"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2019_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "f55053d721d3ed2dda7f367af2e49c19f9d28f0f589d86998950ad0d387a737a"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2020_Q1_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "8849bd2267f278d681eb84ca06957a2135c6882b6c0285da06353a8dcf0d28ba"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2020_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "02ad2e49c8eb5951cc229d695419cff64e4ed7bd04c2c1bb94d920b42ff0beed"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2020_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "4194edf40fbb778849a6fcc68805d0fe663a8c773b0808162fedd5313822c688"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2020_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "dba6e4f3192b46bc058bd07ae0efbf3abef44cb33af70a9d7e6bf5201fad6c1b"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2021_Q1_us_gulf_coast.nc": {
+      "bytes": 77711,
+      "sha256": "479f10c551117beb75d02a66bedb6375bb5f6624daa557b13cf7f1a71ad6549d"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2021_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "b4336cd537062789e4f5f4ae2bec9075d5d70a788149ff900df4b53a0285a436"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2021_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "09bac4ec627fb08a91d594d6047e9eabbb955dcd6ff0711feaa3716ed1d76dc7"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2021_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "4d4073650afbe0dd6455d1af4617789faf784c0c9f8d0a90c1a2116f20043479"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2022_Q1_us_gulf_coast.nc": {
+      "bytes": 77711,
+      "sha256": "0ee3b6a73649cfe49264485e3df4237790eb716850aa1272adf05f151b5f1c82"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2022_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "679b54b6c261bbd1377bdf64b99492978ee9f43a3572e99ff21320b80f79baf3"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2022_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "b0ec5c261aeb741ac9becc02cd87996c87dbdf2d3f0c5be67b7654e30397fb96"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2022_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "550e3742c1f02e0a6fb7924f0d4ecdb12f17674b4b54e9b5fdb58f0796f4e56e"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2023_Q1_us_gulf_coast.nc": {
+      "bytes": 77711,
+      "sha256": "ff64f59e00cd81cef7b3e94d1599f7e39259c8191b2fd488eb3a2497030b33fc"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2023_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "31b4c101b2e5356b17dba218f69e5e48e54b83530fa9f95832838e6d39876b66"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2023_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "21b73969c0155baa67a813e61d97f06a81f90ca7de953058e01226a16f3a21d7"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2023_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "e6d60c9f2a7360bb080ca4d4a73777204fa068b3487e881fc3013589584dd5ce"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2024_Q1_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "0ca6e02ab3ecdbd9b0df072b16c3be1001abcabc025438aba1950da454cc6114"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2024_Q2_us_gulf_coast.nc": {
+      "bytes": 78191,
+      "sha256": "8061da2d807ca10ff78b38c7b82016a55905e5b17d275220dc324d010f792c07"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2024_Q3_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "4be9cac7c841500dac1de953b4c8a315ff38377ab8c0a863267152af9b63eb17"
+    },
+    "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2024_Q4_us_gulf_coast.nc": {
+      "bytes": 78671,
+      "sha256": "90683c9304d58a5a874cdbaaa4be2e4e830f47381f2d7cf0e5550d601edb5381"
+    },
+    "raw/static/gebco_2026/gebco_manifest.json": {
+      "bytes": 5959,
+      "sha256": "a96c79abb136df7869a7dfdebf998c5ae09c4efc881ce614d3bb6124fa2ac4f6"
+    },
+    "raw/static/gebco_2026/ny_bight/gebco_2026_ny_bight.metadata.json": {
+      "bytes": 816,
+      "sha256": "3fb3c3bcdabe856ed33622772ade9e17f0bce9ed97e362365557dcdaa76798da"
+    },
+    "raw/static/gebco_2026/ny_bight/gebco_2026_ny_bight.nc": {
+      "bytes": 1185202,
+      "sha256": "4432229dfa91c4b0603a616676e8ccf9d660c2d1098ec46d5655c9bcb719c118"
+    },
+    "raw/static/gebco_2026/pearl_river_hong_kong/gebco_2026_pearl_river_hong_kong.metadata.json": {
+      "bytes": 854,
+      "sha256": "8c345c36b2d7cec54aaa9afefdf6714992ba1e10810b572f8c6d8d6386173b9b"
+    },
+    "raw/static/gebco_2026/pearl_river_hong_kong/gebco_2026_pearl_river_hong_kong.nc": {
+      "bytes": 1168725,
+      "sha256": "5d9dbdbced52dc230215b67eb7c6e8d24ae4d411651ea58ac2edbc033d25e917"
+    },
+    "raw/static/gebco_2026/south_atlantic_charleston/gebco_2026_south_atlantic_charleston.metadata.json": {
+      "bytes": 868,
+      "sha256": "aae85769bdad02fe23d35d53f737bc77d8b21f84b36c4ff9105753051fd9c506"
+    },
+    "raw/static/gebco_2026/south_atlantic_charleston/gebco_2026_south_atlantic_charleston.nc": {
+      "bytes": 2240349,
+      "sha256": "bd94bf9b9408a3cf0fcd5f4bfd113f7b96d25339b5fc0b5caf9528fb2a9df477"
+    },
+    "raw/static/gebco_2026/southeast_australia/gebco_2026_southeast_australia.metadata.json": {
+      "bytes": 853,
+      "sha256": "f3bb6fa2c7f995a81cb4d8593ac56bfb0ce1ee4ad3ec0c195a0f0bbf57a37ce4"
+    },
+    "raw/static/gebco_2026/southeast_australia/gebco_2026_southeast_australia.nc": {
+      "bytes": 3609889,
+      "sha256": "c5ec2e0bd9199a97fd9b5348b213f8bd3a4bb248b3a8b4f641ca82b86f5efe8b"
+    },
+    "raw/static/gebco_2026/thames_north_sea/gebco_2026_thames_north_sea.metadata.json": {
+      "bytes": 838,
+      "sha256": "d34cd24c1304a319cc917fd609d2db83383b151c6c28b12b5dd3c4382a69eca1"
+    },
+    "raw/static/gebco_2026/thames_north_sea/gebco_2026_thames_north_sea.nc": {
+      "bytes": 1448439,
+      "sha256": "fe1298898aefaa4f57e32ab4ccd5444f67503c426c1236b2b68de54de5deddaa"
+    },
+    "raw/static/gebco_2026/us_gulf_coast/gebco_2026_us_gulf_coast.metadata.json": {
+      "bytes": 832,
+      "sha256": "83c7e7b16de8eee2c00ff8d0119941ff53334e6655287d88b9b355022155166f"
+    },
+    "raw/static/gebco_2026/us_gulf_coast/gebco_2026_us_gulf_coast.nc": {
+      "bytes": 1988562,
+      "sha256": "b480ed201cccfdd819b2dd692488ddc21ab0f35dfacf05d916ecec647a8724ef"
+    },
+    "raw/tide/fes2022/fes2022_tide_manifest.json": {
+      "bytes": 10723,
+      "sha256": "ee1c75ba9a98d2b1538e280182f549c01ac19f117b5408cb8685c2e22f8ebfad"
+    },
+    "raw/tide/fes2022/local_runtime_config/fes2022_ny_bight.yml": {
+      "bytes": 876,
+      "sha256": "bbe2abb61ad7092c95307d219b6c475e62ba8734c2ca3fed6606c37a3e35f848"
+    },
+    "raw/tide/fes2022/local_runtime_config/fes2022_pearl_river_hong_kong.yml": {
+      "bytes": 876,
+      "sha256": "bbe2abb61ad7092c95307d219b6c475e62ba8734c2ca3fed6606c37a3e35f848"
+    },
+    "raw/tide/fes2022/local_runtime_config/fes2022_south_atlantic_charleston.yml": {
+      "bytes": 876,
+      "sha256": "bbe2abb61ad7092c95307d219b6c475e62ba8734c2ca3fed6606c37a3e35f848"
+    },
+    "raw/tide/fes2022/local_runtime_config/fes2022_southeast_australia.yml": {
+      "bytes": 876,
+      "sha256": "bbe2abb61ad7092c95307d219b6c475e62ba8734c2ca3fed6606c37a3e35f848"
+    },
+    "raw/tide/fes2022/local_runtime_config/fes2022_thames_north_sea.yml": {
+      "bytes": 876,
+      "sha256": "bbe2abb61ad7092c95307d219b6c475e62ba8734c2ca3fed6606c37a3e35f848"
+    },
+    "raw/tide/fes2022/local_runtime_config/fes2022_us_gulf_coast.yml": {
+      "bytes": 876,
+      "sha256": "bbe2abb61ad7092c95307d219b6c475e62ba8734c2ca3fed6606c37a3e35f848"
+    },
+    "raw/tide/fes2022/ny_bight/hourly_tide_series.csv": {
+      "bytes": 7057817,
+      "sha256": "81c0d723591cb6c24e6f38ae45a0a04fcd135a0b5fd1e7e84aea8892639bb7c5"
+    },
+    "raw/tide/fes2022/ny_bight/hourly_tide_series.metadata.json": {
+      "bytes": 1573,
+      "sha256": "b410e087d77387160efc9145f5110e392287c36e9438e8548dcc50bf415eff32"
+    },
+    "raw/tide/fes2022/pearl_river_hong_kong/hourly_tide_series.csv": {
+      "bytes": 7060681,
+      "sha256": "3cd69d37bdc621e4afb778a01c8ca7c48b0f60ed8e60e56af6fb8d65f89aa429"
+    },
+    "raw/tide/fes2022/pearl_river_hong_kong/hourly_tide_series.metadata.json": {
+      "bytes": 1598,
+      "sha256": "2b3661210c54b7395dbe83320e5e4dcf8dbbc4698b45221e8879fb1bb4333f4c"
+    },
+    "raw/tide/fes2022/south_atlantic_charleston/hourly_tide_series.csv": {
+      "bytes": 7057836,
+      "sha256": "297ae80c838206b78016b6b4cd9e6e1de051b36911f4693c76b9d89bc909f100"
+    },
+    "raw/tide/fes2022/south_atlantic_charleston/hourly_tide_series.metadata.json": {
+      "bytes": 1616,
+      "sha256": "f561fae37bf3339a7461fc337ce2d554d6cf04ddf8f5639a002874c1b4eee5e9"
+    },
+    "raw/tide/fes2022/southeast_australia/hourly_tide_series.csv": {
+      "bytes": 7058312,
+      "sha256": "d8356c025bcb4d8a331a962a241b13af61b23040e592afac592d32d24e353d04"
+    },
+    "raw/tide/fes2022/southeast_australia/hourly_tide_series.metadata.json": {
+      "bytes": 1597,
+      "sha256": "e3ff62b8e9643c0dd6f35c6e2f855b7b284880027663e50c8ccc66670fd2dac2"
+    },
+    "raw/tide/fes2022/thames_north_sea/hourly_tide_series.csv": {
+      "bytes": 7057604,
+      "sha256": "06965fb92a910b5a393c512ad2f2800c84fc934dc6a110ab526f901061049cb2"
+    },
+    "raw/tide/fes2022/thames_north_sea/hourly_tide_series.metadata.json": {
+      "bytes": 1585,
+      "sha256": "2f95cdb582355254fefd908e9642c51f8e9e01394c540c1b5d765f4e463a7896"
+    },
+    "raw/tide/fes2022/us_gulf_coast/hourly_tide_series.csv": {
+      "bytes": 7051247,
+      "sha256": "3c1b86af51ced2e39f02c70806b04ce9c37fb2480e8fbc9cc00c443511302c85"
+    },
+    "raw/tide/fes2022/us_gulf_coast/hourly_tide_series.metadata.json": {
+      "bytes": 1586,
+      "sha256": "11a3fbfc5dc6e9205ae1acc6553ac3d364b4423276e26b3ffb6dcf250756ffb7"
+    },
+    "region_availability.json": {
+      "bytes": 8335,
+      "sha256": "87144ebeeebcf94aec18b4fd4e71bdb1d297f92ae81cef0447ae94ab3daedeb8"
+    }
+  },
+  "declared_checksum_checks": [
+    {
+      "path": "derived/prime_coast/ny_bight/event_table_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/ny_bight/forcing_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/ny_bight/region_manifest_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/ny_bight/static_pack_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/ny_bight/static_pack_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/ny_bight/target_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/ny_bight/tide_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/ny_bight/train_only_metadata_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/ny_bight/window_index_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/pearl_river_hong_kong/event_table_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/pearl_river_hong_kong/forcing_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/pearl_river_hong_kong/region_manifest_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/pearl_river_hong_kong/static_pack_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/pearl_river_hong_kong/static_pack_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/pearl_river_hong_kong/target_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/pearl_river_hong_kong/tide_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/pearl_river_hong_kong/train_only_metadata_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/pearl_river_hong_kong/window_index_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/south_atlantic_charleston/event_table_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/south_atlantic_charleston/forcing_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/south_atlantic_charleston/region_manifest_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/south_atlantic_charleston/static_pack_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/south_atlantic_charleston/static_pack_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/south_atlantic_charleston/target_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/south_atlantic_charleston/tide_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/south_atlantic_charleston/train_only_metadata_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/south_atlantic_charleston/window_index_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/southeast_australia/event_table_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/southeast_australia/forcing_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/southeast_australia/region_manifest_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/southeast_australia/static_pack_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/southeast_australia/static_pack_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/southeast_australia/target_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/southeast_australia/tide_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/southeast_australia/train_only_metadata_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/southeast_australia/window_index_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/thames_north_sea/event_table_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/thames_north_sea/forcing_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/thames_north_sea/region_manifest_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/thames_north_sea/static_pack_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/thames_north_sea/static_pack_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/thames_north_sea/target_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/thames_north_sea/tide_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/thames_north_sea/train_only_metadata_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/thames_north_sea/window_index_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/us_gulf_coast/event_table_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/us_gulf_coast/forcing_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/us_gulf_coast/region_manifest_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/us_gulf_coast/static_pack_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/us_gulf_coast/static_pack_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/us_gulf_coast/target_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/us_gulf_coast/tide_timeline_v1.csv",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/us_gulf_coast/train_only_metadata_v1.json",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "derived/prime_coast/us_gulf_coast/window_index_v1.npz",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2015_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2015_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2015_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2015_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2016_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2016_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2016_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2016_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2017_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2017_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2017_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2017_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2018_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2018_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2018_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2018_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2019_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2019_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2019_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2019_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2020_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2020_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2020_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2020_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2021_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2021_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2021_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2021_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2022_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2022_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2022_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2022_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2023_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2023_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2023_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2023_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2024_Q1_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2024_Q2_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2024_Q3_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/ny_bight/era5_u10_v10_mslp_2024_Q4_ny_bight.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2015_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2015_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2015_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2015_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2016_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2016_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2016_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2016_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2017_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2017_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2017_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2017_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2018_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2018_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2018_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2018_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2019_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2019_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2019_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2019_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2020_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2020_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2020_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2020_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2021_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2021_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2021_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2021_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2022_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2022_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2022_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2022_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2023_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2023_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2023_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2023_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2024_Q1_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2024_Q2_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2024_Q3_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/pearl_river_hong_kong/era5_u10_v10_mslp_2024_Q4_pearl_river_hong_kong.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2015_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2015_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2015_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2015_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2016_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2016_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2016_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2016_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2017_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2017_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2017_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2017_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2018_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2018_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2018_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2018_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2019_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2019_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2019_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2019_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2020_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2020_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2020_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2020_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2021_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2021_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2021_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2021_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2022_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2022_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2022_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2022_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2023_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2023_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2023_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2023_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2024_Q1_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2024_Q2_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2024_Q3_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/south_atlantic_charleston/era5_u10_v10_mslp_2024_Q4_south_atlantic_charleston.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2015_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2015_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2015_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2015_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2016_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2016_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2016_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2016_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2017_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2017_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2017_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2017_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2018_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2018_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2018_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2018_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2019_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2019_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2019_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2019_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2020_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2020_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2020_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2020_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2021_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2021_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2021_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2021_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2022_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2022_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2022_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2022_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2023_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2023_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2023_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2023_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2024_Q1_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2024_Q2_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2024_Q3_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/southeast_australia/era5_u10_v10_mslp_2024_Q4_southeast_australia.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2015_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2015_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2015_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2015_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2016_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2016_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2016_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2016_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2017_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2017_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2017_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2017_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2018_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2018_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2018_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2018_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2019_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2019_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2019_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2019_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2020_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2020_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2020_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2020_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2021_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2021_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2021_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2021_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2022_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2022_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2022_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2022_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2023_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2023_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2023_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2023_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2024_Q1_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2024_Q2_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2024_Q3_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/thames_north_sea/era5_u10_v10_mslp_2024_Q4_thames_north_sea.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2015_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2015_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2015_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2015_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2016_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2016_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2016_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2016_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2017_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2017_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2017_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2017_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2018_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2018_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2018_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2018_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2019_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2019_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2019_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2019_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2020_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2020_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2020_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2020_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2021_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2021_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2021_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2021_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2022_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2022_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2022_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2022_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2023_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2023_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2023_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2023_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2024_Q1_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2024_Q2_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2024_Q3_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    },
+    {
+      "path": "raw/era5/us_gulf_coast/era5_u10_v10_mslp_2024_Q4_us_gulf_coast.nc",
+      "present": true,
+      "matches": true
+    }
+  ],
+  "regions": [
+    {
+      "region": "ny_bight",
+      "rows": 87672,
+      "first": "2015-01-01T00:00:00",
+      "last": "2024-12-31T23:00:00",
+      "anchor_ids": [
+        "NOAA_8518750_The_Battery"
+      ],
+      "source_names": [
+        "NOAA_COOPS_8518750"
+      ],
+      "qc_flags": {
+        "checked": 87672
+      },
+      "missing_flags": 0,
+      "nonfinite_observed": 0,
+      "duplicate_timestamps": 0,
+      "nonhourly_steps": 0,
+      "tide_aligned": true,
+      "forcing_aligned": true,
+      "forcing_nonfinite": {
+        "u10_ms": 0,
+        "v10_ms": 0,
+        "mslp_pa": 0,
+        "pressure_proxy": 0,
+        "wind_speed_ms": 0,
+        "wind_energy_recent": 0
+      },
+      "thresholds": {
+        "0.95": {
+          "computed": 0.9330199999999997,
+          "declared": 0.9330199999999997
+        },
+        "0.99": {
+          "computed": 1.1561279999999998,
+          "declared": 1.156128
+        }
+      },
+      "scalers": {
+        "water_level_m": {
+          "computed_mean": 0.10809446520324509,
+          "computed_std_ddof0": 0.21455173495727456,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.10809446520324509,
+            "std": 0.21455173495727456,
+            "count": 70137
+          }
+        },
+        "tide_level_m": {
+          "computed_mean": -0.00043919337810285566,
+          "computed_std_ddof0": 0.5522558977582254,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -0.00043919337810285566,
+            "std": 0.5522558977582254,
+            "count": 70137
+          }
+        },
+        "u10_ms": {
+          "computed_mean": 0.8741727687002866,
+          "computed_std_ddof0": 2.439533450264194,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.8741727687002866,
+            "std": 2.439533450264194,
+            "count": 70137
+          }
+        },
+        "v10_ms": {
+          "computed_mean": -0.18366305630235114,
+          "computed_std_ddof0": 2.391991112333074,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -0.18366305630235114,
+            "std": 2.391991112333074,
+            "count": 70137
+          }
+        },
+        "mslp_pa": {
+          "computed_mean": 101722.65294798039,
+          "computed_std_ddof0": 780.672392120433,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 101722.65294798039,
+            "std": 780.672392120433,
+            "count": 70137
+          }
+        },
+        "pressure_proxy": {
+          "computed_mean": -397.65294798038127,
+          "computed_std_ddof0": 780.672392120433,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -397.65294798038127,
+            "std": 780.672392120433,
+            "count": 70137
+          }
+        },
+        "wind_speed_ms": {
+          "computed_mean": 3.1524202416982763,
+          "computed_std_ddof0": 1.5915720856872815,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 3.1524202416982763,
+            "std": 1.5915720856872815,
+            "count": 70137
+          }
+        },
+        "wind_energy_recent": {
+          "computed_mean": 12.470736705407075,
+          "computed_std_ddof0": 12.304320933951564,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 12.470736705407075,
+            "std": 12.304320933951564,
+            "count": 70137
+          }
+        }
+      },
+      "split_indices_half_open": [
+        0,
+        70137,
+        78904,
+        87672
+      ],
+      "events_per_split": {
+        "train": 1449,
+        "validation": 235,
+        "test": 231
+      },
+      "crossing_cut_events": [],
+      "shared_event_ids": [],
+      "event_durations_hours": {
+        "1": 401,
+        "2": 631,
+        "3": 558,
+        "4": 247,
+        "5": 58,
+        "6": 18,
+        "7": 2
+      },
+      "manifest": {
+        "region": "ny_bight",
+        "period": [
+          "2015-01-01 00:00:00+00:00",
+          "2024-12-31 23:00:00+00:00"
+        ],
+        "input_len": 96,
+        "horizon": 72,
+        "window_length": 168,
+        "rows": 87672,
+        "missing_or_invalid_rows": 0,
+        "target_missing_rows": 0,
+        "forcing_missing_rows": 0,
+        "tide_missing_rows": 0,
+        "coverage_status": "complete_hourly_target",
+        "window_policy": "exclude_any_window_with_a_missing_target_tide_or_forcing_row; no_imputation",
+        "window_counts": {
+          "all": 87505,
+          "train": 69970,
+          "validation": 8600,
+          "test": 8601
+        },
+        "split_policy": "chronological_8_1_1_strict_window_containment",
+        "no_imputation_performed": true,
+        "target_sha256": "498a9c79d280fb91d3a84421e6d58219b0b6cb992a65d2971692f8748eeb59e7",
+        "tide_sha256": "f80a98057109dcfad4ac753840231a7c9052f083cb497d1207ab4bad12355424",
+        "forcing_sha256": "af0670d05aa8d3d460b6dfa1a9eff0feb51e2be3c2d1d45c3e642d21e9a70532",
+        "static_sha256": "49a27f2883ef719b8f5c8465366401961107153bca2a65148944a0277ac32747",
+        "window_index_sha256": "8b9aa0bd50914238d613d591f1313239d750b66e4f648d6778bb4b02c6bd5ab2",
+        "train_only_metadata_sha256": "8862b0410eabb83eb53583edb8b80a35049489b38fc8fb9027e092a355ae0233",
+        "event_info": {
+          "event_table": "/data/rongjia/sea-level-shared-database/releases/sea_level_shared_prime_formal_2015_2024_v1_20260721/derived/prime_coast/ny_bight/event_table_v1.csv",
+          "event_table_sha256": "bc9db6a4cc29cbaa849c63a141e61fab1fcc5932031fca97d04bf101199b3fcb",
+          "train_only_q95_total_water_m": 0.9330199999999997,
+          "event_count": 1915
+        },
+        "formal_training_authorized": true,
+        "claim_boundary": "historical_hindcast_only; operational_72h_forecast_requires_archived_issue_valid_lead_nwp",
+        "built_at_utc": "2026-07-20T19:56:17.880502Z"
+      },
+      "window_index_summary": {
+        "train_start_indices": {
+          "shape": [
+            69970
+          ],
+          "dtype": "int64",
+          "first": [
+            0,
+            1,
+            2
+          ],
+          "last": [
+            69967,
+            69968,
+            69969
+          ]
+        },
+        "validation_start_indices": {
+          "shape": [
+            8600
+          ],
+          "dtype": "int64",
+          "first": [
+            70137,
+            70138,
+            70139
+          ],
+          "last": [
+            78734,
+            78735,
+            78736
+          ]
+        },
+        "test_start_indices": {
+          "shape": [
+            8601
+          ],
+          "dtype": "int64",
+          "first": [
+            78904,
+            78905,
+            78906
+          ],
+          "last": [
+            87502,
+            87503,
+            87504
+          ]
+        },
+        "all_timestamps_ns": {
+          "shape": [
+            87672
+          ],
+          "dtype": "int64",
+          "first": [
+            1420070400000000000,
+            1420074000000000000,
+            1420077600000000000
+          ],
+          "last": [
+            1735678800000000000,
+            1735682400000000000,
+            1735686000000000000
+          ]
+        },
+        "input_len": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            96
+          ],
+          "last": [
+            96
+          ]
+        },
+        "horizon": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            72
+          ],
+          "last": [
+            72
+          ]
+        },
+        "window_length": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            168
+          ],
+          "last": [
+            168
+          ]
+        }
+      },
+      "pr17_reproduction": {
+        "input_hours": 72,
+        "horizon_hours": 24,
+        "stride_hours": 1,
+        "windows": 8673,
+        "forecast_cells": 208152,
+        "unique_target_hours": 8696,
+        "independent_storm_count": null,
+        "metrics": {
+          "persistence": {
+            "mae_m": 0.5736431646104768,
+            "rmse_m": 0.7096743274455553,
+            "q95_tail_mae_m": 0.8093868870703764,
+            "tail_cells": 15275
+          },
+          "seasonal24": {
+            "mae_m": 0.21487350926246201,
+            "rmse_m": 0.26775864713104214,
+            "q95_tail_mae_m": 0.20225634042553192,
+            "tail_cells": 15275
+          }
+        }
+      }
+    },
+    {
+      "region": "pearl_river_hong_kong",
+      "rows": 87672,
+      "first": "2015-01-01T00:00:00",
+      "last": "2024-12-31T23:00:00",
+      "anchor_ids": [
+        "UHSLC_329_Quarry_Bay"
+      ],
+      "source_names": [
+        "UHSLC_RQDS_global_hourly"
+      ],
+      "qc_flags": {
+        "checked": 87538,
+        "source_gap_no_imputation": 134
+      },
+      "missing_flags": 134,
+      "nonfinite_observed": 134,
+      "duplicate_timestamps": 0,
+      "nonhourly_steps": 0,
+      "tide_aligned": true,
+      "forcing_aligned": true,
+      "forcing_nonfinite": {
+        "u10_ms": 0,
+        "v10_ms": 0,
+        "mslp_pa": 0,
+        "pressure_proxy": 0,
+        "wind_speed_ms": 0,
+        "wind_energy_recent": 0
+      },
+      "thresholds": {
+        "0.95": {
+          "computed": 2.28,
+          "declared": 2.28
+        },
+        "0.99": {
+          "computed": 2.53,
+          "declared": 2.5300000000000002
+        }
+      },
+      "scalers": {
+        "water_level_m": {
+          "computed_mean": 1.472122629902731,
+          "computed_std_ddof0": 0.22327882488545983,
+          "computed_count": 70012,
+          "declared": {
+            "mean": 1.472122629902731,
+            "std": 0.22327882488545983,
+            "count": 70012
+          }
+        },
+        "tide_level_m": {
+          "computed_mean": 0.0013002877166117743,
+          "computed_std_ddof0": 0.4448399122843801,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.0013260788900474206,
+            "std": 0.44489075142874246,
+            "count": 70012
+          }
+        },
+        "u10_ms": {
+          "computed_mean": -2.220782614938321,
+          "computed_std_ddof0": 3.0286079796793284,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -2.218836638149175,
+            "std": 3.028866768192078,
+            "count": 70012
+          }
+        },
+        "v10_ms": {
+          "computed_mean": -0.5284261822869812,
+          "computed_std_ddof0": 3.208324865548909,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -0.5305105871599297,
+            "std": 3.2096006643734514,
+            "count": 70012
+          }
+        },
+        "mslp_pa": {
+          "computed_mean": 101280.05479365385,
+          "computed_std_ddof0": 652.1521635871366,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 101279.95010498201,
+            "std": 652.4431427322799,
+            "count": 70012
+          }
+        },
+        "pressure_proxy": {
+          "computed_mean": 44.9452063461511,
+          "computed_std_ddof0": 652.1521635871366,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 45.04989501799692,
+            "std": 652.4431427322799,
+            "count": 70012
+          }
+        },
+        "wind_speed_ms": {
+          "computed_mean": 4.527719317784835,
+          "computed_std_ddof0": 2.043693267045158,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 4.527818022821145,
+            "std": 2.0442875987235856,
+            "count": 70012
+          }
+        },
+        "wind_energy_recent": {
+          "computed_mean": 24.677489367279623,
+          "computed_std_ddof0": 21.37212098154699,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 24.68140369870215,
+            "std": 21.382113849200337,
+            "count": 70012
+          }
+        }
+      },
+      "split_indices_half_open": [
+        0,
+        70137,
+        78904,
+        87672
+      ],
+      "events_per_split": {
+        "train": 1015,
+        "validation": 135,
+        "test": 164
+      },
+      "crossing_cut_events": [
+        "pearl_river_hong_kong_event_01149"
+      ],
+      "shared_event_ids": [],
+      "event_durations_hours": {
+        "3": 264,
+        "4": 284,
+        "1": 152,
+        "2": 232,
+        "5": 242,
+        "6": 102,
+        "7": 17,
+        "8": 10,
+        "19": 1,
+        "9": 7,
+        "11": 2,
+        "10": 1
+      },
+      "manifest": {
+        "region": "pearl_river_hong_kong",
+        "period": [
+          "2015-01-01 00:00:00+00:00",
+          "2024-12-31 23:00:00+00:00"
+        ],
+        "input_len": 96,
+        "horizon": 72,
+        "window_length": 168,
+        "rows": 87672,
+        "missing_or_invalid_rows": 134,
+        "target_missing_rows": 134,
+        "forcing_missing_rows": 0,
+        "tide_missing_rows": 0,
+        "coverage_status": "partial_target_coverage_valid_windows_only",
+        "window_policy": "exclude_any_window_with_a_missing_target_tide_or_forcing_row; no_imputation",
+        "window_counts": {
+          "all": 84135,
+          "train": 66776,
+          "validation": 8432,
+          "test": 8593
+        },
+        "split_policy": "chronological_8_1_1_strict_window_containment",
+        "no_imputation_performed": true,
+        "target_sha256": "a760ffa69e7c96516f354b2369c3b4a66a969dbc6270a1960eacb707258c44e7",
+        "tide_sha256": "3e51b3f19a2ef0882b19433fe04c3565837c129c1cb1d235382c7c690770b51d",
+        "forcing_sha256": "6a665d275c13104d189cf7495615bef3989adeee32cea10552955a49f7434340",
+        "static_sha256": "ab0e031fa3e0fcbe12f269de90c7ce3d0d6a21710af167c7c5c4975321c15f79",
+        "window_index_sha256": "91a6d3918ee648780cb5e72728e07c72e8660ad32075ffab741ddc48484e4386",
+        "train_only_metadata_sha256": "50570cbfd82fd51f27574a323f2de456a07cc2a49eb8f1c275a56420c7f186ec",
+        "event_info": {
+          "event_table": "/data/rongjia/sea-level-shared-database/releases/sea_level_shared_prime_formal_2015_2024_v1_20260721/derived/prime_coast/pearl_river_hong_kong/event_table_v1.csv",
+          "event_table_sha256": "0d2c50ce4b77a802688ed5444f7cf3cc05f20f1e06742662b90a3e9981e2b5da",
+          "train_only_q95_total_water_m": 2.28,
+          "event_count": 1314
+        },
+        "formal_training_authorized": false,
+        "claim_boundary": "historical_hindcast_only; operational_72h_forecast_requires_archived_issue_valid_lead_nwp",
+        "built_at_utc": "2026-07-20T20:06:37.175144Z",
+        "exclusion_reason": "UHSLC Quarry Bay contains 134 missing calendar hours in the 2015-2024 target grid; no imputation is allowed. Obtain a complete observed replacement or keep this region outside formal admission."
+      },
+      "window_index_summary": {
+        "train_start_indices": {
+          "shape": [
+            66776
+          ],
+          "dtype": "int64",
+          "first": [
+            0,
+            1,
+            2
+          ],
+          "last": [
+            69967,
+            69968,
+            69969
+          ]
+        },
+        "validation_start_indices": {
+          "shape": [
+            8432
+          ],
+          "dtype": "int64",
+          "first": [
+            70137,
+            70138,
+            70139
+          ],
+          "last": [
+            78734,
+            78735,
+            78736
+          ]
+        },
+        "test_start_indices": {
+          "shape": [
+            8593
+          ],
+          "dtype": "int64",
+          "first": [
+            78904,
+            78905,
+            78906
+          ],
+          "last": [
+            87494,
+            87495,
+            87496
+          ]
+        },
+        "all_timestamps_ns": {
+          "shape": [
+            87672
+          ],
+          "dtype": "int64",
+          "first": [
+            1420070400000000000,
+            1420074000000000000,
+            1420077600000000000
+          ],
+          "last": [
+            1735678800000000000,
+            1735682400000000000,
+            1735686000000000000
+          ]
+        },
+        "input_len": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            96
+          ],
+          "last": [
+            96
+          ]
+        },
+        "horizon": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            72
+          ],
+          "last": [
+            72
+          ]
+        },
+        "window_length": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            168
+          ],
+          "last": [
+            168
+          ]
+        }
+      },
+      "pr17_reproduction": {
+        "input_hours": 72,
+        "horizon_hours": 24,
+        "stride_hours": 1,
+        "windows": 8665,
+        "forecast_cells": 207960,
+        "unique_target_hours": 8688,
+        "independent_storm_count": null,
+        "metrics": {
+          "persistence": {
+            "mae_m": 0.5545698211194461,
+            "rmse_m": 0.69984222592024,
+            "q95_tail_mae_m": 0.8851795996709624,
+            "tail_cells": 14588
+          },
+          "seasonal24": {
+            "mae_m": 0.1561127620696288,
+            "rmse_m": 0.1958454737942478,
+            "q95_tail_mae_m": 0.15576638332876339,
+            "tail_cells": 14588
+          }
+        }
+      }
+    },
+    {
+      "region": "south_atlantic_charleston",
+      "rows": 87672,
+      "first": "2015-01-01T00:00:00",
+      "last": "2024-12-31T23:00:00",
+      "anchor_ids": [
+        "NOAA_8665530_Charleston"
+      ],
+      "source_names": [
+        "NOAA_COOPS_8665530"
+      ],
+      "qc_flags": {
+        "checked": 87672
+      },
+      "missing_flags": 0,
+      "nonfinite_observed": 0,
+      "duplicate_timestamps": 0,
+      "nonhourly_steps": 0,
+      "tide_aligned": true,
+      "forcing_aligned": true,
+      "forcing_nonfinite": {
+        "u10_ms": 0,
+        "v10_ms": 0,
+        "mslp_pa": 0,
+        "pressure_proxy": 0,
+        "wind_speed_ms": 0,
+        "wind_energy_recent": 0
+      },
+      "thresholds": {
+        "0.95": {
+          "computed": 1.0393199999999996,
+          "declared": 1.0393199999999998
+        },
+        "0.99": {
+          "computed": 1.2597,
+          "declared": 1.2597
+        }
+      },
+      "scalers": {
+        "water_level_m": {
+          "computed_mean": 0.1513222900298416,
+          "computed_std_ddof0": 0.20688806736363924,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.1513222900298416,
+            "std": 0.20688806736363924,
+            "count": 70137
+          }
+        },
+        "tide_level_m": {
+          "computed_mean": 0.0003633385732209817,
+          "computed_std_ddof0": 0.5732985165482178,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.0003633385732209817,
+            "std": 0.5732985165482178,
+            "count": 70137
+          }
+        },
+        "u10_ms": {
+          "computed_mean": 0.22751253809775152,
+          "computed_std_ddof0": 2.723424506960433,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.22751253809775152,
+            "std": 2.723424506960433,
+            "count": 70137
+          }
+        },
+        "v10_ms": {
+          "computed_mean": 0.30230123000104087,
+          "computed_std_ddof0": 2.986904982365361,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.30230123000104087,
+            "std": 2.986904982365361,
+            "count": 70137
+          }
+        },
+        "mslp_pa": {
+          "computed_mean": 101823.71651107832,
+          "computed_std_ddof0": 562.1071015082633,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 101823.71651107832,
+            "std": 562.1071015082633,
+            "count": 70137
+          }
+        },
+        "pressure_proxy": {
+          "computed_mean": -498.71651107831815,
+          "computed_std_ddof0": 562.1071015082633,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -498.71651107831815,
+            "std": 562.1071015082633,
+            "count": 70137
+          }
+        },
+        "wind_speed_ms": {
+          "computed_mean": 3.686997106609607,
+          "computed_std_ddof0": 1.6993653942864024,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 3.686997106609607,
+            "std": 1.6993653942864024,
+            "count": 70137
+          }
+        },
+        "wind_energy_recent": {
+          "computed_mean": 16.481744479726277,
+          "computed_std_ddof0": 15.740290932137453,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 16.481744479726277,
+            "std": 15.740290932137453,
+            "count": 70137
+          }
+        }
+      },
+      "split_indices_half_open": [
+        0,
+        70137,
+        78904,
+        87672
+      ],
+      "events_per_split": {
+        "train": 1464,
+        "validation": 209,
+        "test": 181
+      },
+      "crossing_cut_events": [],
+      "shared_event_ids": [],
+      "event_durations_hours": {
+        "1": 389,
+        "3": 590,
+        "2": 609,
+        "4": 225,
+        "5": 38,
+        "12": 1,
+        "7": 1,
+        "6": 1
+      },
+      "manifest": {
+        "region": "south_atlantic_charleston",
+        "period": [
+          "2015-01-01 00:00:00+00:00",
+          "2024-12-31 23:00:00+00:00"
+        ],
+        "input_len": 96,
+        "horizon": 72,
+        "window_length": 168,
+        "rows": 87672,
+        "missing_or_invalid_rows": 0,
+        "target_missing_rows": 0,
+        "forcing_missing_rows": 0,
+        "tide_missing_rows": 0,
+        "coverage_status": "complete_hourly_target",
+        "window_policy": "exclude_any_window_with_a_missing_target_tide_or_forcing_row; no_imputation",
+        "window_counts": {
+          "all": 87505,
+          "train": 69970,
+          "validation": 8600,
+          "test": 8601
+        },
+        "split_policy": "chronological_8_1_1_strict_window_containment",
+        "no_imputation_performed": true,
+        "target_sha256": "88039673e29042b13f34356b0c22b6a9dd5a3b6ec2040ac4e3340efffe62c50a",
+        "tide_sha256": "4755df5deefe8f5f43c677dd7c50ebca045e687cbe6aa97488b7c0d74a09297f",
+        "forcing_sha256": "e27d2f7c2c977d0842e022ec8c9b9430187285fb478388dddb298783ccd35c84",
+        "static_sha256": "5a0957d9d975cfd59eacaa8443c4b63935d79aa5a4aaad5939aaa66d8d1db265",
+        "window_index_sha256": "8b9aa0bd50914238d613d591f1313239d750b66e4f648d6778bb4b02c6bd5ab2",
+        "train_only_metadata_sha256": "13104d13c63cc42dc8be2e6f792ddd7974ed3d69c6e45752884834982a4069e7",
+        "event_info": {
+          "event_table": "/data/rongjia/sea-level-shared-database/releases/sea_level_shared_prime_formal_2015_2024_v1_20260721/derived/prime_coast/south_atlantic_charleston/event_table_v1.csv",
+          "event_table_sha256": "8396753dc02ecba0497129819f8c1c772e5f285080f313b9bb3d70c04cb6493e",
+          "train_only_q95_total_water_m": 1.0393199999999998,
+          "event_count": 1854
+        },
+        "formal_training_authorized": true,
+        "claim_boundary": "historical_hindcast_only; operational_72h_forecast_requires_archived_issue_valid_lead_nwp",
+        "built_at_utc": "2026-07-20T20:06:53.505217Z"
+      },
+      "window_index_summary": {
+        "train_start_indices": {
+          "shape": [
+            69970
+          ],
+          "dtype": "int64",
+          "first": [
+            0,
+            1,
+            2
+          ],
+          "last": [
+            69967,
+            69968,
+            69969
+          ]
+        },
+        "validation_start_indices": {
+          "shape": [
+            8600
+          ],
+          "dtype": "int64",
+          "first": [
+            70137,
+            70138,
+            70139
+          ],
+          "last": [
+            78734,
+            78735,
+            78736
+          ]
+        },
+        "test_start_indices": {
+          "shape": [
+            8601
+          ],
+          "dtype": "int64",
+          "first": [
+            78904,
+            78905,
+            78906
+          ],
+          "last": [
+            87502,
+            87503,
+            87504
+          ]
+        },
+        "all_timestamps_ns": {
+          "shape": [
+            87672
+          ],
+          "dtype": "int64",
+          "first": [
+            1420070400000000000,
+            1420074000000000000,
+            1420077600000000000
+          ],
+          "last": [
+            1735678800000000000,
+            1735682400000000000,
+            1735686000000000000
+          ]
+        },
+        "input_len": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            96
+          ],
+          "last": [
+            96
+          ]
+        },
+        "horizon": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            72
+          ],
+          "last": [
+            72
+          ]
+        },
+        "window_length": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            168
+          ],
+          "last": [
+            168
+          ]
+        }
+      },
+      "pr17_reproduction": {
+        "input_hours": 72,
+        "horizon_hours": 24,
+        "stride_hours": 1,
+        "windows": 8673,
+        "forecast_cells": 208152,
+        "unique_target_hours": 8696,
+        "independent_storm_count": null,
+        "metrics": {
+          "persistence": {
+            "mae_m": 0.6495126268303931,
+            "rmse_m": 0.7994732338317451,
+            "q95_tail_mae_m": 0.8868265502595564,
+            "tail_cells": 10595
+          },
+          "seasonal24": {
+            "mae_m": 0.22321736999884703,
+            "rmse_m": 0.26939130445100296,
+            "q95_tail_mae_m": 0.16338226521944313,
+            "tail_cells": 10595
+          }
+        }
+      }
+    },
+    {
+      "region": "southeast_australia",
+      "rows": 87672,
+      "first": "2015-01-01T00:00:00",
+      "last": "2024-12-31T23:00:00",
+      "anchor_ids": [
+        "BOM_IDO71003_Port_Kembla"
+      ],
+      "source_names": [
+        "BOM_ABSLMP_IDO71003"
+      ],
+      "qc_flags": {
+        "checked": 87641,
+        "source_gap_no_imputation": 31
+      },
+      "missing_flags": 31,
+      "nonfinite_observed": 31,
+      "duplicate_timestamps": 0,
+      "nonhourly_steps": 0,
+      "tide_aligned": true,
+      "forcing_aligned": true,
+      "forcing_nonfinite": {
+        "u10_ms": 0,
+        "v10_ms": 0,
+        "mslp_pa": 0,
+        "pressure_proxy": 0,
+        "wind_speed_ms": 0,
+        "wind_energy_recent": 0
+      },
+      "thresholds": {
+        "0.95": {
+          "computed": 1.644,
+          "declared": 1.6440000000000001
+        },
+        "0.99": {
+          "computed": 1.849,
+          "declared": 1.849
+        }
+      },
+      "scalers": {
+        "water_level_m": {
+          "computed_mean": 0.9666450271146472,
+          "computed_std_ddof0": 0.09589103883331128,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.9666450271146472,
+            "std": 0.09589103883331128,
+            "count": 70137
+          }
+        },
+        "tide_level_m": {
+          "computed_mean": 0.00019947721259820064,
+          "computed_std_ddof0": 0.3894863180030938,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.00019947721259820064,
+            "std": 0.3894863180030938,
+            "count": 70137
+          }
+        },
+        "u10_ms": {
+          "computed_mean": 0.706663429277343,
+          "computed_std_ddof0": 3.7285439488055903,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.706663429277343,
+            "std": 3.7285439488055903,
+            "count": 70137
+          }
+        },
+        "v10_ms": {
+          "computed_mean": 0.5513300977203188,
+          "computed_std_ddof0": 4.859609599673595,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.5513300977203188,
+            "std": 4.859609599673595,
+            "count": 70137
+          }
+        },
+        "mslp_pa": {
+          "computed_mean": 101693.16376252905,
+          "computed_std_ddof0": 716.4194711496417,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 101693.16376252905,
+            "std": 716.4194711496417,
+            "count": 70137
+          }
+        },
+        "pressure_proxy": {
+          "computed_mean": -368.1637625290503,
+          "computed_std_ddof0": 716.4194711496417,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -368.1637625290503,
+            "std": 716.4194711496417,
+            "count": 70137
+          }
+        },
+        "wind_speed_ms": {
+          "computed_mean": 5.58350030982634,
+          "computed_std_ddof0": 2.6731456766425166,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 5.58350030982634,
+            "std": 2.6731456766425166,
+            "count": 70137
+          }
+        },
+        "wind_energy_recent": {
+          "computed_mean": 38.32089434040412,
+          "computed_std_ddof0": 34.860499244425625,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 38.32089434040412,
+            "std": 34.860499244425625,
+            "count": 70137
+          }
+        }
+      },
+      "split_indices_half_open": [
+        0,
+        70137,
+        78904,
+        87672
+      ],
+      "events_per_split": {
+        "train": 1392,
+        "validation": 206,
+        "test": 196
+      },
+      "crossing_cut_events": [],
+      "shared_event_ids": [],
+      "event_durations_hours": {
+        "1": 313,
+        "2": 533,
+        "3": 604,
+        "4": 295,
+        "5": 48,
+        "6": 1
+      },
+      "manifest": {
+        "region": "southeast_australia",
+        "period": [
+          "2015-01-01 00:00:00+00:00",
+          "2024-12-31 23:00:00+00:00"
+        ],
+        "input_len": 96,
+        "horizon": 72,
+        "window_length": 168,
+        "rows": 87672,
+        "missing_or_invalid_rows": 31,
+        "target_missing_rows": 31,
+        "forcing_missing_rows": 0,
+        "tide_missing_rows": 0,
+        "coverage_status": "partial_target_coverage_valid_windows_only",
+        "window_policy": "exclude_any_window_with_a_missing_target_tide_or_forcing_row; no_imputation",
+        "window_counts": {
+          "all": 87307,
+          "train": 69970,
+          "validation": 8402,
+          "test": 8601
+        },
+        "split_policy": "chronological_8_1_1_strict_window_containment",
+        "no_imputation_performed": true,
+        "target_sha256": "30900a173006d2b739a76df52966a62300788e8653b61821023975e838b65f06",
+        "tide_sha256": "c33f71d574897ed7b3cd0e1f69b6f5f220f92c2db83907ed9a8c962bde196f5a",
+        "forcing_sha256": "03b0975e608701ae88d14107eeff2964cad965ac63f8c5bbbc634789f138b22a",
+        "static_sha256": "40e5e3f44cac2af1541bf052f7003ef85edc8c7a41f6e383f0e850d2d14ac305",
+        "window_index_sha256": "78b96ba4d8385e624229848827c7210c8c54fb608264950c3b6a3673a38b80bf",
+        "train_only_metadata_sha256": "b9ca0116103509a8e2712afc22a768fff17b3f39acd9de9be599a87baeb23a64",
+        "event_info": {
+          "event_table": "/data/rongjia/sea-level-shared-database/releases/sea_level_shared_prime_formal_2015_2024_v1_20260721/derived/prime_coast/southeast_australia/event_table_v1.csv",
+          "event_table_sha256": "5d61936be0f9e4cbcd0fcf117c7675c99bc82301a536da5763f40ddc7996f818",
+          "train_only_q95_total_water_m": 1.6440000000000001,
+          "event_count": 1794
+        },
+        "formal_training_authorized": true,
+        "claim_boundary": "historical_hindcast_only; operational_72h_forecast_requires_archived_issue_valid_lead_nwp",
+        "built_at_utc": "2026-07-20T19:57:02.812132Z"
+      },
+      "window_index_summary": {
+        "train_start_indices": {
+          "shape": [
+            69970
+          ],
+          "dtype": "int64",
+          "first": [
+            0,
+            1,
+            2
+          ],
+          "last": [
+            69967,
+            69968,
+            69969
+          ]
+        },
+        "validation_start_indices": {
+          "shape": [
+            8402
+          ],
+          "dtype": "int64",
+          "first": [
+            70137,
+            70138,
+            70139
+          ],
+          "last": [
+            78734,
+            78735,
+            78736
+          ]
+        },
+        "test_start_indices": {
+          "shape": [
+            8601
+          ],
+          "dtype": "int64",
+          "first": [
+            78904,
+            78905,
+            78906
+          ],
+          "last": [
+            87502,
+            87503,
+            87504
+          ]
+        },
+        "all_timestamps_ns": {
+          "shape": [
+            87672
+          ],
+          "dtype": "int64",
+          "first": [
+            1420070400000000000,
+            1420074000000000000,
+            1420077600000000000
+          ],
+          "last": [
+            1735678800000000000,
+            1735682400000000000,
+            1735686000000000000
+          ]
+        },
+        "input_len": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            96
+          ],
+          "last": [
+            96
+          ]
+        },
+        "horizon": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            72
+          ],
+          "last": [
+            72
+          ]
+        },
+        "window_length": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            168
+          ],
+          "last": [
+            168
+          ]
+        }
+      },
+      "pr17_reproduction": {
+        "input_hours": 72,
+        "horizon_hours": 24,
+        "stride_hours": 1,
+        "windows": 8673,
+        "forecast_cells": 208152,
+        "unique_target_hours": 8696,
+        "independent_storm_count": null,
+        "metrics": {
+          "persistence": {
+            "mae_m": 0.45093098312771435,
+            "rmse_m": 0.5606976208477168,
+            "q95_tail_mae_m": 0.7667598574821852,
+            "tail_cells": 12630
+          },
+          "seasonal24": {
+            "mae_m": 0.1383798185941043,
+            "rmse_m": 0.1639355605703784,
+            "q95_tail_mae_m": 0.12181939825811561,
+            "tail_cells": 12630
+          }
+        }
+      }
+    },
+    {
+      "region": "thames_north_sea",
+      "rows": 87672,
+      "first": "2015-01-01T00:00:00",
+      "last": "2024-12-31T23:00:00",
+      "anchor_ids": [
+        "IOC_SHEE"
+      ],
+      "source_names": [
+        "IOC_SHEE_history_15min_aggregate"
+      ],
+      "qc_flags": {
+        "checked": 85376,
+        "source_gap_no_imputation": 2296
+      },
+      "missing_flags": 2296,
+      "nonfinite_observed": 2296,
+      "duplicate_timestamps": 0,
+      "nonhourly_steps": 0,
+      "tide_aligned": true,
+      "forcing_aligned": true,
+      "forcing_nonfinite": {
+        "u10_ms": 0,
+        "v10_ms": 0,
+        "mslp_pa": 0,
+        "pressure_proxy": 0,
+        "wind_speed_ms": 0,
+        "wind_energy_recent": 0
+      },
+      "thresholds": {
+        "0.95": {
+          "computed": 5.5192916665,
+          "declared": 5.5192916665
+        },
+        "0.99": {
+          "computed": 5.907550000000003,
+          "declared": 5.907550000000002
+        }
+      },
+      "scalers": {
+        "water_level_m": {
+          "computed_mean": 3.1047763243627386,
+          "computed_std_ddof0": 0.5486770829256395,
+          "computed_count": 68071,
+          "declared": {
+            "mean": 3.1047763243627386,
+            "std": 0.5486770829256395,
+            "count": 68071
+          }
+        },
+        "tide_level_m": {
+          "computed_mean": -0.0015796923911772672,
+          "computed_std_ddof0": 1.4079312415993974,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -0.0011743976979918037,
+            "std": 1.4076798618585729,
+            "count": 68071
+          }
+        },
+        "u10_ms": {
+          "computed_mean": 1.2003753871018437,
+          "computed_std_ddof0": 2.9838954568639435,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 1.194735400682346,
+            "std": 2.978329720143785,
+            "count": 68071
+          }
+        },
+        "v10_ms": {
+          "computed_mean": 0.7661984090257925,
+          "computed_std_ddof0": 2.977184179866195,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.7658253843167281,
+            "std": 2.9837803543535895,
+            "count": 68071
+          }
+        },
+        "mslp_pa": {
+          "computed_mean": 101562.11290670402,
+          "computed_std_ddof0": 1066.9432446634953,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 101566.61127811403,
+            "std": 1066.6504494893532,
+            "count": 68071
+          }
+        },
+        "pressure_proxy": {
+          "computed_mean": -237.11290670402212,
+          "computed_std_ddof0": 1066.9432446634953,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -241.611278114028,
+            "std": 1066.6504494893532,
+            "count": 68071
+          }
+        },
+        "wind_speed_ms": {
+          "computed_mean": 3.9881020736805115,
+          "computed_std_ddof0": 1.9723743712086275,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 3.9879424294496624,
+            "std": 1.9706824962993184,
+            "count": 68071
+          }
+        },
+        "wind_energy_recent": {
+          "computed_mean": 19.794604020758715,
+          "computed_std_ddof0": 18.973940409641383,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 19.794827568052035,
+            "std": 18.991120897900856,
+            "count": 68071
+          }
+        }
+      },
+      "split_indices_half_open": [
+        0,
+        70137,
+        78904,
+        87672
+      ],
+      "events_per_split": {
+        "train": 2234,
+        "validation": 306,
+        "test": 312
+      },
+      "crossing_cut_events": [],
+      "shared_event_ids": [],
+      "event_durations_hours": {
+        "1": 1465,
+        "2": 1248,
+        "3": 132,
+        "4": 7
+      },
+      "manifest": {
+        "region": "thames_north_sea",
+        "period": [
+          "2015-01-01 00:00:00+00:00",
+          "2024-12-31 23:00:00+00:00"
+        ],
+        "input_len": 96,
+        "horizon": 72,
+        "window_length": 168,
+        "rows": 87672,
+        "missing_or_invalid_rows": 2296,
+        "target_missing_rows": 2296,
+        "forcing_missing_rows": 0,
+        "tide_missing_rows": 0,
+        "coverage_status": "partial_target_coverage_valid_windows_only",
+        "window_policy": "exclude_any_window_with_a_missing_target_tide_or_forcing_row; no_imputation",
+        "window_counts": {
+          "all": 63722,
+          "train": 50436,
+          "validation": 5984,
+          "test": 6968
+        },
+        "split_policy": "chronological_8_1_1_strict_window_containment",
+        "no_imputation_performed": true,
+        "target_sha256": "e8bc1e2fe55e1eb3b9e8fd01bdd65875030b09b9f595597095ec5e6480f215f6",
+        "tide_sha256": "d89a789cb2053a5428836472d3a39451b230ccb95d4be7fd70d9f7e1cedceb3a",
+        "forcing_sha256": "ec1a9f6d2f68017dcf558f3a67fa5cf88a56fd055f67c1368c98852c4909643e",
+        "static_sha256": "230764e65fc09cd068c465e27a837ea97c8516b6a6debb1e47e8b4f92bec909a",
+        "window_index_sha256": "ca433592d2e64a6f7364d7589a39270e4aa23a9325c8587f8da798dd74ad3c6a",
+        "train_only_metadata_sha256": "b401f087b205e6e3c8c2f5de2aac6dd3fe5e959d10f656026a46269c315e3881",
+        "event_info": {
+          "event_table": "/data/rongjia/sea-level-shared-database/releases/sea_level_shared_prime_formal_2015_2024_v1_20260721/derived/prime_coast/thames_north_sea/event_table_v1.csv",
+          "event_table_sha256": "abed71d7d526a2e1d1b5f3a2c53e049b0d2a40aab9f2bd0af8e08c9a2b9902ef",
+          "train_only_q95_total_water_m": 5.5192916665,
+          "event_count": 2852
+        },
+        "formal_training_authorized": true,
+        "claim_boundary": "historical_hindcast_only; operational_72h_forecast_requires_archived_issue_valid_lead_nwp",
+        "built_at_utc": "2026-07-20T19:56:42.125812Z"
+      },
+      "window_index_summary": {
+        "train_start_indices": {
+          "shape": [
+            50436
+          ],
+          "dtype": "int64",
+          "first": [
+            0,
+            1,
+            2
+          ],
+          "last": [
+            69967,
+            69968,
+            69969
+          ]
+        },
+        "validation_start_indices": {
+          "shape": [
+            5984
+          ],
+          "dtype": "int64",
+          "first": [
+            70137,
+            70138,
+            70139
+          ],
+          "last": [
+            78734,
+            78735,
+            78736
+          ]
+        },
+        "test_start_indices": {
+          "shape": [
+            6968
+          ],
+          "dtype": "int64",
+          "first": [
+            78904,
+            78905,
+            78906
+          ],
+          "last": [
+            87501,
+            87502,
+            87503
+          ]
+        },
+        "all_timestamps_ns": {
+          "shape": [
+            87672
+          ],
+          "dtype": "int64",
+          "first": [
+            1420070400000000000,
+            1420074000000000000,
+            1420077600000000000
+          ],
+          "last": [
+            1735678800000000000,
+            1735682400000000000,
+            1735686000000000000
+          ]
+        },
+        "input_len": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            96
+          ],
+          "last": [
+            96
+          ]
+        },
+        "horizon": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            72
+          ],
+          "last": [
+            72
+          ]
+        },
+        "window_length": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            168
+          ],
+          "last": [
+            168
+          ]
+        }
+      },
+      "pr17_reproduction": {
+        "input_hours": 72,
+        "horizon_hours": 24,
+        "stride_hours": 1,
+        "windows": 7688,
+        "forecast_cells": 184512,
+        "unique_target_hours": 7918,
+        "independent_storm_count": null,
+        "metrics": {
+          "persistence": {
+            "mae_m": 1.749002111425181,
+            "rmse_m": 2.14748154779952,
+            "q95_tail_mae_m": 2.6377185626752118,
+            "tail_cells": 10065
+          },
+          "seasonal24": {
+            "mae_m": 0.5979735405645054,
+            "rmse_m": 0.7072928365694237,
+            "q95_tail_mae_m": 0.4327108544461003,
+            "tail_cells": 10065
+          }
+        }
+      }
+    },
+    {
+      "region": "us_gulf_coast",
+      "rows": 87672,
+      "first": "2015-01-01T00:00:00",
+      "last": "2024-12-31T23:00:00",
+      "anchor_ids": [
+        "NOAA_8771450_Galveston_Pier_21"
+      ],
+      "source_names": [
+        "NOAA_COOPS_8771450"
+      ],
+      "qc_flags": {
+        "checked": 87672
+      },
+      "missing_flags": 0,
+      "nonfinite_observed": 0,
+      "duplicate_timestamps": 0,
+      "nonhourly_steps": 0,
+      "tide_aligned": true,
+      "forcing_aligned": true,
+      "forcing_nonfinite": {
+        "u10_ms": 0,
+        "v10_ms": 0,
+        "mslp_pa": 0,
+        "pressure_proxy": 0,
+        "wind_speed_ms": 0,
+        "wind_energy_recent": 0
+      },
+      "thresholds": {
+        "0.95": {
+          "computed": 0.5535199999999997,
+          "declared": 0.5535199999999997
+        },
+        "0.99": {
+          "computed": 0.7260279999999999,
+          "declared": 0.726028
+        }
+      },
+      "scalers": {
+        "water_level_m": {
+          "computed_mean": 0.2003871357056903,
+          "computed_std_ddof0": 0.19278008342832964,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.2003871357056903,
+            "std": 0.19278008342832964,
+            "count": 70137
+          }
+        },
+        "tide_level_m": {
+          "computed_mean": 0.0007166269302935681,
+          "computed_std_ddof0": 0.17221755217619447,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 0.0007166269302935681,
+            "std": 0.17221755217619447,
+            "count": 70137
+          }
+        },
+        "u10_ms": {
+          "computed_mean": -1.1885642116924304,
+          "computed_std_ddof0": 3.1475564581093955,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -1.1885642116924304,
+            "std": 3.1475564581093955,
+            "count": 70137
+          }
+        },
+        "v10_ms": {
+          "computed_mean": 1.4358584917036086,
+          "computed_std_ddof0": 4.632524936283514,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 1.4358584917036086,
+            "std": 4.632524936283514,
+            "count": 70137
+          }
+        },
+        "mslp_pa": {
+          "computed_mean": 101665.04584153158,
+          "computed_std_ddof0": 533.8311213263449,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 101665.04584153158,
+            "std": 533.8311213263449,
+            "count": 70137
+          }
+        },
+        "pressure_proxy": {
+          "computed_mean": -340.0458415315739,
+          "computed_std_ddof0": 533.8311213263449,
+          "computed_count": 70137,
+          "declared": {
+            "mean": -340.0458415315739,
+            "std": 533.8311213263449,
+            "count": 70137
+          }
+        },
+        "wind_speed_ms": {
+          "computed_mean": 5.427125605934585,
+          "computed_std_ddof0": 2.32122405062663,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 5.427125605934585,
+            "std": 2.32122405062663,
+            "count": 70137
+          }
+        },
+        "wind_energy_recent": {
+          "computed_mean": 34.84265111671611,
+          "computed_std_ddof0": 27.114630615540715,
+          "computed_count": 70137,
+          "declared": {
+            "mean": 34.84265111671611,
+            "std": 27.114630615540715,
+            "count": 70137
+          }
+        }
+      },
+      "split_indices_half_open": [
+        0,
+        70137,
+        78904,
+        87672
+      ],
+      "events_per_split": {
+        "train": 449,
+        "validation": 80,
+        "test": 75
+      },
+      "crossing_cut_events": [],
+      "shared_event_ids": [],
+      "event_durations_hours": {
+        "1": 83,
+        "2": 62,
+        "5": 39,
+        "6": 32,
+        "16": 11,
+        "13": 23,
+        "3": 66,
+        "4": 48,
+        "10": 17,
+        "19": 7,
+        "17": 10,
+        "8": 28,
+        "9": 23,
+        "15": 27,
+        "12": 28,
+        "14": 18,
+        "7": 38,
+        "70": 1,
+        "28": 1,
+        "11": 22,
+        "35": 1,
+        "22": 1,
+        "44": 1,
+        "71": 1,
+        "43": 1,
+        "57": 1,
+        "18": 4,
+        "21": 1,
+        "55": 1,
+        "36": 1,
+        "94": 1,
+        "20": 3,
+        "33": 1,
+        "45": 1,
+        "23": 1
+      },
+      "manifest": {
+        "region": "us_gulf_coast",
+        "period": [
+          "2015-01-01 00:00:00+00:00",
+          "2024-12-31 23:00:00+00:00"
+        ],
+        "input_len": 96,
+        "horizon": 72,
+        "window_length": 168,
+        "rows": 87672,
+        "missing_or_invalid_rows": 0,
+        "target_missing_rows": 0,
+        "forcing_missing_rows": 0,
+        "tide_missing_rows": 0,
+        "coverage_status": "complete_hourly_target",
+        "window_policy": "exclude_any_window_with_a_missing_target_tide_or_forcing_row; no_imputation",
+        "window_counts": {
+          "all": 87505,
+          "train": 69970,
+          "validation": 8600,
+          "test": 8601
+        },
+        "split_policy": "chronological_8_1_1_strict_window_containment",
+        "no_imputation_performed": true,
+        "target_sha256": "17f9c4075c5921240414a573d82c7f0615afb329bff0bd2ab54742b7f8f57626",
+        "tide_sha256": "58d21f0f3d773e7ac555cdb28453e4c628d1a118c4414ae832d23914a909af0a",
+        "forcing_sha256": "7c25694033b184c2d2fbc68ca9919ec080933d5b3b4dd08d6b1cfd14bf061881",
+        "static_sha256": "72b06802916d99d98327a6dfd336711975ddfa906c85a04a291387532a1b6f5e",
+        "window_index_sha256": "8b9aa0bd50914238d613d591f1313239d750b66e4f648d6778bb4b02c6bd5ab2",
+        "train_only_metadata_sha256": "17212578e875a16b7280c26995058b924f80693d009aaf15bdc98f8e624addf8",
+        "event_info": {
+          "event_table": "/data/rongjia/sea-level-shared-database/releases/sea_level_shared_prime_formal_2015_2024_v1_20260721/derived/prime_coast/us_gulf_coast/event_table_v1.csv",
+          "event_table_sha256": "15c3403c389816e8c0d31ce61e04279b08489f903399c60cf5c0ab3cc8dae2e7",
+          "train_only_q95_total_water_m": 0.5535199999999997,
+          "event_count": 604
+        },
+        "formal_training_authorized": true,
+        "claim_boundary": "historical_hindcast_only; operational_72h_forecast_requires_archived_issue_valid_lead_nwp",
+        "built_at_utc": "2026-07-20T19:56:48.278172Z"
+      },
+      "window_index_summary": {
+        "train_start_indices": {
+          "shape": [
+            69970
+          ],
+          "dtype": "int64",
+          "first": [
+            0,
+            1,
+            2
+          ],
+          "last": [
+            69967,
+            69968,
+            69969
+          ]
+        },
+        "validation_start_indices": {
+          "shape": [
+            8600
+          ],
+          "dtype": "int64",
+          "first": [
+            70137,
+            70138,
+            70139
+          ],
+          "last": [
+            78734,
+            78735,
+            78736
+          ]
+        },
+        "test_start_indices": {
+          "shape": [
+            8601
+          ],
+          "dtype": "int64",
+          "first": [
+            78904,
+            78905,
+            78906
+          ],
+          "last": [
+            87502,
+            87503,
+            87504
+          ]
+        },
+        "all_timestamps_ns": {
+          "shape": [
+            87672
+          ],
+          "dtype": "int64",
+          "first": [
+            1420070400000000000,
+            1420074000000000000,
+            1420077600000000000
+          ],
+          "last": [
+            1735678800000000000,
+            1735682400000000000,
+            1735686000000000000
+          ]
+        },
+        "input_len": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            96
+          ],
+          "last": [
+            96
+          ]
+        },
+        "horizon": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            72
+          ],
+          "last": [
+            72
+          ]
+        },
+        "window_length": {
+          "shape": [],
+          "dtype": "int64",
+          "first": [
+            168
+          ],
+          "last": [
+            168
+          ]
+        }
+      },
+      "pr17_reproduction": {
+        "input_hours": 72,
+        "horizon_hours": 24,
+        "stride_hours": 1,
+        "windows": 8673,
+        "forecast_cells": 208152,
+        "unique_target_hours": 8696,
+        "independent_storm_count": null,
+        "metrics": {
+          "persistence": {
+            "mae_m": 0.19314832670356277,
+            "rmse_m": 0.25549562647908186,
+            "q95_tail_mae_m": 0.2127802334014637,
+            "tail_cells": 15167
+          },
+          "seasonal24": {
+            "mae_m": 0.11176824772281793,
+            "rmse_m": 0.16353491199069267,
+            "q95_tail_mae_m": 0.13803792444122104,
+            "tail_cells": 15167
+          }
+        }
+      }
+    }
+  ]
+}

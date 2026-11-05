@@ -1,0 +1,47 @@
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Coastal water-level forecasting}
+Traditional coastal water-level forecasting combines deterministic tidal
+constituents with empirical or dynamical storm-surge models~\citep{yang2023storm}.
+In recent years, neural approaches have improved forecast quality on held-out
+gauges. \citet{sergeev2024spatial} demonstrated that information from multiple
+gauges along a coastline substantially improves forecast accuracy for downstream
+stations. \citet{tong2024dual} introduced dual-timescale residual memory that
+separately models slow tidal evolution and fast storm-driven residuals, with
+particular attention to extreme events. These works establish that (a) the
+de-tided residual signal carries the most operationally relevant information during
+storms, and (b) extreme events demand model architectures that differ from those
+optimized for benign conditions.
+
+\subsection{Data augmentation for time-series forecasting}
+Data augmentation for time series is reviewed by~\citet{hoppe2024diffusion} and
+related surveys. Standard approaches include: (1) \emph{oversampling} rare events
+or weighting them in the loss function, (2) \emph{perturbation} with additive or
+multiplicative noise, (3) \emph{interpolation} between adjacent real windows, and
+(4) \emph{generative models} including GANs, VAEs, and diffusion. A key
+distinction for coastal water levels is whether augmentation preserves the
+\emph{physical plausibility} of the residual signal: unrealistic samples may
+actually degrade downstream forecasting by corrupting the training distribution.
+
+\subsection{Conditional diffusion models for time series}
+Conditional score-based diffusion models have been applied to time-series
+imputation~\citep{tashiro2022csdi,ma2023marginal} and generation. The canonical
+formulation~\citep{ho2020denoising} defines a forward process
+$q(x_t | x_0) = \mathcal{N}(\sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t) I)$
+and trains a network $\epsilon_\theta(x_t, t, c)$ to predict the injected noise,
+where $c$ denotes conditioning information. During generation, the reverse process
+iteratively denoises from $T$ back to 0:
+\begin{equation}
+    x_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}} \epsilon_\theta(x_t, t, c) \right) + \sigma_t z,
+    \label{eq:reverse}
+\end{equation}
+where $\sigma_t^2 = \beta_t (1 - \bar{\alpha}_{t-1}) / (1 - \bar{\alpha}_t)$ is the
+posterior variance and $z \sim \mathcal{N}(0, I)$.
+
+\subsection{This work's niche}
+To our knowledge, this is the first systematic application of conditional diffusion
+augmentation to coastal water-level forecasting with (a) event-grouped leakage-safe
+splits, (b) train-only threshold estimation, (c) matched-budget comparison across
+augmentation methods, and (d) pre-registration of hypotheses before running
+experiments.

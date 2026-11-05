@@ -1,0 +1,67 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage[htt]{hyphenat}
+\usepackage{hyperref}
+\usepackage{natbib}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\title{\textbf{When Does Generative Augmentation Help Extreme Coastal
+Water-Level Forecasting?\\ Architecture Dependence, Physical Priors, and
+Independent-Event Validation}}
+
+\author{Yingda Yu \and Tong Mengxue \and Rong Jia}
+\date{\today\\\textit{Preprint --- evidence-linked; hypotheses not yet confirmed}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Extreme coastal water levels are rare, and generative augmentation is the
+obvious way to make them less rare in training data. We ask when it actually
+helps, and report a programme of controlled experiments in which the honest
+answer is: not yet demonstrably, and for reasons that can be stated precisely.
+Across five regions under a frozen 96\,h$\rightarrow$72\,h contract (2015--2024),
+we first reconstruct the independent-event census from raw cluster artefacts.
+The 2015--2024 union is \textbf{679} event units (634 peak-over-threshold
+clusters, 73 tropical cyclones, 28 matched), not the 707 previously reported;
+the 2024 test split contains 59 independent units, with no duplicate timestamps
+and no cross-split window leakage. We then benchmark four conditional
+generators on identical splits. Only Flow Matching reproduces the target
+dispersion (generated/real scale ratio 0.945--1.116, Wasserstein-1 0.047);
+conditional VAE and TimeGrad are under-dispersed by factors of 2.3 and 12,
+and Diffusion-TS is rejected in all ten runs. An oracle-denoiser test proves
+the reverse diffusion recursion itself correct (max absolute reconstruction
+error $1.1\times10^{-10}$), which localises the failures to implementation
+defects rather than model families; we report that two of the three proposed
+repairs did \emph{not} work. Finally, after correcting cross-architecture
+pairing, a $5{,}000\times$ p-value inflation and a Monte-Carlo resolution floor
+that made significance arithmetically unreachable, the corrected event-level
+analysis finds \textbf{zero seed-robust augmentation findings} across 320
+comparisons. Effects are architecture-dependent (the TCN responds roughly forty
+times more strongly than the GRU) and region-dependent (Thames is harmed for
+both), and baseline seed variance alone reaches 25\%. We release the verified
+event census, the fidelity benchmark, the corrected statistics and a three-year
+split protocol built from scratch, and we state what would be required to
+establish a positive claim.
+\end{abstract}
+
+\input{sections/1-introduction}
+\input{sections/2-related-work}
+\input{sections/3-protocol}
+\input{sections/4-method}
+\input{sections/5-experiments}
+\input{sections/6-results}
+\input{sections/7-discussion}
+\input{sections/8-conclusion}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sections/a-audit}
+
+\end{document}
