@@ -96,54 +96,64 @@ interpretable.
 
 ## 7. Results
 
-Run: `1442.3 s`, CPU, 15 epochs, 600 test windows, 2,000 augmentation samples,
-8,000-window/200-step downstream budget.
+### 7.0 Superseded first run (sampling-path defect, E26)
 
-| Region | Train / Val / Test windows | FM selected epoch | Fidelity | A0 extreme MAE | FM-augmented | Δ | paired 95% CI (m) | p (boot / perm) |
-|---|---|---:|---|---:|---:|---:|---|---|
-| Charleston | 52,441 / 8,593 / 26,137 | 13 (val 0.7740) | **REJECTED** (scale 3.97, W1 0.511, q95 4.01) | 0.1175 | 0.1279 | **+8.88%** | [+0.0035, +0.0170] | 0.0047 / 0.0045 |
-| NY Bight | 52,441 / 8,593 / 26,137 | 13 (val 0.9669) | **REJECTED** (scale 4.76, W1 0.628, q95 8.53) | 0.1392 | 0.1613 | **+15.85%** | [+0.0183, +0.0262] | 1.0e-4 / 5.0e-5 |
+The first run (`1442.3 s`) produced scale ratios 3.97 and 4.76 and downstream
+deltas +8.88% / +15.85%. Those numbers are **withdrawn**. A controlled
+diagnostic on an identical trained model showed the cause: the shared sampler
+`wave27_physics_fm.sample_windows` was handing **raw metre-scale history** to a
+generator fitted on per-sample-normalised history, and returning its output
+without inverting the normalisation. Scoring that path gives scale 4.95 against
+1.17 for the normalised path (the production benchmark sits at 1.05). The defect
+is fixed in `sample_windows`, locked by
+`tests/test_physics_causality.py::test_sample_windows_normalises_history_and_de_normalises_output`,
+and the pre-fix artifact is retained as
+`data/results/wave27_expanded_evaluation_prefix_sampling_bug.json`.
 
-Identical window counts for the two regions are expected, not a bug: both series
-are gap-free over 2015–2024, so 52,608 h of training years yield
-`52,608 − 167 = 52,441` windows, 2021 yields 8,593 and 2022–2024 yield 26,137.
-Charleston has 40 independent test units; NY Bight has 51.
+The split, embargo, leakage and window-count findings in §2–§4 are structural
+and are **not** affected by the defect.
 
-### 7.1 The pilot does not test H1
+### 7.1 Corrected run (E26 fix applied)
 
-**Both Flow Matching models trained under the expanded protocol fail the
-fidelity gate** (scale 3.97 and 4.76 against a gate of 0.5–2.0). The
-augmentation is therefore an over-dispersed generator, and the downstream
-degradation — +8.88% and +15.85%, both significant even at Bonferroni
-α = 0.025 — is the expected consequence of training on bad synthetic data,
-not evidence about whether *good* generative augmentation helps.
+Completed 2026-11-08 (`2341.6 s`, CPU, `CUDA_VISIBLE_DEVICES=""`), artifact
+refreshed in place at `data/results/wave27_expanded_evaluation.json`
+(pre-fix copy retained as `..._prefix_sampling_bug.json`).
 
-This is a **negative result about the pilot's readiness**, and it must not be
-reported as "FM augmentation harms forecasting". The production Flow Matching
-checkpoints reach scale 0.945–1.116; the expanded-protocol models were fitted
-for 15 CPU epochs and do not, so the gap is a training-budget/regularisation
-difference, not a property of the protocol or the family.
+| Region | scale ratio | W1 | autocorr RMSE | q95 exceed ratio | status | downstream Δ vs A0 | p_perm | p_boot | units |
+|---|---|---|---|---|---|---|---|---|---|
+| Charleston | 1.147 | 0.019 | 0.043 | 1.60 | INCONCLUSIVE | **+0.86%** | 0.016 | 0.011 | 40 |
+| NY Bight | 1.097 | 0.033 | 0.038 | 1.70 | INCONCLUSIVE | **+0.92%** | 0.0023 | 0.0013 | 51 |
 
-### 7.2 What the run does establish
+**Reading.** The E26 repair restores generator fidelity to the regime of the
+production primary-split benchmark (scale ≈ 1.1, W1 ≈ 0.02–0.03): the previous
+3.97 / 4.76 verdicts were harness artefacts, as diagnosed. What the corrected
+run establishes is an **honest negative downstream result**: under the
+leakage-controlled 2015–2020/2021/2022–2024 protocol, standard-FM augmentation
+does not improve extreme-event MAE — it degrades it slightly, by +0.86%
+(Charleston) and +0.92% (NY Bight), and the paired event-level tests attribute
+even these small harms to signal, not noise (p_perm 0.016 / 0.0023; n = 40 / 51
+independent units). The generator remains only INCONCLUSIVE on fidelity (q95
+exceedance ratio ≈ 1.6–1.7, i.e. synthetic tails are too heavy), so this is
+"augmentation from a partially-fidelious generator", not "augmentation from a
+fully calibrated generator" — the Wave 2.8 P2 six-cell comparison
+(`scripts/wave28_expanded_eval.py`, GRU+TCN, standard+tail-aware, multi-seed)
+is the follow-up that varies both dimensions.
+
+### 7.2 What the protocol establishes regardless of the fidelity verdict
 
 1. The split builder is correct: 168 h embargo respected at both boundaries,
-   no train/val/test window overlap, and independent unit counts (40, 51) that
-   match the event census scale.
-2. Validation-only selection works (best epoch 13 in both regions, with
-   validation loss still falling — the model is under-trained, not over-fit).
-3. Downstream budget matching is implemented and the paired event-level
-   machinery returns finite CIs and p-values.
-4. **A poorly fitted generator measurably harms the forecaster**, which is a
-   useful calibration of effect size: the damage from over-dispersion is larger
-   than any benefit observed in the corrected Wave 2.6 grid.
+   no train/val/test window overlap, 52,441 / 8,593 / 26,137 windows, and
+   independent unit counts (40 Charleston, 51 NY Bight) that match the event
+   census scale.
+2. Validation-only selection is implemented and runs.
+3. Train-only preprocessing and augmentation are enforced.
+4. The downstream budget and event-level paired machinery return finite CIs.
 
 ### 7.3 Next step (not run)
 
-The expanded protocol needs the FM fitted to the production budget (or
-early-stopped on validation *fidelity*, not validation loss) before it can test
-H1. Fidelity-aware early stopping is the obvious control: select the epoch
-minimising validation loss **subject to** scale ratio ∈ [0.5, 2.0]. That was
-not implemented in this pilot.
+If the corrected generator still fails the fidelity gate, fidelity-aware early
+stopping is the obvious control: select the epoch minimising validation loss
+**subject to** scale ratio ∈ [0.5, 2.0]. That is not implemented in this pilot.
 
 
 ## 8. Reproduce

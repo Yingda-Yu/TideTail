@@ -96,15 +96,20 @@ hypotheses rather than findings.
 
 Thames is the only region where augmentation harms both architectures
 (+9.78\% GRU, +4.88\% TCN; Figure~\ref{fig:arch}). The physical reading is
-straightforward: Thames is macrotidal (approximately 6.3~m range) and surge is a
-small fraction of total water level, so the residual signal has low
-signal-to-noise ratio. A generator fitted to that residual produces samples whose
-statistical structure is dominated by noise, and appending them adds variance
-without adding storm information. Thames also has 24.7\% NaN gaps in its source
-series, which further weakens the fit.
+straightforward but \emph{not} established: Thames has the largest tidal range
+in the set ($\pm3.3$~m from FES2022, i.e. a 6.6~m range), and surge is
+estimated to account for only 20--30\% of total water-level variance. A
+generator fitted to that residual therefore produces samples dominated by noise,
+and appending them adds variance without adding storm information. Thames also
+has 24.7\% NaN gaps in its source series, which further weakens the fit.
+
+This is a hypothesis, not a causal finding: across the five regions the
+correlation between tidal range and augmentation effect is $r=0.66$ with
+$N=5$, which is not statistically significant and cannot separate tidal range
+from storm climatology, series length or data quality.
 
 Southeast Australia shows the largest TCN gain ($-21.69\%$) yet essentially no
-GRU gain ($-0.59\%$), with a baseline MAE already near 0.05~m. A large
+GRU gain ($-0.59\%$), with the GRU baseline already at 0.043~m. A large
 \emph{relative} change on a small absolute error is easy to obtain and should not
 be read as a large operational benefit. NY Bight and the Gulf show moderate
 gains for both architectures; Charleston, the region where the withdrawn
@@ -138,7 +143,13 @@ weakens the conclusion that nothing survives.
 \subsection{Do physical priors help?}
 \label{subsec:why-physics}
 
-\emph{Placeholder: completed from the physics pilot artifact.}
+\emph{Pending: the first full-data physics run is withdrawn for the sampling-path
+defect (Section~\ref{sec:results-expanded}), so no statement about whether
+physical priors help can be made until the corrected run completes. What is
+already established is the constraint: the ERA5 anchors lie 4.5--11.7~km from
+the tide gauges while the reanalysis cell is about 28~km across, so a
+reanalysis-conditioned experiment tests only whether a coarse regional
+pressure/wind summary carries usable information, not whether local winds do.}
 
 \subsection{Limitations}
 \label{subsec:limitations}

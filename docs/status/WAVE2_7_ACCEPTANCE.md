@@ -79,14 +79,13 @@ results. Scope: single region (Charleston), CPU, 20k training windows.
 
 ## P4 — Physics-guided Flow Matching
 
-Status: **RUNNING** at the time of this record (5 variants × 2 regions, full-data
-FM fit, CPU). Artifact `data/results/wave27_physics_fm.json` is written only on
-completion; no physics number is claimed in this record.
+Status: **RERUNNING** after defect E26. The first full-data run (6,636.3 s)
+completed all ten arms but is withdrawn in full — see "Withdrawn result" below.
 
 Accepted design constraints (all verified before launch):
 
 * Physics features are summarised **only** over the 96 h conditioning history;
-  the 72 h horizon is never read (`tests/test_physics_causality.py`, 4 tests).
+  the 72 h horizon is never read (`tests/test_physics_causality.py`, 5 tests).
 * Train-only normalisation statistics.
 * Identical downstream budget (8,000 windows, 200 steps) for A0 and every arm.
 * Explicit units: msl Pa, wind m s⁻¹, tendency Pa/24 h.
@@ -94,6 +93,16 @@ Accepted design constraints (all verified before launch):
   claimed.
 * Labelled a retrospective **reanalysis-conditioned** experiment, not an
   operational forecast.
+* Sampling applies the same per-sample normalisation as training (added after
+  defect E26).
+
+**Withdrawn result (E26).** The completed run gave A0 Charleston 0.1013 and NY
+Bight 0.1155 with deltas −1.60/−1.16/−0.58/+2.31/+9.44% and
++3.35/+3.39/+3.05/+4.69/+4.60%, but all ten variants failed fidelity at scale
+3.19–4.09. A controlled diagnostic proved the cause was the shared sampling path
+(raw history into a normalised generator), not the physics features: scale 4.95
+raw versus **1.17** normalised on the identical model. No physics conclusion is
+drawn from that run; it is being repeated with the fix.
 
 ---
 
@@ -105,20 +114,17 @@ Accepted design constraints (all verified before launch):
 | 168 h embargo at both boundaries | **PASS** |
 | No cross-split forecast-window leakage | **PASS** |
 | Train-only preprocessing | **PASS** |
-| Validation-only model selection | **PASS** (epoch 13 both regions) |
+| Validation-only model selection | **PASS** |
 | Existing checkpoints not reused | **PASS** — retrained from scratch |
 | Event-level paired uncertainty | **PASS** — 40 and 51 POT units |
 | Multiple-comparison limitation reported | **PASS** — 2 tests, α=0.025 |
-| Test of H1 | **FAIL — invalid, generators fail fidelity** |
+| Test of H1 | **DONE 2026-11-08 (corrected rerun, E26 fix)** — fidelity restored (scale 1.147/1.097, W1 0.019/0.033, INCONCLUSIVE; q95 exceed ratio 1.6–1.7); downstream: standard-FM augmentation harms extreme-event MAE by +0.86% (p_perm 0.016, 40 units) and +0.92% (p_perm 0.0023, 51 units). Honest negative result, retrospective caveat recorded. Six-cell follow-up running as Wave 2.8 P2. |
 
-Fidelity: scale ratio 3.97 / 4.76 against gate [0.5, 2.0] → **REJECTED**.
-Downstream effect: +8.88% (CI [+0.0035, +0.0170] m) and +15.85% (CI
-[+0.0183, +0.0262] m).
-
-**Accepted conclusion:** the protocol and machinery are correct; the retrained
-generators are under-fitted; an over-dispersed generator measurably harms the
-forecaster. This is **not** evidence that good generative augmentation harms
-forecasting, and these models must not be used to test H1.
+**Withdrawn result (E26).** The first run reported scale 3.97 / 4.76 and
+downstream +8.88% / +15.85%. Those measured the sampling artefact, not Flow
+Matching: an identical model gives scale 4.95 through the buggy path and 1.17
+through the corrected path. The run is being repeated with the fix; the
+structural protocol results in the table above are unaffected.
 
 ---
 
@@ -158,8 +164,9 @@ Figures: `W27_schematic`, `W27_event_census`, `W27_fidelity_gate`,
 ## Explicit non-claims
 
 1. No claim that generative augmentation improves extreme coastal forecasting.
-2. No claim that it degrades forecasting in general (P5's harm is a
-   bad-generator artefact).
+2. No claim that it degrades forecasting in general: the corrected expanded-year
+   result (+0.86% / +0.92% harm, 2 regions, partially calibrated generator) is
+   a bounded retrospective negative result, not a universal statement.
 3. No claim that VAE, TimeGrad or Diffusion-TS are intrinsically unsuitable.
 4. No claim of operational forecasting: physics conditioning is
    reanalysis-based.

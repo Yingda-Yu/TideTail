@@ -1,21 +1,51 @@
-# LATEST PROGRESS — TideTail Wave 2.7 (Model Recovery, Physics, Manuscript)
+# LATEST PROGRESS — TideTail Wave 2.8 (Three Publication-Critical Experiments)
 
-**Last updated**: 2026-11-05 Wave 2.7
-**Head SHA**: see `git log -1` (Wave 2.7 commits on top of `242093a`)
+**Last updated**: 2026-11-08 Wave 2.8 (in execution)
+**Head SHA**: see `git log -1` (Wave 2.8 commits on top of `e599b56`)
 **Branch**: `trae/global-data-generative-research-20261031`
 **PR**: #23 (Draft — DO NOT MERGE main)
 
 ---
 
-## Wave 2.7 current state
+## Wave 2.8 current state (updated 2026-11-08)
+
+| Priority | Status | Evidence |
+|---|---|---|
+| P0 state recovery | DONE | Wave 2.7 E26 fix verified in tree; both corrected reruns relaunched (earlier relaunch died silently, artifacts were stale md5-identical copies) |
+| P0 expanded rerun | **DONE** | `data/results/wave27_expanded_evaluation.json` (2026-11-08): fidelity restored — scale 1.147 / 1.097, W1 0.019 / 0.033 (INCONCLUSIVE); downstream **honest negative**: +0.86% (p_perm 0.016, 40 units) / +0.92% (p_perm 0.0023, 51 units) harm vs A0 |
+| P0 physics rerun | RUNNING | `scripts/wave27_physics_fm.py` corrected rerun (CPU background) |
+| P1 physics 6-arm | RUNNING | `scripts/wave28_physics_fm.py`: standard / era5_cond (conditioning-only control) / pressure_prior / wind_prior / combined_prior / combined_tail; physical penalty on implied clean estimate x1_hat = x_t+(1−t)v; train-only OLS physics regression; auto-calibrated frozen λ; coast-normal wind stress; GRU+TCN downstream; 2 regions × 2 FM seeds. 11 unit tests (`tests/test_wave28_physics.py`) |
+| P2 6-cell expanded | RUNNING | `scripts/wave28_expanded_eval.py`: A0/standard-FM/tail-aware-FM × GRU/TCN, FM seeds {42,99}, downstream seeds {42,99,7}, validation-only selection, sign-flip null + bootstrap CI, retest disclosure |
+| P3 7-family benchmark | RUNNING | `scripts/wave28_gen_benchmark.py` + new `src/tidetail/models/wgan_gp.py` (conditional WGAN-GP, Gulrajani 2017); families: FM, tail-FM, CVAE, TimeGrad, conditional DDPM, WGAN-GP, Diffusion-TS (total-water → residual reconstruction); zero search budget for all families; 4 unit tests |
+| P4 matching protocol | DONE | Frozen strict-overlap rule (union 679) with tolerance sensitivity (24h: 676, 48h: 667, 72h: 665) documented in `6-results.tex` + `a-audit.tex` |
+| P5 manuscript | UPDATED | Expanded-year section rewritten with corrected results (withdrawn + corrected run); matching-protocol paragraph added |
+| P6 commit/push | PENDING | After running experiments complete |
+
+**Wave 2.8 headline findings so far**
+
+1. **The E26 fix converts the expanded-year story**: generators now pass to
+   INCONCLUSIVE fidelity (scale ~1.1), and standard-FM augmentation shows a
+   small, consistent, statistically significant **harm** (+0.86% / +0.92%
+   extreme-event MAE, p_perm ≤ 0.016) — an honest negative result under the
+   leakage-controlled multi-year protocol (retrospective caveat recorded).
+2. Tail calibration (q95 over-exceedance 1.6–1.7) remains the generator's
+   main fidelity defect — motivating the tail-aware cells in the running
+   six-cell comparison.
+
+**Environment**: GPU0 prohibited; all other GPUs occupied by other users
+(verified 2026-11-08). All Wave 2.8 experiments run on CPU with thread caps.
+
+---
+
+## Wave 2.7 final state (2026-11-05)
 
 | Priority | Status | Evidence |
 |---|---|---|
 | P1 verify Wave 2.6 | DONE | event union 679 (not 707); 2024 units 59; corrected statistics → 0 robust survivors; Charleston 5/48 withdrawn |
 | P2 ERA5 | DONE | 600/600 partitions, 87,672 h/region, `all_regions_integrity_ok: true` |
 | P3 model recovery | DONE | oracle sampler exact (1.1e-10); VAE repair refuted; TimeGrad partial; DTS repair refuted (NaN) |
-| P4 physics FM | RUNNING | 5 variants × 2 regions, full-data FM fit (CPU) |
-| P5 expanded eval | DONE (negative readiness) | splits verified; retrained FM fails fidelity → +8.88% / +15.85% harm; does not test H1 |
+| P4 physics FM | SUPERSEDED BY WAVE 2.8 P1 | 5-variant conditioning pilot withdrawn (E26); genuine 6-arm penalty design running |
+| P5 expanded eval | CORRECTED RERUN DONE (2026-11-08) | see Wave 2.8 table above |
 | P6 manuscript | DONE | new title/abstract/intro/results/discussion/conclusion; 6 figures; PDF compiled |
 | P7 queue/tests/commit | DONE | `TASK_QUEUE.json` reconciled; pytest CPU gate; pushed to PR #23 |
 
@@ -35,9 +65,10 @@
   active latent dims in both variants (posterior collapse vs `N(0,I)` sampling).
 - Diffusion-TS: x0-spectrum Fourier repair **diverges to NaN** at epoch 24
   (`x0_pred` divides by `sqrt(ᾱ) ≈ 0.024`, ~41× amplification).
-- Expanded protocol: the retrained FM fails fidelity (scale 3.97 / 4.76), so
-  the downstream degradation is a generator-readiness failure, not a test of
-  augmentation utility.
+- Expanded protocol (Wave 2.8 corrected rerun): generator fidelity restored
+  (scale 1.15 / 1.10) but standard-FM augmentation **does not help** —
+  +0.86% / +0.92% extreme-event MAE harm vs A0, both significant under the
+  sign-flip null. An honest negative result, reported as such.
 
 **Environment**: GPU0 prohibited; all other GPUs occupied by other users.
 All Wave 2.7 experiments ran on CPU with thread caps. No GPU job was

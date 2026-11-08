@@ -1,9 +1,37 @@
 \section{Method}
 \label{sec:method}
 
-\subsection{Conditional DDPM architecture}
-We implement a 1D temporal denoising diffusion probabilistic model with the
-following components:
+\subsection{Pipeline}
+Figure~\ref{fig:pipeline} shows the comparison the paper is built around. A
+conditional generator consumes the 96~h history of the non-tidal residual; in
+the physics arms it additionally consumes causal reanalysis summaries of the
+same 96~h window. Synthetic residuals are then appended to the real training
+set, and a GRU or TCN forecaster is trained on a budget that is held fixed
+across arms. The real-only arm (A0) uses the identical budget, split and
+architecture, so the difference isolates the augmentation.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/W27_schematic.pdf}
+\caption{Evaluation pipeline. Physics covariates are summarised only over the
+96~h preceding the forecast origin; the 72~h target horizon is never read.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Generators}
+Four conditional generators are compared: a Conditional VAE (63,273
+parameters), TimeGrad (7,177), Diffusion-TS (39,425) and Flow Matching (27,937).
+Flow Matching regresses a velocity field between a Gaussian prior and the
+conditional data distribution and integrates it with a fixed-step Euler solver;
+Diffusion-TS decomposes the signal into trend, seasonal and residual components
+and diffuses the residual; TimeGrad rolls a scalar DDPM out autoregressively
+over the horizon; the VAE encodes the history and target into a latent and
+decodes the horizon. All four are scored by the same fidelity gate and, where
+they pass it, by the same downstream protocol.
+
+\subsection{Historical pilot DDPM architecture}
+\label{subsec:pilot-ddpm}
+The Wave 2.0 pilot used a 1D temporal DDPM with the following components:
 
 \begin{enumerate}
     \item \textbf{Temporal embedding}: sinusoidal frequencies $f_j = 10000^{-2j/D}$

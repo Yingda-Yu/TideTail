@@ -103,16 +103,35 @@ Normalisation uses **train-split-only** statistics, computed once from
 5. Downstream extreme-window MAE delta versus A0.
 
 Earlier pilot (8,000-window FM-fitting cap, superseded) produced scale ratios
-4–5 and REJECTED fidelity for every variant — a budget artifact, not a physics
-finding. The current run fits the FM on the full training set.
+4–5 and REJECTED fidelity for every variant. That was initially read as a
+training-budget artefact. It was not: Wave 2.7 later traced it to a sampling-path
+defect (E26) that affected every Wave 2.7 generative pilot. The current run fits
+the FM on the full training set **with the sampling path corrected**.
 
 ---
 
 ## 5. Results
 
-_Pending completion of the full-data run. This section is filled from
-`data/results/wave27_physics_fm.json` only — no numbers are estimated or
-carried over from the superseded run._
+### 5.0 Superseded full-data run (sampling-path defect, E26)
+
+The 6,636.3 s full-data run wrote A0 Charleston 0.1013 and NY Bight 0.1155 with
+downstream deltas −1.60/−1.16/−0.58/+2.31/+9.44% and
++3.35/+3.39/+3.05/+4.69/+4.60%, but every one of its ten variants failed fidelity
+at scale 3.19–4.09. A controlled diagnostic proved that the failure came from
+the shared sampler `sample_windows` feeding **raw metre-scale history** to a
+generator fitted on per-sample-normalised history and never inverting the
+normalisation: scale 4.95 raw versus 1.17 normalised on the identical model.
+
+**Those numbers are withdrawn in full** and are preserved only as
+`data/results/wave27_physics_fm_prefix_sampling_bug.json`. The fix is in
+`sample_windows`, guarded by
+`tests/test_physics_causality.py::test_sample_windows_normalises_history_and_de_normalises_output`.
+
+### 5.1 Corrected run
+
+Being rerun with `CUDA_VISIBLE_DEVICES=""` on CPU. Results will be inserted here
+from the refreshed `data/results/wave27_physics_fm.json`; no value is typed by
+hand.
 
 ---
 

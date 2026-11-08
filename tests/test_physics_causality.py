@@ -69,3 +69,25 @@ def test_no_empty_window_at_origin():
 def test_standard_has_zero_physics_dimension():
     feats, _ = mod.build_features(np.array([10]), _frame(), "standard")
     assert feats.shape == (1, 0)
+
+
+# ---------------------------------------------------------------------------
+# E26 sampling-path regression test
+# ---------------------------------------------------------------------------
+
+class _IdentityFM:
+    """Stub generator returning its (normalised) history input as the
+    sample: if sample_windows normalises/de-normalises correctly the
+    round trip reproduces the raw input exactly (E26 fix)."""
+
+    def sample(self, hn, net, seed=0, physics=None):
+        return hn
+
+
+def test_sample_windows_normalises_history_and_de_normalises_output():
+    rng = np.random.default_rng(3)
+    hist = (rng.normal(0, 0.2, (6, CONTEXT)) + 0.35).astype(np.float32)
+    model = {"net": None, "fm": _IdentityFM(), "physics_dim": 0}
+    out = mod.sample_windows(model, hist, np.zeros((6, 0)),
+                             np.arange(6), draws=1)
+    np.testing.assert_allclose(out[0], hist, atol=1e-5)

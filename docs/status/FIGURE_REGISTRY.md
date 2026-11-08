@@ -1,24 +1,30 @@
 # Figure Registry — TideTail
 
-Auto-updated 2026-11-03 Wave 1.8
+Updated 2026-11-05 Wave 2.7.
 
-| figure_id | title | status | output_path | source_sha | script |
-|---|---|---|---|---|---|
-| F1 | Study Regions Map | ✅ COMPLETE | paper/figures/F1_study_regions.pdf | 618482370afbe867 | make_wave18_figures.py |
-| F2 | (combined into F1) | — | — | — | — |
-| F3 | Event Counts and Splits | ✅ COMPLETE | paper/figures/F3_storm_splits.pdf | 06b628d1f8c087bb | make_wave18_figures.py |
-| F4 | Total Water/Tide/Residual Decomposition | ✅ COMPLETE | paper/figures/F4_decomposition.pdf | c7e1d0b84639f358 | make_wave18_figures.py |
-| F5 | (architecture diagram — conceptual) | ✅ COMPLETE | paper/figures/F5_architecture.pdf | N/A (hand-drawn) | — |
-| F6 | Real vs Generated Residual Distributions | ✅ COMPLETE | paper/figures/F6_residual_distributions.pdf | ff3a2c660eacf283 | make_wave18_figures.py |
-| F7 | (peak duration — subset of F6) | — | — | — | — |
-| F8 | A0/A1/A2/A3 Performance Comparison | ✅ COMPLETE | paper/figures/F8_augmentation_comparison.pdf | c04790de96a1ddc5 | make_wave18_figures.py |
-| F9 | Tail 95/99 Performance Comparison | ✅ COMPLETE | paper/figures/F9_tail_performance.pdf | fd66b2fe5629b8e7 | make_wave18_figures.py |
-| F10 | Generative Model Benchmark | ❌ PENDING | paper/figures/F10_benchmark.pdf | — | — |
-| F11 | Physics Ablation | ❌ PENDING | paper/figures/F11_ablation.pdf | — | — |
-| F12 | Cross-Region Generalization | ❌ PENDING | paper/figures/F12_cross_region.pdf | — | — |
-| F13 | Failure Cases | ❌ PENDING | paper/figures/F13_failure.pdf | — | — |
-| F14 | Success Cases | ❌ PENDING | paper/figures/F14_success.pdf | — | — |
+All Wave 2.7 figures are generated **only** from committed result artifacts by
+`scripts/make_wave27_figures.py`; no value is typed by hand.
 
-**Progress**: 6/14 complete (43%). All verified artifacts. 8 pending (generative benchmark + cross-region + cases).
+| figure_id | title | status | output | artifact source |
+|---|---|---|---|---|
+| W27-schematic | Pipeline and causal physics boundary | COMPLETE | `paper/figures/W27_schematic.pdf` | conceptual; causal rule guarded by `tests/test_physics_causality.py` |
+| W27-census | Decade event census vs union; 2024 units | COMPLETE | `paper/figures/W27_event_census.pdf` | `data/results/wave27_event_set_audit.json` |
+| W27-fidelity | Generator scale ratio against gate | COMPLETE | `paper/figures/W27_fidelity_gate.pdf` | `data/results/{vae,timegrad,diffusion_ts,flow_matching}_96_72.json` |
+| W27-arch | Augmentation effect by region and architecture | COMPLETE | `paper/figures/W27_architecture_region.pdf` | `data/results/paired_significance_wave27.json` |
+| W27-recovery | Legacy vs repaired generator scale | COMPLETE | `paper/figures/W27_recovery.pdf` | `data/results/wave27_model_recovery.json` |
+| W27-seedvar | A0 baseline seed variance | COMPLETE | `paper/figures/W27_baseline_seed.pdf` | `data/results/paired_significance_wave27.json` |
+| W27-expanded | Expanded-protocol fidelity vs delta | PENDING | — | `data/results/wave27_expanded_evaluation.json` |
+| W27-physics | Five-variant physics ablation | PENDING | — | `data/results/wave27_physics_fm.json` |
 
-**Source data SHA**: `wave17_analysis_v2.json` SHA256 verified on commit d124bcc.
+Notes:
+
+* `W27-expanded` and `W27-physics` are pending because their result artifacts
+  either do not yet exist (physics run in flight) or are better presented as
+  tables than as figures.
+* Every figure above is cited in the manuscript (`paper/sections/`).
+* The Wave 1.8 legacy figures (F1, F3, F4, F5, F6, F8, F9) remain on disk but
+  are **not cited** by the current manuscript; they encode the superseded
+  Wave 1.7 narrative and must not be reintroduced without re-deriving their data.
+
+**Progress**: 6/8 Wave 2.7 figures complete. Two pending artifacts are declared,
+not invented.

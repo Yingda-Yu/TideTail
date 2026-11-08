@@ -95,9 +95,10 @@ is matched across A3/A4.
 \subsection{Reproducibility metadata}
 Every run records exact git commit SHA, data file hashes, split manifest hash,
 random seed list, optimizer parameters, checkpoint SHA, and wall-clock time.
-Candidate configurations use seeds $\{0, 2024\}$ and the corrected event-level
-analysis tests each candidate against \emph{both} A0 seeds. The earlier
-five-seed list $\{0, 2024, 4242, 7777, 9001\}$ was not realised in the
+The realised seed list is $\{42, 99\}$: all A0 baselines, generators and
+augmentation arms recorded in the experiment registry use these two seeds, and
+the corrected event-level analysis tests each candidate against \emph{both}
+A0 seeds. An earlier five-seed list was declared but never realised in the
 augmentation grid; that discrepancy is one of the defects corrected in
 Section~\ref{sec:results-augmentation}.
 

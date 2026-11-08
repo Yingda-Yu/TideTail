@@ -231,6 +231,37 @@ def fig_schematic() -> None:
     save(fig, "W27_schematic")
 
 
+# ---------------------------------------------------------------- Fig 7
+def fig_physics() -> None:
+    d = json.loads((RES / "wave27_physics_fm.json").read_text())
+    variants = ["standard", "tail_aware", "pressure", "wind", "combined"]
+    vlab = ["standard", "tail-aware", "pressure", "wind", "wind+press."]
+    regs = [("south_atlantic_charleston", "Charleston"), ("ny_bight", "NY Bight")]
+    x = np.arange(len(variants))
+    fig, axes = plt.subplots(1, 2, figsize=(6.8, 2.7))
+    ax = axes[0]
+    ax.axhspan(0.5, 2.0, color="#dcead6", zorder=0)
+    w = 0.38
+    for j, (r, lab) in enumerate(regs):
+        vals = [d["regions"][r]["variants"][v]["scale_ratio"] for v in variants]
+        ax.bar(x + (j - 0.5) * w, vals, w,
+               color=C_GRU if j == 0 else C_TCN, label=lab)
+    ax.set_yscale("log")
+    ax.set_xticks(x); ax.set_xticklabels(vlab, rotation=18, fontsize=7)
+    ax.set_ylabel("scale ratio (log)")
+    ax.legend(frameon=False, fontsize=7)
+    ax.set_title("(a) Sample dispersion vs fidelity gate 0.5–2.0", fontsize=8.5, loc="left")
+    ax = axes[1]
+    for j, (r, lab) in enumerate(regs):
+        vals = [d["regions"][r]["variants"][v]["downstream_delta_pct_vs_A0"] for v in variants]
+        ax.bar(x + (j - 0.5) * w, vals, w, color=C_GRU if j == 0 else C_TCN, label=lab)
+    ax.axhline(0, color="black", lw=0.8)
+    ax.set_xticks(x); ax.set_xticklabels(vlab, rotation=18, fontsize=7)
+    ax.set_ylabel("extreme-window MAE change vs A0 (%)")
+    ax.set_title("(b) Downstream effect (negative = helps)", fontsize=8.5, loc="left")
+    save(fig, "W27_physics")
+
+
 if __name__ == "__main__":
     fig_schematic()
     fig_census()
@@ -238,3 +269,4 @@ if __name__ == "__main__":
     fig_architecture()
     fig_recovery()
     fig_baseline_seed()
+    fig_physics()

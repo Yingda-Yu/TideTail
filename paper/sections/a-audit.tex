@@ -22,6 +22,11 @@ committed, checkpoints and raw data are not.
   \item \textbf{Union $=679$; 2024 units $=59$.}
   \texttt{wave27\_event\_set\_audit.json}; guarded by
   \texttt{test\_event\_set\_arithmetic.py}.
+  \item \textbf{Frozen matching protocol: strict temporal overlap.}
+  Same artifact, fields \texttt{primary\_strict} and
+  \texttt{tolerance\_sensitivity} (24\,h: 676, 48\,h: 667, 72\,h: 665).
+  The rule was frozen before downstream significance testing; no
+  matching parameter was tuned on downstream outcomes.
   \item \textbf{No duplicate timestamps; 8,601 test windows.} Same artifact,
   fields \texttt{window\_integrity} and \texttt{periods}.
   \item \textbf{Zero robust augmentation survivors.}

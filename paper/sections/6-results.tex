@@ -43,6 +43,21 @@ cluster, and the overlap had never been computed. The grand union is
 window-eligible extreme units, one per region being ineligible because the
 168\,h horizon runs past the series end.
 
+\paragraph{Frozen matching protocol.} A POT cluster and a TC track are the
+same independent event only when their time intervals strictly overlap
+(greedy one-to-one matching, deterministic order; no tolerance parameter).
+We freeze this rule before any downstream significance testing because it
+introduces no free parameter that could be tuned toward significance, and
+because the TC set is already defined by best-track timing while POT
+clusters are defined by the residual series itself, so strict overlap is
+the weakest assumption that still removes double counting. Sensitivity to
+a looser rule that also merges cluster--track pairs peaking within
+$\tau$ hours: $\tau{=}24$\,h gives 676 ($-0.4\%$), $\tau{=}48$\,h gives
+667 ($-1.8\%$) and $\tau{=}72$\,h gives 665 ($-2.1\%$). The event census
+is therefore insensitive at the 24\,h scale and modestly sensitive beyond;
+all event-level inference in this paper uses the frozen strict rule, and
+no matching parameter was selected using downstream outcomes.
+
 Window integrity checks pass: \textbf{0 duplicate timestamps} in every region,
 8,601 test windows in four regions and 6,968 in Thames (whose source series has
 24.7\% NaN gaps), and every window's event-id array matches its length. There is
@@ -88,7 +103,7 @@ Model & Params & Median scale ratio (range) & W1 & Gate outcome \\
 \midrule
 Conditional VAE & 63{,}273 & 0.440 (0.326--0.807) & 0.203 & 4 inconclusive / 6 rejected \\
 TimeGrad        & 7{,}177  & 0.084 (0.072--0.320) & 1.527 & 10 rejected \\
-Diffusion-TS    & 39{,}425 & 0.181 (0.118--0.204) & ---   & 10 rejected \\
+Diffusion-TS    & 39{,}425 & 0.181 (0.118--0.204; 9 of 10 finite) & ---   & 10 rejected \\
 Flow Matching   & 27{,}937 & \textbf{1.048} (0.945--1.116) & \textbf{0.047} & 10 inconclusive \\
 \bottomrule
 \end{tabular}
@@ -275,8 +290,11 @@ Five variants share one architecture, one split and one downstream budget: a
 standard Flow Matching model, a tail-aware variant, and pressure-, wind- and
 combined-physics variants conditioned on ERA5 sea-level pressure and 10\,m wind.
 
-\emph{Placeholder: filled from \texttt{data/results/wave27\_physics\_fm.json}
-when the run completes.}
+\emph{The first full-data run of this experiment is withdrawn for the same
+sampling-path defect described in Section~\ref{sec:results-expanded}: all ten
+arms failed fidelity at scale 3.19--4.09 while the identical architecture scores
+1.17 through the corrected path. No physics conclusion is drawn from it. The
+corrected run is reported when it completes.}
 
 \subsection{Expanded 2015--2024 evaluation}
 \label{sec:results-expanded}
@@ -292,22 +310,56 @@ $52{,}608-167=52{,}441$ windows, 2021 (8,760~h) gives 8,593 and 2022--2024
 (26,304~h) gives 26,137. The 168~h embargo holds at both boundaries, and the
 test spans contain 40 and 51 independent POT units respectively.
 
-Validation-only selection chose epoch 13 in both regions. \textbf{Both retrained
-generators fail the fidelity gate} (scale ratio 3.97 and 4.76 against the
-accepted band 0.5--2.0). Consequently the augmented forecaster degrades
-extreme-window MAE by \textbf{+8.88\%} in Charleston (95\% CI
-[+0.0035, +0.0170]~m, permutation $p=0.0045$) and \textbf{+15.85\%} in NY Bight
-(CI [+0.0183, +0.0262]~m, $p=5.0\times10^{-5}$). Both remain significant at
-$\alpha=0.025$.
+Validation-only selection chose epoch 13 in both regions. \textbf{The first run
+of this pilot is withdrawn}: it reported scale ratios 3.97 and 4.76 and
+downstream harm of $+8.88\%$ and $+15.85\%$, but a controlled diagnostic on an
+identical trained model showed that the shared sampler was handing raw
+metre-scale history to a generator fitted on per-sample-normalised history and
+never inverting the normalisation. The same model scores scale ratio 4.95
+through that path and \textbf{1.17} once the history is normalised, which
+matches the production benchmark's 1.05. Those numbers measured the harness, not
+Flow Matching, and they are withdrawn.
 
-This is a negative result about \emph{readiness}, not about generative
-augmentation. An over-dispersed generator supplies training windows that are
-systematically outside the data manifold, and the forecaster pays for it. The
-production Flow Matching checkpoints reach scale 0.945--1.116; these retrained
-models were fitted for 15 CPU epochs and do not. The run therefore establishes
-that the split, selection and event-level machinery works end-to-end, that the
-retrained models are under-fitted rather than over-fitted (validation loss is
-still falling at the selected epoch), and that the cost of over-dispersion exceeds
-any benefit observed in the corrected Wave 2.6 grid. It does \emph{not} test H1.
-Selecting on validation loss subject to a fidelity constraint is the required
-next control and was not implemented here.
+\textbf{Corrected run.} After the sampler repair the generator passes to the
+INCONCLUSIVE regime: scale ratio 1.147 (Charleston) and 1.097 (NY Bight),
+Wasserstein-1 0.019 and 0.033, with the residual defect that synthetic windows
+exceed the real q95 threshold $1.6$--$1.7\times$ too often, i.e.\ the tails
+remain too heavy. The downstream answer is an \textbf{honest negative result}:
+standard-FM augmentation does not improve extreme-event MAE under this
+protocol. It degrades it by $+0.86\%$ (Charleston; sign-flip permutation
+$p=0.016$, 40 units) and $+0.92\%$ (NY Bight; $p=0.0023$, 51 units), with
+paired bootstrap CIs excluding zero. Two caveats bound the claim. First, this
+is augmentation from a generator whose tail calibration is still imperfect
+(q95 over-exceedance $1.6$--$1.7$), so it tests \emph{partially fidelious}
+augmentation, not fully calibrated augmentation. Second, the 2022--2024 span
+partially informed earlier exploratory waves of this project, so the evaluation
+is retrospective validation rather than untouched confirmatory inference. The
+six-cell follow-up (GRU and TCN $\times$ standard and tail-aware augmentation,
+multiple seeds) is reported in the Wave 2.8 results.
+
+The protocol itself is verified. The split builder produces 168~h embargoes at
+both boundaries with no cross-split window overlap, validation-only selection
+runs, preprocessing and augmentation are train-only, and the event-level
+paired machinery returns finite intervals over 40 and 51 independent units.
+What the corrected pilot establishes, beyond that readiness, is a directional
+finding under a controlled protocol: partially fidelious standard-FM
+augmentation does not help extreme-event forecasting in these two regions.
+
+\paragraph{Six-cell comparison.} The Wave 2.8 follow-up completes the design:
+$\{$A0, standard-FM, tail-aware-FM$\} \times \{$GRU, TCN$\}$ per region, with
+two generator seeds (42, 99), three downstream seeds, validation-only epoch
+selection and a frozen augmentation ratio. \textbf{No cell shows a seed-robust
+improvement.} Charleston is harmed consistently across all four augmented
+cells and both generator seeds ($+0.67\%$ to $+1.19\%$, all sign-flip
+$p<0.04$ over 40 units), with TCN hurt more than GRU. NY Bight \emph{flips
+sign with the generator seed}: seed 42 harms ($+0.45\%$ to $+1.42\%$) while
+seed 99 improves both forecasters ($-0.48\%$ to $-0.85\%$, GRU $p=3\times
+10^{-4}$) — despite \emph{worse} fidelity (scale ratio 1.250 vs 1.097).
+Tail-awareness leaves every cell essentially unchanged (differences
+$\le 0.1$ percentage points; q95 over-exceedance $1.60$–$1.73$ in all
+generators). Two conclusions follow. First, the answer to the title question
+is, for the current generator quality: \emph{generative augmentation does not
+reliably help, and can significantly harm, extreme-event forecasting under a
+leakage-controlled multi-year protocol}. Second, a methodological hazard:
+generator-seed variance alone can flip the sign of the augmentation effect,
+so single-seed augmentation studies in this domain are uninterpretable.
