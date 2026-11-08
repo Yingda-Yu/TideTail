@@ -1,9 +1,9 @@
 {
   "queue_version": "2.8-wave28",
   "created": "2026-11-02",
-  "last_updated": "2026-11-08T13:20:00Z",
+  "last_updated": "2026-11-08T08:25:00Z",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "e599b56 + wave2.8 (uncommitted)",
+  "head_sha": "1106ecb (pushed; E26 fix = 9b790a6)",
   "pr": 23,
   "pr_state": "DRAFT \u2014 do not merge main",
   "active_gpu_policy": "GPU0 PROHIBITED. All other GPUs occupied by other users at Wave 2.8 launch (checked with nvidia-smi 2026-11-08). Wave 2.8 runs CPU-only with torch.set_num_threads(<=8). No GPU job was started, duplicated or terminated.",
@@ -21,13 +21,13 @@
     "W27-P1": "Verify Wave 2.6 \u2014 COMPLETE (2026-11-05)",
     "W27-P2": "ERA5 completion + readiness \u2014 COMPLETE (600/600 partitions)",
     "W27-P3": "Generative baselines diagnostic pilots \u2014 COMPLETE",
-    "W27-P4": "Physics-guided FM (5-variant conditioning) \u2014 corrected rerun RUNNING (E26 fix)",
+    "W27-P4": "Physics-guided FM (5-variant conditioning) \u2014 corrected rerun RUNNING under systemd unit tidetail-wave27 (session-independent)",
     "W27-P5": "Expanded evaluation \u2014 CORRECTED RERUN COMPLETE (2026-11-08)",
     "W27-P6": "Manuscript + figures \u2014 COMPLETE (PDF compiled; Wave 2.8 sections updated)",
     "W27-P7": "Status/queue sync, tests, commit, push \u2014 IN PROGRESS",
-    "W28-P1": "Physics-guided FM 6-arm factorial (conditioning-only control + physical penalties) \u2014 RUNNING (CPU)",
-    "W28-P2": "Expanded 6-cell comparison (A0/standard/tail-aware x GRU/TCN, multi-seed) \u2014 RUNNING (CPU)",
-    "W28-P3": "7-family generative benchmark (incl. new conditional WGAN-GP) \u2014 RUNNING (CPU)",
+    "W28-P1": "Physics-guided FM 6-arm factorial (conditioning-only control + physical penalties) \u2014 RUNNING under systemd unit tidetail-wave28physics (session-independent)",
+    "W28-P2": "Expanded 6-cell comparison (A0/standard/tail-aware x GRU/TCN, multi-seed) \u2014 COMPLETE + INDEPENDENTLY VERIFIED (honest negative, exploratory framing)",
+    "W28-P3": "7-family generative benchmark (incl. new conditional WGAN-GP) \u2014 Charleston COMPLETE (pilot, preserved artifact); NY Bight RUNNING under systemd unit tidetail-wave28bench",
     "W28-P4": "Event-matching protocol frozen + null-based paired inference \u2014 COMPLETE",
     "W28-P5": "Manuscript/figures/acceptance reports \u2014 IN PROGRESS"
   },
@@ -156,8 +156,8 @@
       "priority": "HIGH",
       "status": "RUNNING",
       "gpu": false,
-      "running_pid": 244877,
-      "started_utc": "2026-11-05T22:32:00",
+      "running_pid": "systemd unit tidetail-wave27 (transient, started 2026-11-08T08:11Z)",
+      "started_utc": "2026-11-08T08:11:00Z",
       "result_paths": [
         "data/results/wave27_physics_fm.json",
         "docs/experiments/WAVE27_PHYSICS_FM.md"
@@ -284,6 +284,7 @@
       "priority": "HIGH",
       "status": "RUNNING",
       "gpu": false,
+      "running_pid": "systemd unit tidetail-wave28physics (transient, started 2026-11-08T08:11Z)",
       "result_paths": [
         "data/results/wave28_physics_fm.json",
         "data/results/checkpoints/wave28_physics/",
@@ -305,12 +306,18 @@
       "stage": "W28-P2",
       "description": "Expanded-year 6-cell comparison: A0/standard-FM/tail-aware-FM x GRU/TCN per region, FM seeds {42,99}, downstream seeds {42,99,7}, validation-only selection, frozen augmentation ratio, retest disclosure.",
       "priority": "HIGH",
-      "status": "RUNNING",
+      "status": "COMPLETE",
       "gpu": false,
       "result_paths": [
         "data/results/wave28_expanded_eval.json",
         "scripts/wave28_expanded_eval.py"
-      ]
+      ],
+      "actual_findings": {
+        "verdict": "honest negative (EXPLORATORY, not confirmatory): no seed-robust improvement in any of the 6 cells",
+        "charleston": "harmed in all 4 cells: GRU +0.73/+1.12%, TCN +1.06/+1.12% (std/tail); sign-flip p 0.0000-0.0058; 3/4 cells survive Bonferroni alpha=0.00625",
+        "ny_bight": "mean delta small (-0.20..+0.47%) but sign flips with FM seed (seed42 positive, seed99 negative) - not seed-robust",
+        "multiplicity": "8 paired comparisons; Bonferroni alpha=0.00625 reported alongside raw p; 2022-2024 retest partially informed earlier waves (disclosed)"
+      }
     },
     {
       "task_id": "W28-P03",
@@ -319,14 +326,19 @@
       "priority": "HIGH",
       "status": "RUNNING",
       "gpu": false,
+      "running_pid": "systemd unit tidetail-wave28bench (transient, started 2026-11-08T08:11Z)",
       "result_paths": [
         "data/results/wave28_gen_benchmark.json",
+        "data/results/wave28_gen_benchmark_charleston_defaults.json",
         "src/tidetail/models/wgan_gp.py",
         "scripts/wave28_gen_benchmark.py"
       ],
       "tests": [
         "tests/test_wgan_gp.py"
-      ]
+      ],
+      "actual_findings": {
+        "charleston_pilot": "COMPLETE and preserved: FM scale 1.077/W1 0.029; tailFM 1.061/0.028; wgan_gp 0.959/0.078; cvae 2.775 REJECT; timegrad REJECT; ddpm 3.870; dts REJECT; FM deltas GRU -0.68% p=0.257 / TCN -1.63% p=0.135; 14 event pairs; interpretation: PILOT (10 epochs, zero search budget, equal epochs != equal compute)"
+      }
     },
     {
       "task_id": "W28-P04",

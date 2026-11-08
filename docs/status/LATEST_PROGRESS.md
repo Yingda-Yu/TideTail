@@ -1,25 +1,26 @@
 # LATEST PROGRESS — TideTail Wave 2.8 (Three Publication-Critical Experiments)
 
-**Last updated**: 2026-11-08 Wave 2.8 (in execution)
-**Head SHA**: see `git log -1` (Wave 2.8 commits on top of `e599b56`)
-**Branch**: `trae/global-data-generative-research-20261031`
+**Last updated**: 2026-11-08 16:20 CST (Wave 2.8 in execution, systemd-persistent)
+**Head SHA**: `1106ecb` (runner) ← `9b790a6` (E26 fix) on top of `8a45765`
+**Branch**: `trae/global-data-generative-research-20261031` (pushed)
 **PR**: #23 (Draft — DO NOT MERGE main)
 
 ---
 
-## Wave 2.8 current state (updated 2026-11-08)
+## Wave 2.8 current state (updated 2026-11-08 16:20)
 
 | Priority | Status | Evidence |
 |---|---|---|
-| P0 state recovery | DONE | Wave 2.7 E26 fix verified in tree; both corrected reruns relaunched (earlier relaunch died silently, artifacts were stale md5-identical copies) |
-| P0 expanded rerun | **DONE** | `data/results/wave27_expanded_evaluation.json` (2026-11-08): fidelity restored — scale 1.147 / 1.097, W1 0.019 / 0.033 (INCONCLUSIVE); downstream **honest negative**: +0.86% (p_perm 0.016, 40 units) / +0.92% (p_perm 0.0023, 51 units) harm vs A0 |
-| P0 physics rerun | RUNNING | `scripts/wave27_physics_fm.py` corrected rerun (CPU background) |
-| P1 physics 6-arm | RUNNING | `scripts/wave28_physics_fm.py`: standard / era5_cond (conditioning-only control) / pressure_prior / wind_prior / combined_prior / combined_tail; physical penalty on implied clean estimate x1_hat = x_t+(1−t)v; train-only OLS physics regression; auto-calibrated frozen λ; coast-normal wind stress; GRU+TCN downstream; 2 regions × 2 FM seeds. 11 unit tests (`tests/test_wave28_physics.py`) |
-| P2 6-cell expanded | RUNNING | `scripts/wave28_expanded_eval.py`: A0/standard-FM/tail-aware-FM × GRU/TCN, FM seeds {42,99}, downstream seeds {42,99,7}, validation-only selection, sign-flip null + bootstrap CI, retest disclosure |
-| P3 7-family benchmark | RUNNING | `scripts/wave28_gen_benchmark.py` + new `src/tidetail/models/wgan_gp.py` (conditional WGAN-GP, Gulrajani 2017); families: FM, tail-FM, CVAE, TimeGrad, conditional DDPM, WGAN-GP, Diffusion-TS (total-water → residual reconstruction); zero search budget for all families; 4 unit tests |
+| P0 execution reliability | **DONE** | Root cause confirmed with evidence: experiment children lived under the trae-sandbox exec tree and were killed at context compaction (NOT OOM). All long jobs now run under `systemd-run --user` transient units (`tidetail-wave27`, `tidetail-wave28physics`, `tidetail-wave28bench`), PPID = systemd user manager (uid 1018, linger on) — verified to survive conversation resets. Artifact protection via `scripts/tidetail_run.sh` (commit `1106ecb`): immutable per-run dirs, backup-before-overwrite, append-only `data/results/RUN_MANIFEST.jsonl` |
+| P0 state recovery | DONE | Wave 2.7 E26 fix committed `9b790a6` (includes sha256 of the code actually used by running processes); 16 regression tests pass |
+| P0 expanded rerun | DONE | `data/results/wave27_expanded_evaluation.json`: fidelity INCONCLUSIVE (scale 1.147/1.097); downstream honest negative (+0.86%/+0.92% harm vs A0) |
+| P2 6-cell expanded | **DONE + INDEPENDENTLY VERIFIED** | `data/results/wave28_expanded_eval.json` (2026-11-08): Charleston harmed in all 4 cells (+0.67..+1.19%; sign-flip p 0.0000–0.0058; 3/4 cells survive Bonferroni α=0.00625); NY Bight sign flips with FM seed (seed42 +, seed99 −), no seed-robust effect anywhere. Reported as **exploratory** (multiple comparisons, historical test-set reuse disclosed in artifact) |
+| P0 physics rerun | RUNNING (systemd) | `scripts/wave27_physics_fm.py` corrected rerun, unit `tidetail-wave27`, ETA ~18:10 CST |
+| P1 physics 6-arm | RUNNING (systemd) | `scripts/wave28_physics_fm.py`: standard / era5_cond (conditioning-only control) / pressure_prior / wind_prior / combined_prior / combined_tail; physical penalty on implied clean estimate x1_hat = x_t+(1−t)v; train-only OLS physics regression; auto-calibrated frozen λ; unit `tidetail-wave28physics`, ETA ~20:30–21:30 CST |
+| P3 7-family benchmark | Charleston **DONE** (pilot); NY Bight RUNNING (systemd) | Charleston result preserved at `data/results/wave28_gen_benchmark_charleston_defaults.json` (+ /tmp copy): 7 families, 14 event pairs, epochs=10 seed=42 downstream_seeds=[42,99,7]. FM scale 1.077 w1 0.029; tailFM 1.061/0.028; cvae 2.775 REJECT; timegrad REJECT; ddpm 3.870; wgan_gp 0.959/0.078; dts REJECT; A0 GRU 0.1058; FM deltas GRU −0.68% p=0.257 / TCN −1.63% p=0.135. **Interpreted as PILOT only** (equal epochs ≠ equal compute/convergence; per-family params/opt-steps/train-time recorded; zero search budget for all families). NY Bight run under unit `tidetail-wave28bench`, ETA ~18:15 CST; Charleston region dict must be merged back into final `wave28_gen_benchmark.json` (identical protocol/seeds verified) |
 | P4 matching protocol | DONE | Frozen strict-overlap rule (union 679) with tolerance sensitivity (24h: 676, 48h: 667, 72h: 665) documented in `6-results.tex` + `a-audit.tex` |
-| P5 manuscript | UPDATED | Expanded-year section rewritten with corrected results (withdrawn + corrected run); matching-protocol paragraph added |
-| P6 commit/push | PENDING | After running experiments complete |
+| P5 manuscript | PARTIAL | Expanded-year section rewritten (exploratory framing); physics/benchmark sections pending final artifacts; benchmark must be labelled pilot with full training-budget table |
+| P6 commit/push | PENDING | After running experiments complete: figures, acceptance matrix, tests, PDF, push PR #23 |
 
 **Wave 2.8 headline findings so far**
 
@@ -28,9 +29,16 @@
    small, consistent, statistically significant **harm** (+0.86% / +0.92%
    extreme-event MAE, p_perm ≤ 0.016) — an honest negative result under the
    leakage-controlled multi-year protocol (retrospective caveat recorded).
+   Six-cell two-region comparison strengthens this: no cell shows a
+   seed-robust improvement; Charleston is consistently harmed.
 2. Tail calibration (q95 over-exceedance 1.6–1.7) remains the generator's
-   main fidelity defect — motivating the tail-aware cells in the running
+   main fidelity defect — motivating the tail-aware cells in the completed
    six-cell comparison.
+3. Seven-family benchmark (Charleston pilot): only the two FM variants and
+   WGAN-GP pass the fidelity gate; CVAE/TimeGrad/DDPM/Diffusion-TS fail at
+   10 epochs with zero search budget. This is a **pilot observation about
+   implementation stability under a fixed budget**, NOT a final model-family
+   ranking (P0-4 interpretation rule).
 
 **Environment**: GPU0 prohibited; all other GPUs occupied by other users
 (verified 2026-11-08). All Wave 2.8 experiments run on CPU with thread caps.
