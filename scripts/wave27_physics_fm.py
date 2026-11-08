@@ -250,16 +250,30 @@ def train_variant(data: dict, feats: dict, mode: str, epochs: int,
 @torch.no_grad()
 def sample_windows(model: dict, hist: np.ndarray, phys: np.ndarray,
                    idx: np.ndarray, draws: int) -> np.ndarray:
-    """Generate `draws` samples for history windows `hist[idx]`.
+    """Generate `draws` samples for history windows `hist[idx]`, in metres.
 
-    Physics features must be the causal features of the SAME windows.
+    The generator is fitted on per-sample-normalised history and targets
+    (``train_variant``). Inference must therefore apply the same per-sample
+    statistics to the history and invert them on the output. Handing raw
+    history to a normalised model mixes metre-scale inputs with dimensionless
+    ones and inflates the generated dispersion; Wave 2.7 audited this path and
+    found a 4.95 scale ratio from it against 1.17 once normalised.
+
+    Physics features must be the causal features of the SAME windows; they are
+    already standardised with train-only statistics by ``build_features``.
     """
     net, fm = model["net"], model["fm"]
     h = torch.from_numpy(np.ascontiguousarray(hist[idx]))
+    mean = h.mean(dim=1, keepdim=True)
+    std = h.std(dim=1, keepdim=True).clamp(min=1e-4)
+    hn = (h - mean) / std
     p = None
     if model["physics_dim"]:
         p = torch.from_numpy(np.ascontiguousarray(phys[idx]))
-    out = [fm.sample(h, net, seed=42 + k, physics=p).numpy() for k in range(draws)]
+    out = []
+    for k in range(draws):
+        g = fm.sample(hn, net, seed=42 + k, physics=p)
+        out.append((g * std + mean).numpy())
     return np.stack(out, axis=0)  # (draws, len(idx), horizon)
 
 
