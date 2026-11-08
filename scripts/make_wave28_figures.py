@@ -61,7 +61,8 @@ def fig_physics_ablation() -> bool:
                for a in arms]
         ax.bar(x, scales, color="#4477aa", alpha=0.85)
         ax.axhline(1.0, color="k", lw=0.8, ls="--")
-        ax.axhspan(0.9, 1.1, color="green", alpha=0.08)
+        # hard scale gate from src/tidetail/quality.py: [0.5, 2.0]
+        ax.axhspan(0.5, 2.0, color="green", alpha=0.08)
         for xi, w1 in zip(x, w1s):
             ax.annotate(f"W1={w1:.3f}", (xi, scales[xi]), ha="center",
                         va="bottom", fontsize=7)
@@ -106,18 +107,21 @@ def fig_benchmark() -> bool:
         ax = axes[0][r]
         scale = [v["families"][f]["scale_ratio"] for f in fams]
         w1 = [v["families"][f]["wasserstein1"] for f in fams]
-        colors = ["#228833" if 0.9 <= s <= 1.1 else
-                  "#ccbb44" if 0.5 <= s <= 1.5 else "#cc3311"
+        colors = ["#228833" if 0.5 <= s <= 2.0 else "#cc3311"
                   for s in scale]
         ax.bar(x, scale, color=colors, alpha=0.9)
+        ax.set_yscale("log")
         ax.axhline(1.0, color="k", lw=0.8, ls="--")
+        # hard scale gate from src/tidetail/quality.py: [0.5, 2.0]
+        ax.axhspan(0.5, 2.0, color="green", alpha=0.08)
         for xi, (s, w) in enumerate(zip(scale, w1)):
             ax.annotate(f"W1={w:.3f}", (xi, s), ha="center", va="bottom",
                         fontsize=7)
         ax.set_xticks(x, [f.replace("_", "\n") for f in fams], fontsize=7)
-        ax.set_ylabel("Scale ratio (gen/real)")
+        ax.set_ylabel("Scale ratio (gen/real, log)")
         ax.set_title(f"{region} — 7-family fidelity\n"
-                     "(green ≤±10%, amber ≤±50%, red beyond)", fontsize=10)
+                     "(green within hard gate [0.5, 2.0], red rejected)",
+                     fontsize=10)
     fig.suptitle("Wave 2.8 fair generative benchmark (residual space; "
                  "Diffusion-TS reconstructed via tide)", fontsize=11)
     fig.tight_layout(rect=(0, 0, 1, 0.93))

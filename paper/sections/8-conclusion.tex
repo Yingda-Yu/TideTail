@@ -17,6 +17,12 @@ contract, only Flow Matching reproduces the target dispersion (scale ratio
 factors of 2.3 and 12 and Diffusion-TS is rejected in all ten runs. An
 oracle-denoiser test proves the reverse diffusion recursion correct to
 $1.1\times10^{-10}$, so these are implementation failures, not family verdicts.
+A seven-family fixed-budget pilot under one matched contract (ten epochs, zero
+hyperparameter search for every family) is consistent with this picture: only
+the two Flow Matching variants and WGAN-GP avoid fidelity rejection, and the
+eleven Bonferroni-surviving downstream effects are all \emph{harms} of
+fidelity-rejected generators — confirmations of broken implementations, not
+rankings of families.
 \textbf{Third}, under corrected event-level inference --- within-architecture
 pairing, a repaired bootstrap p-value, and a Monte-Carlo resolution floor below
 the correction threshold --- no augmentation effect survives a 320-test

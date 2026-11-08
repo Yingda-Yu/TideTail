@@ -4,9 +4,15 @@
 \subsection{Why Flow Matching produces plausible samples}
 \label{subsec:why-fm}
 
-Flow Matching is the only generator in our benchmark whose sample dispersion
-matches the data (Table~\ref{tab:generators}). Three structural differences
-explain it, and each is a mechanism rather than an empirical coincidence.
+Flow Matching is the only generator that passes the fidelity gate in every
+wave of our programme — including the seven-family pilot of
+Section~\ref{sec:results-benchmark-pilot}, where its two variants and WGAN-GP
+are the only \textsc{inconclusive} (not \textsc{rejected}) generators
+under the hard scale window $[0.5, 2.0]$ (WGAN-GP sits at 0.831–0.959, i.e.\
+mildly under-dispersed, and the pilot is a fixed-budget comparison, so this is
+not a family verdict). Three structural
+differences explain Flow Matching's robustness, and each is a mechanism
+rather than an empirical coincidence.
 
 \begin{enumerate}
     \item \textbf{One regression, one ODE.} The training objective is a single
@@ -170,4 +176,17 @@ pressure/wind summary carries usable information, not whether local winds do.}
     correspondingly scoped.
     \item \textbf{Thames data quality.} 24.7\% of the source timeline is NaN,
     which both reduces its unit count and weakens any generator fitted to it.
+    \item \textbf{Pilot budgets.} The seven-family comparison gives every
+    family ten epochs, fixed defaults and zero hyperparameter search; equal
+    epochs are neither equal compute nor evidence of convergence, so its
+    rejections are implementation-at-budget statements, not family verdicts.
+    Its fidelity statistics are additionally computed on the first 200
+    consecutive test windows (a single early-winter slice); a
+    season-stratified revised evaluation is reported separately and the pilot
+    artifact is preserved unchanged.
+    \item \textbf{Downstream seed coverage.} The physics and benchmark
+    studies draw one generator sample set per seed; generator-seed variance
+    alone can flip augmentation signs (Section~\ref{sec:results-expanded}),
+    so per-seed direction consistency, not a single p-value, is the
+    robustness criterion.
 \end{itemize}

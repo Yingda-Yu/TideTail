@@ -187,6 +187,75 @@ intrinsically ineffective}, because every failure was localised to a specific
 line of code; and \emph{two of our three repairs did not work}, which is
 recorded rather than tuned away until it looked positive.
 
+\subsection{Seven families under one matched budget: a pilot}
+\label{sec:results-benchmark-pilot}
+
+To place Flow Matching in a wider design space, a seven-family benchmark —
+standard FM, tail-aware FM, conditional VAE, TimeGrad, conditional DDPM,
+WGAN-GP and Diffusion-TS — was run in Charleston and NY Bight under one
+contract: identical splits (69{,}970/8{,}601 windows), identical windows,
+10 fixed epochs, batch size 256, one generator seed (42), three downstream
+seeds, augmentation ratio 0.25, GRU and TCN proxies, and \emph{zero}
+hyperparameter search for every family.
+
+\paragraph{Interpretation contract.} This is a \textbf{pilot}, not a
+model-family ranking. Equal epochs are neither equal computational budgets nor
+evidence of adequate convergence; all families use the same fixed defaults with
+no search, so a family failing here failed \emph{this implementation at this
+budget in this configuration}, and no claim about the family itself is
+licensed. Parameter counts and optimiser steps are disclosed: e.g.\ TimeGrad's
+denoiser has 7{,}177 parameters against 63{,}273 for the VAE and 55{,}586 for
+WGAN-GP; every family saw 2{,}740 optimiser steps in 10 epochs.
+
+\begin{table}[htbp]
+\centering
+\caption{Seven-family pilot. Fidelity gate: hard scale window $[0.5,2.0]$
+(outside $\Rightarrow$ \textsc{rejected}); other quality checks raise warnings,
+so ``\textsc{inconclusive}'' $=$ no hard failure with unresolved warnings.
+``Rejected'' generators
+provide no meaningful downstream augmentation.}
+\begin{tabular}{l r r r l}
+\toprule
+Family & Params & Train (s) & Scale (Chas.\ / NYB) & Fidelity \\
+\midrule
+Flow Matching   & 27{,}937 & 115.9 / 96.1  & 1.077 / 0.905 & \textsc{inconclusive} \\
+Tail-aware FM   & 27{,}937 & 78.0 / 87.1   & 1.061 / 0.903 & \textsc{inconclusive} \\
+WGAN-GP        & 55{,}586 & 354.8 / 251.6 & 0.959 / 0.831 & \textsc{inconclusive} \\
+Cond.\ VAE     & 63{,}273 & 365.7 / 158.9 & 2.775 / 2.164 & rejected \\
+TimeGrad       & 7{,}177  & 32.8 / 20.0   & $2.5{\times}10^{4}$ / $8.1{\times}10^{5}$ & rejected \\
+Cond.\ DDPM    & 27{,}937 & 92.6 / 70.8   & 3.870 / 3.574 & rejected \\
+Diffusion-TS   & 39{,}425 & 123.2 / 97.1  & 29.46 / \textsc{nan} & rejected \\
+\bottomrule
+\end{tabular}
+\label{tab:benchmark-pilot}
+\end{table}
+
+Only the two FM variants and WGAN-GP are \textsc{inconclusive} (not
+\textsc{rejected}) in both regions under the shared hard scale gate
+$[0.5, 2.0]$ (Table~\ref{tab:benchmark-pilot}); every \textsc{inconclusive}
+cell still carries unresolved warnings (autocorrelation RMSE, peak KS), so
+none is \textsc{accepted}. WGAN-GP at 0.831 lies inside the hard gate but
+outside $\pm 10\%$ of unity — we do not call it a $\pm 10\%$ pass. The four
+rejections are consistent with the diagnostic study of
+Section~\ref{sec:results-recovery} (posterior collapse for the VAE,
+insufficient denoiser capacity for TimeGrad, terminal-step amplification for
+DDPM and Diffusion-TS), and Diffusion-TS diverges to \textsc{nan} in NY Bight
+where it produced a finite 29.5 in Charleston — an honest negative recorded
+as-is. Two further caveats. First, fidelity was evaluated on the first 200
+consecutive test windows — a single early-winter slice of the 2024 test
+split — so the fidelity statistics describe one season; a season-stratified
+revised evaluation is reported separately and the pilot artifact is preserved
+unchanged. Second, downstream inference: of the 28 comparisons
+(7 families $\times$ 2 regions $\times$ 2 proxies), \textbf{11 survive
+Bonferroni} ($\alpha = 0.0018$) — \emph{all harmful, all from rejected
+generators} (TimeGrad both regions and proxies; DDPM-cond in three of four
+cells; Diffusion-TS where finite). No beneficial effect survives, and no
+fidelity-eligible generator shows a surviving effect (best nominal: FM in NY
+Bight, $-1.61\%$, $p=0.023$). Because all surviving effects come from
+generators that failed the fidelity gate, they are statements about
+\emph{these implementations at this budget}, not about the model families;
+no family-ranking claim is made.
+
 \subsection{Augmentation under corrected event-level inference}
 \label{sec:results-augmentation}
 
@@ -293,8 +362,38 @@ combined-physics variants conditioned on ERA5 sea-level pressure and 10\,m wind.
 \emph{The first full-data run of this experiment is withdrawn for the same
 sampling-path defect described in Section~\ref{sec:results-expanded}: all ten
 arms failed fidelity at scale 3.19--4.09 while the identical architecture scores
-1.17 through the corrected path. No physics conclusion is drawn from it. The
-corrected run is reported when it completes.}
+1.17 through the corrected path. No physics conclusion is drawn from it.}
+
+\emph{Corrected run (complete).} After the sampler repair, every one of the ten
+variant $\times$ region cells is fidelity-\textsc{inconclusive} (scale ratio
+0.869--1.077, W1 0.024--0.139), so the E26 defect fully explains the earlier
+rejections. The downstream deltas are exploratory: ten comparisons at a single
+generator draw-set and a single downstream seed (42) yield nominal
+$p<0.05$ in 8/10 cells, but \textbf{nothing survives Bonferroni}
+($\alpha = 0.005$). The sign pattern is the informative part. In Charleston the
+wind-prior arm is the only nominally significant \emph{harm} ($+1.25\%$,
+$p=0.024$) while the same arm improves NY Bight ($-1.85\%$, $p=0.026$); the
+combined arm is a flat no-effect in Charleston ($+0.09\%$, $p=0.81$).
+\textbf{No physics arm beats standard Flow Matching consistently} across the two
+regions (standard $-2.20\%$/$-2.02\%$; pressure $-1.95\%$/$-1.88\%$; wind
+$+1.25\%$/$-1.85\%$; combined $+0.09\%$/$-2.00\%$). Because the stricter
+leakage-controlled expanded protocol of
+Section~\ref{sec:results-expanded} finds standard-FM augmentation
+\emph{harmful}, the small negative deltas here cannot be read as augmentation
+value; this table is retained as the corrected physics-variant comparison under
+its own (primary-split) protocol.
+
+The physics content of these arms must be stated precisely. The
+pressure/wind/combined variants add ERA5 sea-level-pressure and 10\,m-wind
+covariates summarised strictly over the 96\,h causal history (regression-tested:
+mutating the target horizon cannot change the features), and their priors are
+\emph{physics-inspired statistical regularizers} — a train-only OLS penalty on
+an implied surge with an auto-calibrated frozen weight — \emph{not}
+governing-equation PDE constraints, and \emph{not} bathymetry, which was never
+downloaded. ERA5 forcing is retrospective reanalysis, so conditioning on it is
+reanalysis conditioning rather than an operational forecast input. The Wave 2.8
+six-arm ablation (Section~\ref{sec:results-physics-ablation}) extends this
+design with a conditioning-only control.
 
 \subsection{Expanded 2015--2024 evaluation}
 \label{sec:results-expanded}
@@ -363,3 +462,31 @@ reliably help, and can significantly harm, extreme-event forecasting under a
 leakage-controlled multi-year protocol}. Second, a methodological hazard:
 generator-seed variance alone can flip the sign of the augmentation effect,
 so single-seed augmentation studies in this domain are uninterpretable.
+
+\subsection{Six-arm physics ablation}
+\label{sec:results-physics-ablation}
+
+The Wave 2.8 ablation separates the two mechanisms conflated in
+Section~\ref{sec:results-physics}: \emph{meteorological conditioning}
+(``era5\_cond'': ERA5 pressure/wind covariates enter the network as inputs,
+no penalty) versus \emph{physics-inspired statistical regularization}
+(``pressure\_prior'', ``wind\_prior'', ``combined\_prior'': train-only OLS
+physical predictions — inverse-barometer level change, coast-normal wind
+stress (approximate onshore unit vectors, digitised per region) — penalising
+the implied clean target of the flow-matching velocity with an auto-calibrated
+frozen weight;
+``combined\_tail'': both penalties plus tail-weighted loss). Together with
+``standard'', the six arms run in both
+regions with two generator seeds (42, 99) per arm under the identical
+downstream budget of the corrected protocol. The comparison family is
+\emph{pre-specified} for mechanism isolation: (C1) era5\_cond vs standard
+(conditioning effect), (C2) pressure vs era5\_cond, (C3) wind vs era5\_cond,
+(C4) combined vs era5\_cond (regularization effects), and (C5)
+combined\_tail vs combined\_prior (tail-loss effect) — 5 contrasts
+$\times$ 2 regions $\times$ 2 forecast architectures $=$ 20 primary
+comparisons, Bonferroni $\alpha = 0.0025$, with arm-vs-A0 deltas reported
+separately as exploratory. As everywhere in this paper, the
+priors are regularizers, \emph{not} governing-equation PDE constraints, and no
+bathymetry is used (regional wind coefficients absorb fetch effects; GEBCO was
+deferred); results appear in
+Table~\ref{tab:physics-ablation} once the run completes.

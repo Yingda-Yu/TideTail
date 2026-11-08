@@ -26,12 +26,22 @@ This benchmark is a **PILOT**, not a final model-family ranking:
 - A family failing here failed *this implementation at this budget in this
   configuration*; the failure does not license the claim that the family is
   inherently inferior.
-- Fidelity gate (scale ratio within ±10% ⇒ INCONCLUSIVE-viable; outside ⇒ REJECTED)
-  is a necessary, not sufficient, condition; downstream deltas from REJECTED
-  generators are not meaningful augmentations.
-- All downstream deltas are exploratory: 7 families × 2 regions × 2 downstream
-  proxies = 28 comparisons; nominal p < 0.05 does not survive any multiplicity
-  correction.
+- Fidelity gate is the shared `src/tidetail/quality.py` policy: a **hard
+  scale-ratio window [0.5, 2.0]** (outside ⇒ REJECTED); any other quality
+  check (range coverage, Wasserstein-1, autocorrelation RMSE, peak KS, peak
+  timing) raises a warning. **ACCEPTED** = all criteria satisfied;
+  **INCONCLUSIVE** = no hard failure but unresolved warnings;
+  **REJECTED** = ≥1 hard failure. INCONCLUSIVE is a necessary, not sufficient,
+  condition; downstream deltas from REJECTED generators are not meaningful
+  augmentations.
+- Fidelity was evaluated on the **first 200 consecutive test windows** (early
+  2024, single season — a sampling-bias caveat; see "Revised evaluation"
+  below). All fidelity numbers inherit this caveat.
+- Downstream inference: 7 families × 2 regions × 2 downstream proxies =
+  28 comparisons, Bonferroni α = 0.05/28 = 0.0018; **11 comparisons survive —
+  all harmful effects of REJECTED generators**; no beneficial effect and no
+  fidelity-eligible (INCONCLUSIVE) generator's effect survives correction.
+  Single generator seed (42) ⇒ no model-seed robustness claim is possible.
 
 ## Protocol (identical for both regions, verified before merge)
 
@@ -74,26 +84,50 @@ This benchmark is a **PILOT**, not a final model-family ranking:
 
 ## Findings (pilot-level, no family-ranking claims)
 
-1. **Only the two FM variants and WGAN-GP pass the ±10% fidelity gate in both
-   regions.** FM scale 1.077/0.905, tail-aware FM 1.061/0.903, WGAN-GP
-   0.959/0.831.
-2. **CVAE, TimeGrad, DDPM and Diffusion-TS fail fidelity at this budget** —
-   scale ratios 1.6× to 8×10⁵× off, and Diffusion-TS diverges to NaN in NY Bight
-   (finite 29.5 in Charleston). These failures are statements about *these
-   implementations under 10 epochs with zero search*, not about the families.
-   They are consistent with the Wave 2.7 diagnostic pilots (CVAE posterior
-   collapse; TimeGrad 6.5k-param denoiser under-capacity; DTS Fourier-repair
-   divergence).
-3. **No downstream effect survives multiplicity correction.** Nominal nominal
-   p<0.05 cells exist (FM in NY Bight −1.6% p≈0.02; WGAN-GP harm in Charleston
-   +3.0% p≈0.003), but with 28 comparisons none survives Bonferroni
-   (α=0.0018), and the FM/NY-Bight nominal improvement must additionally be read
-   against the expanded-year protocol (Wave 2.8 corrected rerun), where
-   standard-FM augmentation *harmed* extreme-event MAE (+0.86%/+0.92%) under
-   the leakage-controlled multi-year split.
-4. **Training-time spread under equal epochs** (20 s … 366 s per family) confirms
-   that "10 epochs" is not a common compute budget: TimeGrad consumed the least
-   wall-time yet failed hardest; equal-epoch comparisons are budget-confounded.
+1. **Only the two FM variants and WGAN-GP are INCONCLUSIVE (not REJECTED) in
+   both regions** under the shared hard scale gate [0.5, 2.0]: FM scale
+   1.077/0.905, tail-aware FM 1.061/0.903, WGAN-GP 0.959/0.831. All
+   INCONCLUSIVE cells still carry unresolved warnings (e.g. autocorrelation
+   RMSE > 0.15 and peak-KS p < 0.01 for FM); none is ACCEPTED.
+   (WGAN-GP 0.831 lies inside the hard gate but outside ±10% — it is not a
+   ±10% pass.)
+2. **CVAE, TimeGrad, DDPM and Diffusion-TS are REJECTED at this budget** —
+   scale ratios 1.6× to 8×10⁵× outside [0.5, 2.0], and Diffusion-TS diverges
+   to NaN in NY Bight (finite 29.5 in Charleston). These failures are
+   statements about *these implementations under 10 epochs with zero search*,
+   not about the families. They are consistent with the Wave 2.7 diagnostic
+   pilots (CVAE posterior collapse; TimeGrad 6.5k-param denoiser
+   under-capacity; DTS Fourier-repair divergence).
+3. **Multiple-testing correction (corrected 2026-11-08): 11 of the 28
+   downstream comparisons survive Bonferroni α = 0.0018 — and all 11 are
+   HARMFUL effects of REJECTED generators**: TimeGrad (both regions × both
+   proxies, +946% to +4×10⁵%), DDPM-cond (Charleston GRU/TCN +3.8%/+5.2%,
+   NY Bight TCN +5.3%), Diffusion-TS (Charleston +88%/+106%; NY Bight NaN,
+   p≈0 by degeneration). **No beneficial effect survives**, and **no
+   fidelity-eligible (INCONCLUSIVE) generator shows a surviving effect**
+   (best nominal: FM NY-Bight GRU −1.61% p=0.023; WGAN-GP Charleston
+   +3.0% p=0.0028 — both above α). The FM/NY-Bight nominal improvement must
+   additionally be read against the expanded-year protocol (Wave 2.8
+   corrected rerun), where standard-FM augmentation *harmed* extreme-event
+   MAE (+0.86%/+0.92%) under the leakage-controlled multi-year split.
+   Rejected-generator deltas are statements about these implementations, not
+   evidence that the model families are intrinsically ineffective.
+4. **Training-time spread under equal epochs** (20 s … 366 s per family)
+   confirms that "10 epochs" is not a common compute budget: TimeGrad
+   consumed the least wall-time yet failed hardest; equal-epoch comparisons
+   are budget-confounded.
+
+## Fidelity-sample caveat (P3) and revised evaluation
+
+The pilot evaluates fidelity on `test_res_t[:200]` — the **first 200
+consecutive test windows** of the 2024 test split, i.e. a single continuous
+early-winter slice (~11 days). Fidelity statistics therefore describe one
+season and are **not** an annual-representative assessment. The pilot
+artifact is preserved unchanged; a **revised, separately-labelled evaluation**
+(season-stratified windows, independent extreme events, background periods,
+Tail95/Tail99 per stratum, multiple generator seeds, validation-data selection
+only) is queued to run after the physics experiment frees the CPU, and will be
+reported as `wave28_gen_benchmark_revised.json` without overwriting the pilot.
 
 ## Provenance
 

@@ -1,7 +1,7 @@
 # LATEST PROGRESS — TideTail Wave 2.8 (Three Publication-Critical Experiments)
 
-**Last updated**: 2026-11-08 21:50 CST
-**Head SHA**: `858281e` + interim docs commit (this wave)
+**Last updated**: 2026-11-08 22:05 CST
+**Head SHA**: `3e42ad2` (pushed) + uncommitted docs/paper edits (this wave)
 **Branch**: `trae/global-data-generative-research-20261031`
 **PR**: #23 (Draft — DO NOT MERGE main)
 
@@ -16,12 +16,12 @@
 | P0-3 E26 fix | DONE (committed `9b790a6`) | Running processes' code SHA `1106ecb` recorded in run `env.txt`; 311 pytest pass |
 | P2 6-cell expanded | DONE + VERIFIED | `data/results/wave28_expanded_eval.json` — honest negative, exploratory framing |
 | P0 physics rerun (W27-P4) | **DONE 2026-11-08 18:15** | `data/results/wave27_physics_fm.json` (exit 0, 7,448 s): all 10 variant×region cells fidelity-INCONCLUSIVE (E26 fix verified at full scale); downstream deltas −2.2%..+1.3%, **nothing survives Bonferroni α=0.005** (10 comparisons, single downstream seed 42); wind arm harms Charleston (+1.25% p=0.024) but helps NY Bight — no physics arm beats standard consistently; expanded-year harm result supersedes for augmentation-value claims. Doc §5.1 updated |
-| P3 7-family benchmark | **DONE (both regions)** 2026-11-08 17:27 | NY Bight completed under systemd (exit 0, 4,562 s); Charleston dict merged (protocol fields verified identical) → `data/results/wave28_gen_benchmark.json` sha256 `3656e1ed…`; FM/tailFM/wgan_gp pass fidelity both regions; cvae/timegrad/ddpm/dts REJECT (dts→NaN in NY Bight); 28 downstream comparisons — none survives Bonferroni; **PILOT framing only**. Doc `docs/experiments/WAVE28_GEN_BENCHMARK.md` written with full training-budget table |
+| P3 7-family benchmark | **DONE (both regions)** 2026-11-08 17:27 | NY Bight completed under systemd (exit 0, 4,562 s); Charleston dict merged (protocol fields verified identical) → `data/results/wave28_gen_benchmark.json` sha256 `3656e1ed…`; gate = quality.py hard scale window [0.5,2.0]: FM/tailFM/wgan_gp INCONCLUSIVE (not REJECTED, warnings unresolved) both regions; cvae/timegrad/ddpm/dts REJECT (dts→NaN in NY Bight); **CORRECTED 2026-11-08 22:30: 28 downstream comparisons — 11 survive Bonferroni α=0.0018, ALL harmful effects of REJECTED generators; no beneficial or fidelity-eligible effect survives**; fidelity measured on first 200 consecutive test windows (single-season caveat — revised season-stratified eval queued after physics run); **PILOT framing only**. Docs/figure/ledger corrected accordingly |
 | P1 physics 6-arm | **RUNNING (relaunch 21:39, ETA ~03:30)** | unit `tidetail-wave28physics`, run `wave28physics_20261108T133917Z_39437029`; killed once by systemd-oomd during 3-way concurrency; incremental saves in place |
-| P5 manuscript | PARTIAL | Expanded section done; benchmark pilot + wave27 §5.1 docs done; **paper 6-results.tex updates for benchmark + wave27 physics pending**; wave28 physics section pending final artifact |
+| P5 manuscript | IN PROGRESS | 6-results.tex UPDATED 2026-11-08 22:00: §6.6 wave27 physics corrected-run numbers written (all INCONCLUSIVE, nothing survives Bonferroni, wind sign-flip, superseded-by-expanded caveat); NEW §6.3b seven-family pilot subsection with interpretation contract + params/train-s/scale table; NEW six-arm ablation subsection skeleton (numbers pending run completion). CLAIMS_LEDGER.md: E24 corrected-complete, E30 benchmark pilot added, E29 physics pending. EXPERIMENT_REGISTRY.csv rows updated (5VARIANT COMPLETE, 6CELL COMPLETE, 7FAMILY COMPLETE, 6ARM RUNNING) |
 | P6 acceptance/commit/push | PENDING | pytest baseline 311 pass re-verified 2026-11-08 21:30 |
 
-**Remaining sequence**: wave28physics finishes (~03:30) → WAVE28_PHYSICS_FM.md + ledger E29 → paper sections (benchmark pilot table, wave27 physics, wave28 ablation) → regenerate W28_physics_ablation.pdf → acceptance matrix → pytest → latexmk PDF + visual inspect → simulated peer review → LATEST_PROGRESS/TASK_QUEUE/REGISTRY/CLAIMS_LEDGER → commit + push PR #23.
+**Remaining sequence**: wave28physics finishes (~03:30, chained unit `tidetail-wave28bench-rev` auto-starts the revised fidelity eval on success) → `python3 scripts/wave28_physics_analysis.py` (pre-specified 5 mechanism contrasts × 2 regions × 2 archs = 20 primary comps, Bonferroni α=0.0025; arm-vs-A0 secondary exploratory) → WAVE28_PHYSICS_FM.md + fill paper ablation table + finalize ledger E29 → `python3 scripts/make_wave28_figures.py` (regenerate W28_physics_ablation.pdf from complete JSON) → visually verify 3 W28 PDFs → acceptance matrix → pytest → latexmk PDF + visual inspect → simulated peer review → LATEST_PROGRESS/TASK_QUEUE final sync → commit + push PR #23. **P1/P2 corrections applied 2026-11-08 22:30**: fidelity gate restated as quality.py hard window [0.5,2.0] (±10% language removed everywhere incl. figure); multiple-testing statement corrected — 11/28 benchmark comps survive Bonferroni (all harmful, all REJECTED generators); P3 single-season caveat documented + revised season-stratified eval scripted and queued (`scripts/wave28_gen_bench_revised_eval.py`, unit `tidetail-wave28bench-rev`).
 
 **Wave 2.8 headline findings so far**
 
@@ -32,7 +32,8 @@
    six-cell comparison: no seed-robust improvement anywhere.
 3. Physics arms (statistical regularization, NOT PDE): no arm beats standard
    consistently; wind-prior sign flips across regions.
-4. Seven-family pilot: only FM/tailFM/WGAN-GP pass fidelity at 10 epochs +
+4. Seven-family pilot: only FM/tailFM/WGAN-GP are INCONCLUSIVE (not REJECTED,
+   with unresolved warnings) at 10 epochs +
    zero search; failures are implementation-at-budget statements, not
    family verdicts.
 
