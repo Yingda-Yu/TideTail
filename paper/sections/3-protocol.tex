@@ -1,0 +1,92 @@
+\section{Research Protocol}
+\label{sec:protocol}
+
+\subsection{Data source and admission}
+The authorized owner copy of the dataset is at \texttt{/data/yingda/tidetail-data/prime-formal-2015-2024},
+containing 350 files totaling 451~MB. Six coastal regions are included, with
+87,672 hourly UTC rows each spanning 2015-01-01 to 2024-12-31. Region admission
+status is recorded in \texttt{region\_availability.json}:
+
+\begin{table}[htbp]
+\centering
+\caption{Region formal training authorization status}
+\begin{tabular}{l c}
+\toprule
+Region & Training authorized \\
+\midrule
+New York Bight & Yes \\
+Thames / North Sea & Yes \\
+Hong Kong Pearl River & \textbf{No} (license/datum not signed) \\
+Southeast Australia & Yes \\
+US Gulf Coast & Yes \\
+Charleston Atlantic & Yes \\
+\bottomrule
+\end{tabular}
+\label{tab:regions}
+\end{table}
+
+The Hong Kong region is excluded from all formal experiments until the data owner
+confirms license, vertical datum, and the HK event \texttt{pearl\_river\_hong\_kong\_event\_01149},
+which spans the validation/test boundary at index 78904. The migration manifest
+(\texttt{MIGRATION\_MANIFEST.json}) exists one level above the release directory;
+file SHA256 and size checks confirm all inspected files match both release and
+migration inventory entries.
+
+\subsection{Target definition}
+The release manifest \texttt{database\_manifest.json} defines:
+\begin{itemize}
+    \item \textbf{Total water level}: observed water level above local chart datum.
+    \item \textbf{Tide}: deterministic FES2022 tidal constituent forecast (no future
+    uncertainty in this archival release).
+    \item \textbf{Residual}: $\text{water\_level\_m} = \text{observed\_total} - \text{FES2022\_tide}$.
+\end{itemize}
+The pilot diffusion model targets \texttt{water\_level\_m} (residual), in metres,
+with a fixed 72-hour history $\rightarrow$ 24-hour forecast window for engineering
+feasibility. The formal release contract specifies 96-hour history $\rightarrow$
+72-hour forecast; all comparisons between methods should use one consistent
+contract for scientific validity.
+
+\subsection{Leakage-safe splitting}
+Our protocol enforces three hard gates before any window creation or normalization:
+
+\begin{enumerate}
+    \item \textbf{Event-group disjointness}: the same independent storm event may
+    not appear in two partitions. Events are represented as \texttt{EventGroup(event\_id,
+    start\_idx, end\_idx)} intervals. The implementation in \texttt{src/tidetail/splits.py}
+    validates non-overlapping intervals and unique IDs before splitting.
+
+    \item \textbf{Chronological ordering}: train row block must end before
+    validation row block, which must end before test row block. The split is
+    8:1:1 by chronological event-group order, subject to \texttt{min\_events\_per\_split}.
+
+    \item \textbf{Full-support embargo}: for forecast origin time $o$, lookback $L$,
+    and horizon $H$, the full temporal support of one forecast window is
+    $[o-L, o+H)$. Two partitions must not have overlapping full-support intervals.
+    The repaired \texttt{embargo\_filter} compares every index in an event group
+    to every protected index, replacing the earlier midpoint-only comparison that
+    incorrectly accepted dangerous events (see Appendix~\ref{sec:audit}).
+    Additionally, \texttt{embargo\_full\_support\_filter} enforces
+    $o \geq \text{split\_block\_start} + L$ and $o \leq \text{split\_block\_end} - H$
+    for each forecast origin.
+\end{enumerate}
+
+All scaler fitting, quantile threshold estimation, and interpolation fitting are
+performed on \emph{train rows only} and then applied to all partitions without
+re-fitting. Threshold-run events crossing the train boundary are removed in full
+before window creation, not partial-interval trimmed.
+
+\subsection{Formal release contract}
+The database manifest specifies:
+\begin{itemize}
+    \item \textbf{Input}: 96 hours of historical observations.
+    \item \textbf{Horizon}: 72 hours of forecast.
+    \item \textbf{Split}: chronological 8:1:1 with strict window containment.
+    \item \textbf{Tide}: existing local FES2022 deterministic archive.
+    \item \textbf{Forcing}: ERA5 hindcast only. No operational 72-hour forecast
+    claim without archived issue/valid/lead NWP forecast vintages.
+\end{itemize}
+The ERA5 forcing data available in this release is historical hindcast data, not
+forecast data. Using future observed ERA5 values as conditioning information in
+a forecast experiment would constitute leakage unless explicitly labelled as an
+oracle experiment. Our gauge-only diffusion model does not consume atmospheric
+forcing; this limitation is discussed in Section~\ref{sec:discussion}.

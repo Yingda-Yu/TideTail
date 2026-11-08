@@ -1,0 +1,492 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{The independent-event census}
+\label{sec:results-census}
+
+An independent event unit is either a POT cluster (q95 threshold, 168\,h
+declustering, Coles 2001) or a canonical tropical cyclone, counted once. Cluster
+identifiers restart each January, so a year-unique label
+$-(1000\,\cdot\,\text{year} + c + 1)$ is required; the naive
+``event\_id $< -999$ means background'' convention used in an earlier wave
+silently dropped valid clusters.
+
+The corrected census is shown in Table~\ref{tab:census}. The union identity
+$|\text{POT} \cup \text{TC}| = |\text{POT}| + |\text{TC}| - |\text{POT} \cap
+\text{TC}|$ was checked per region and per period.
+
+\begin{table}[htbp]
+\centering
+\caption{Independent event units, 2015--2024, and the 2024 test split.
+Union is computed by one-to-one peak matching, not by addition.}
+\begin{tabular}{l r r r r r}
+\toprule
+Region & POT & TC & matched & \textbf{union} & 2024 extreme units \\
+\midrule
+New York Bight        & 171 & 10 & 3  & \textbf{178} & 15 \\
+US Gulf Coast         & 110 & 38 & 10 & \textbf{138} & 15 \\
+Charleston            & 133 & 24 & 14 & \textbf{143} & 14 \\
+Southeast Australia   & 101 & 0  & 0  & \textbf{101} & 6  \\
+Thames / North Sea    & 119 & 1  & 1  & \textbf{119} & 9  \\
+\midrule
+Total                 & 634 & 73 & 28 & \textbf{679} & \textbf{59} \\
+\bottomrule
+\end{tabular}
+\label{tab:census}
+\end{table}
+
+The earlier repository record reported $634 + 73 = 707$. That arithmetic
+double-counts the 28 TC peaks that already exceed q95 within their own POT
+cluster, and the overlap had never been computed. The grand union is
+\textbf{679}. Per-period unions are 60 (2024), 127 (2023--2024), 190
+(2022--2024) and 679 (2015--2024); the 2024 bootstrap cohort contains 59
+window-eligible extreme units, one per region being ineligible because the
+168\,h horizon runs past the series end.
+
+\paragraph{Frozen matching protocol.} A POT cluster and a TC track are the
+same independent event only when their time intervals strictly overlap
+(greedy one-to-one matching, deterministic order; no tolerance parameter).
+We freeze this rule before any downstream significance testing because it
+introduces no free parameter that could be tuned toward significance, and
+because the TC set is already defined by best-track timing while POT
+clusters are defined by the residual series itself, so strict overlap is
+the weakest assumption that still removes double counting. Sensitivity to
+a looser rule that also merges cluster--track pairs peaking within
+$\tau$ hours: $\tau{=}24$\,h gives 676 ($-0.4\%$), $\tau{=}48$\,h gives
+667 ($-1.8\%$) and $\tau{=}72$\,h gives 665 ($-2.1\%$). The event census
+is therefore insensitive at the 24\,h scale and modestly sensitive beyond;
+all event-level inference in this paper uses the frozen strict rule, and
+no matching parameter was selected using downstream outcomes.
+
+Window integrity checks pass: \textbf{0 duplicate timestamps} in every region,
+8,601 test windows in four regions and 6,968 in Thames (whose source series has
+24.7\% NaN gaps), and every window's event-id array matches its length. There is
+no forecast-window overlap across the train/validation/test boundaries.
+Figure~\ref{fig:census} shows the raw components against the deduplicated union:
+the gap between the stacked bars and the black marker is exactly the
+double-count a naive sum would introduce.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/W27_event_census.pdf}
+\caption{(a) Raw POT and TC components stacked, with the deduplicated union as
+a black marker. The vertical gap is the double-count removed by matching.
+(b) Window-eligible independent extreme units in the 2024 test split.}
+\label{fig:census}
+\end{figure}
+
+\subsection{Four generators under one fidelity gate}
+\label{sec:results-generators}
+
+All generators share the same splits and the same
+96\,h$\rightarrow$72\,h contract, and the target is
+\texttt{water\_level\_m}, the non-tidal residual (total observed water level
+equals residual plus astronomical tide, so the tide must never be subtracted a
+second time). Three of the four consume that residual directly. Diffusion-TS is
+trained on observed \emph{total} water level by design, because its
+trend/seasonal/residual decomposition is defined on the full signal; the
+companion series has standard deviation 0.598~m against 0.207~m for the residual,
+so its row is scored against its own target and is \emph{not} directly
+comparable with the other three. It is retained because the failure is
+unambiguous within its own target and because it motivates the repair study
+below. Samples are scored by a single
+gate (scale ratio $\in[0.5, 2.0]$, Wasserstein-1 $\le 0.25$, autocorrelation RMSE
+$\le 0.15$, q95 exceedance ratio $\in[0.5, 2.5]$, peak KS $p \ge 0.01$).
+
+\begin{table}[htbp]
+\centering
+\caption{Production generative benchmark, 5 regions $\times$ 2 seeds.
+Scale ratio is generated/real dispersion; the gate accepts $[0.5, 2.0]$.}
+\begin{tabular}{l r r r r}
+\toprule
+Model & Params & Median scale ratio (range) & W1 & Gate outcome \\
+\midrule
+Conditional VAE & 63{,}273 & 0.440 (0.326--0.807) & 0.203 & 4 inconclusive / 6 rejected \\
+TimeGrad        & 7{,}177  & 0.084 (0.072--0.320) & 1.527 & 10 rejected \\
+Diffusion-TS    & 39{,}425 & 0.181 (0.118--0.204; 9 of 10 finite) & ---   & 10 rejected \\
+Flow Matching   & 27{,}937 & \textbf{1.048} (0.945--1.116) & \textbf{0.047} & 10 inconclusive \\
+\bottomrule
+\end{tabular}
+\label{tab:generators}
+\end{table}
+
+Only Flow Matching reproduces the dispersion of the real residual
+distribution (Table~\ref{tab:generators}, Figure~\ref{fig:fidelity}). The VAE
+and TimeGrad are under-dispersed by factors of 2.3 and 12; Diffusion-TS is
+under-dispersed on the bulk while over-shooting the peak. Every Flow Matching
+run is formally \emph{inconclusive} rather than accepted: scale and
+Wasserstein distance pass, but the gate also requires peak tail agreement, which
+the samples do not establish at $n=10$ runs.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/W27_fidelity_gate.pdf}
+\caption{Generated-to-real scale ratio for each production run (10 per
+generator), log axis. The shaded band is the accepted gate. The red bar is the
+median. Flow Matching is the only generator whose median lies inside the band.}
+\label{fig:fidelity}
+\end{figure}
+
+\subsection{Diagnosing the failed generators}
+\label{sec:results-recovery}
+
+\paragraph{The sampler is not the problem.} Before attributing any failure to a
+model family, the reverse diffusion recursion was tested with an
+\textbf{oracle denoiser} that returns the exact forward-process noise. The
+deterministic reverse pass then recovers $x_0$ with a maximum absolute error of
+$1.1\times10^{-10}$, and the stochastic pass has relative RMSE 0.06, the expected
+posterior-noise floor. Schedule, \texttt{noisy()} and the reverse update are
+therefore correct, and residual failures are optimisation or conditioning
+failures.
+
+\paragraph{Three defects, three outcomes.} Three controlled Charlestown pilots
+isolated one defect each at a common budget (20,000 training windows; 25/30/25
+epochs; CPU, because GPU0 is prohibited and every other GPU was occupied by other
+users).
+
+\begin{enumerate}
+    \item \textbf{Conditional VAE.} The decoder broadcast a single scalar
+    projection of $z$ across all 72 horizon positions, giving rank-1 latent use
+    regardless of latent size, and the class did not subclass \texttt{nn.Module}
+    so every production run silently stayed on CPU. Repair: a linear
+    $z\mapsto$ horizon map plus KL warm-up. \emph{Outcome: refuted.}
+    Reconstruction improves 2.7$\times$ (MSE 0.882 $\rightarrow$ 0.326), but
+    \emph{sample} dispersion worsens from 3.29 to 7.26. Both variants show total
+    posterior collapse (0/32 latent dimensions with posterior std $>0.3$), while
+    sampling draws $z\sim\mathcal{N}(0,I)$. The decoder is trained on a narrow
+    aggregate posterior and then evaluated on a broad prior; giving it a stronger
+    latent path amplifies exactly that mismatch.
+    \item \textbf{TimeGrad.} The denoiser accepted autoregressive memory and then
+    ignored it. Repair: consume the memory and widen the denoiser.
+    \emph{Outcome: partial.} Scale error falls from 10.55 to 6.09, but raw sum
+    memory grows without bound across the 72-step rollout (it reached
+    $1.9\times10^{7}$ at the smaller budget) and mean aggregation collapses the
+    signal, diverging to $1.22\times10^{5}$. Neither aggregation is numerically
+    stable.
+    \item \textbf{Diffusion-TS.} The Fourier regulariser compared the spectrum of
+    the \emph{predicted noise} with the spectrum of the \emph{clean signal}. The
+    repair compares the implied clean signal instead.
+    \emph{Outcome: refuted.} The implied clean signal divides by
+    $\sqrt{\bar\alpha_t}$, which is $0.024$ at the terminal step, amplifying both
+    value and gradient by $\sim$41$\times$; the loss reaches NaN by epoch 24 and
+    the generated set collapses to 99.8\% exact duplicates. The apparent 2$\times$
+    improvement at the smaller budget was an under-training artefact.
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.78\textwidth]{figures/W27_recovery.pdf}
+\caption{Legacy versus repaired configurations against the fidelity band. Two
+of the three proposed repairs make sampling worse; one is partially better and
+still far outside the gate.}
+\label{fig:recovery}
+\end{figure}
+
+The conclusion is deliberately narrow: \emph{no family is shown to be
+intrinsically ineffective}, because every failure was localised to a specific
+line of code; and \emph{two of our three repairs did not work}, which is
+recorded rather than tuned away until it looked positive.
+
+\subsection{Seven families under one matched budget: a pilot}
+\label{sec:results-benchmark-pilot}
+
+To place Flow Matching in a wider design space, a seven-family benchmark —
+standard FM, tail-aware FM, conditional VAE, TimeGrad, conditional DDPM,
+WGAN-GP and Diffusion-TS — was run in Charleston and NY Bight under one
+contract: identical splits (69{,}970/8{,}601 windows), identical windows,
+10 fixed epochs, batch size 256, one generator seed (42), three downstream
+seeds, augmentation ratio 0.25, GRU and TCN proxies, and \emph{zero}
+hyperparameter search for every family.
+
+\paragraph{Interpretation contract.} This is a \textbf{pilot}, not a
+model-family ranking. Equal epochs are neither equal computational budgets nor
+evidence of adequate convergence; all families use the same fixed defaults with
+no search, so a family failing here failed \emph{this implementation at this
+budget in this configuration}, and no claim about the family itself is
+licensed. Parameter counts and optimiser steps are disclosed: e.g.\ TimeGrad's
+denoiser has 7{,}177 parameters against 63{,}273 for the VAE and 55{,}586 for
+WGAN-GP; every family saw 2{,}740 optimiser steps in 10 epochs.
+
+\begin{table}[htbp]
+\centering
+\caption{Seven-family pilot. Fidelity gate: hard scale window $[0.5,2.0]$
+(outside $\Rightarrow$ \textsc{rejected}); other quality checks raise warnings,
+so ``\textsc{inconclusive}'' $=$ no hard failure with unresolved warnings.
+``Rejected'' generators
+provide no meaningful downstream augmentation.}
+\begin{tabular}{l r r r l}
+\toprule
+Family & Params & Train (s) & Scale (Chas.\ / NYB) & Fidelity \\
+\midrule
+Flow Matching   & 27{,}937 & 115.9 / 96.1  & 1.077 / 0.905 & \textsc{inconclusive} \\
+Tail-aware FM   & 27{,}937 & 78.0 / 87.1   & 1.061 / 0.903 & \textsc{inconclusive} \\
+WGAN-GP        & 55{,}586 & 354.8 / 251.6 & 0.959 / 0.831 & \textsc{inconclusive} \\
+Cond.\ VAE     & 63{,}273 & 365.7 / 158.9 & 2.775 / 2.164 & rejected \\
+TimeGrad       & 7{,}177  & 32.8 / 20.0   & $2.5{\times}10^{4}$ / $8.1{\times}10^{5}$ & rejected \\
+Cond.\ DDPM    & 27{,}937 & 92.6 / 70.8   & 3.870 / 3.574 & rejected \\
+Diffusion-TS   & 39{,}425 & 123.2 / 97.1  & 29.46 / \textsc{nan} & rejected \\
+\bottomrule
+\end{tabular}
+\label{tab:benchmark-pilot}
+\end{table}
+
+Only the two FM variants and WGAN-GP are \textsc{inconclusive} (not
+\textsc{rejected}) in both regions under the shared hard scale gate
+$[0.5, 2.0]$ (Table~\ref{tab:benchmark-pilot}); every \textsc{inconclusive}
+cell still carries unresolved warnings (autocorrelation RMSE, peak KS), so
+none is \textsc{accepted}. WGAN-GP at 0.831 lies inside the hard gate but
+outside $\pm 10\%$ of unity — we do not call it a $\pm 10\%$ pass. The four
+rejections are consistent with the diagnostic study of
+Section~\ref{sec:results-recovery} (posterior collapse for the VAE,
+insufficient denoiser capacity for TimeGrad, terminal-step amplification for
+DDPM and Diffusion-TS), and Diffusion-TS diverges to \textsc{nan} in NY Bight
+where it produced a finite 29.5 in Charleston — an honest negative recorded
+as-is. Two further caveats. First, fidelity was evaluated on the first 200
+consecutive test windows — a single early-winter slice of the 2024 test
+split — so the fidelity statistics describe one season; a season-stratified
+revised evaluation is reported separately and the pilot artifact is preserved
+unchanged. Second, downstream inference: of the 28 comparisons
+(7 families $\times$ 2 regions $\times$ 2 proxies), \textbf{11 survive
+Bonferroni} ($\alpha = 0.0018$) — \emph{all harmful, all from rejected
+generators} (TimeGrad both regions and proxies; DDPM-cond in three of four
+cells; Diffusion-TS where finite). No beneficial effect survives, and no
+fidelity-eligible generator shows a surviving effect (best nominal: FM in NY
+Bight, $-1.61\%$, $p=0.023$). Because all surviving effects come from
+generators that failed the fidelity gate, they are statements about
+\emph{these implementations at this budget}, not about the model families;
+no family-ranking claim is made.
+
+\subsection{Augmentation under corrected event-level inference}
+\label{sec:results-augmentation}
+
+\paragraph{Three defects in the earlier significance analysis.}
+\begin{enumerate}
+    \item Candidates were paired against a baseline of the \emph{other}
+    architecture, so a GRU candidate was compared with a TCN A0.
+    \item The bootstrap p-value used a proportion where a count was required
+    ($p = 2(\text{prop}+1)/(n_\text{boot}+1)$), shrinking p by
+    $\approx 5{,}000\times$. An observed difference of $-0.235$ with 95\% CI
+    $[-0.70, +0.20]$ was reported as $p = 2.3\times10^{-4}$.
+    \item The Monte-Carlo resolution floor $2/(n_\text{boot}+1)$ exceeded the
+    Bonferroni threshold, so survival was arithmetically impossible.
+\end{enumerate}
+
+After within-architecture pairing, 30,000 bootstrap resamples and 30,000 sign
+flips, and a family of 320 tests ($\alpha = 1.563\times10^{-4}$), the corrected
+analysis finds \textbf{zero seed-robust survivors}. Three comparisons survive
+their within-region correction, but each is significant against only one of the
+two A0 seeds; with a 25\% baseline seed spread (SE Australia TCN: 0.0713 versus
+0.0569~m) they are seed-fragile, not findings.
+
+The earlier ``Charleston 5/48 multiplicity-adjusted'' result is withdrawn.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/W27_architecture_region.pdf}
+\caption{Mean extreme-window MAE change versus the same-architecture A0
+baseline, averaged over all candidate configurations within each region.
+Negative values mean augmentation helps.}
+\label{fig:arch}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.90\textwidth]{figures/W27_baseline_seed.pdf}
+\caption{A0 extreme-window MAE for the two baseline seeds of the identical
+recipe. The spread bounds how large an augmentation effect would have to be
+before it could be distinguished from seed noise.}
+\label{fig:seedvar}
+\end{figure}
+
+\paragraph{Architecture dependence.} Aggregating over all 160 comparisons per
+architecture, the GRU improves in 86 and worsens in 74 (mean $-0.17\%$), while
+the TCN improves in 110 and worsens in 50 (mean $-7.08\%$). This reverses the
+earlier claim that architecture effects dwarf augmentation effects: under a
+corrected pairing the TCN responds to augmentation roughly forty times more
+strongly in relative terms. The GRU's better absolute accuracy is a separate
+observation and does not imply insensitivity.
+
+\paragraph{Region dependence.} Table~\ref{tab:region-delta} gives the mean
+change by region. Thames is the one region where augmentation is harmful for
+both forecasters, consistent with its macrotidal regime in which surge is a
+small fraction of total water level.
+
+\begin{table}[htbp]
+\centering
+\caption{Mean extreme-window MAE change versus the same-architecture A0
+baseline, by region (\%). Negative means augmentation helps.}
+\begin{tabular}{l r r}
+\toprule
+Region & GRU & TCN \\
+\midrule
+New York Bight       & $-3.41$  & $-13.14$ \\
+US Gulf Coast        & $-2.33$  & $-5.37$  \\
+Charleston           & $-4.30$  & $-0.09$  \\
+Southeast Australia  & $-0.59$  & $-21.69$ \\
+Thames / North Sea   & $+9.78$  & $+4.88$  \\
+\bottomrule
+\end{tabular}
+\label{tab:region-delta}
+\end{table}
+
+\paragraph{Multiplicity is under-corrected, not over-corrected.} The 320-test
+family covers A1, A2 and A3 Flow Matching predictions only. Tail-aware A3
+predictions are absent, and discarded ratios, generator hyper-parameters and
+model-selection choices were never materialised as predictions. The true search
+space is larger, so the Bonferroni correction is anti-conservative and every
+surviving claim is exploratory.
+
+\subsection{Early DDPM pilot: a genuine but historical failure}
+\label{sec:results-pilot}
+
+An early 27,169-parameter conditional DDPM trained for three epochs produced
+samples with standard deviation 4.47~m against a training reference of 0.215~m,
+a ratio of 22.8, reproduced independently on CPU (4.92~m, 22.9). The failure was
+traced to terminal-step amplification: the cosine schedule terminated at
+$\bar\alpha_{64}\approx5.93\times10^{-7}$, an amplification of 1,299$\times$. A
+subsampled 1000-step schedule terminating at
+$\bar\alpha_{64}\approx5.89\times10^{-4}$ reduced amplification to 41$\times$
+and sample $\sigma$ from 4.92~m to 0.297~m. That probe is a schedule diagnostic,
+not a repair, because the checkpoint's epsilon predictions are schedule-specific.
+This record is retained because it explains why the later benchmark moved to
+Flow Matching; it is superseded by Sections~\ref{sec:results-generators} and
+\ref{sec:results-recovery}.
+
+\subsection{Physics-guided Flow Matching}
+\label{sec:results-physics}
+
+Five variants share one architecture, one split and one downstream budget: a
+standard Flow Matching model, a tail-aware variant, and pressure-, wind- and
+combined-physics variants conditioned on ERA5 sea-level pressure and 10\,m wind.
+
+\emph{The first full-data run of this experiment is withdrawn for the same
+sampling-path defect described in Section~\ref{sec:results-expanded}: all ten
+arms failed fidelity at scale 3.19--4.09 while the identical architecture scores
+1.17 through the corrected path. No physics conclusion is drawn from it.}
+
+\emph{Corrected run (complete).} After the sampler repair, every one of the ten
+variant $\times$ region cells is fidelity-\textsc{inconclusive} (scale ratio
+0.869--1.077, W1 0.024--0.139), so the E26 defect fully explains the earlier
+rejections. The downstream deltas are exploratory: ten comparisons at a single
+generator draw-set and a single downstream seed (42) yield nominal
+$p<0.05$ in 8/10 cells, but \textbf{nothing survives Bonferroni}
+($\alpha = 0.005$). The sign pattern is the informative part. In Charleston the
+wind-prior arm is the only nominally significant \emph{harm} ($+1.25\%$,
+$p=0.024$) while the same arm improves NY Bight ($-1.85\%$, $p=0.026$); the
+combined arm is a flat no-effect in Charleston ($+0.09\%$, $p=0.81$).
+\textbf{No physics arm beats standard Flow Matching consistently} across the two
+regions (standard $-2.20\%$/$-2.02\%$; pressure $-1.95\%$/$-1.88\%$; wind
+$+1.25\%$/$-1.85\%$; combined $+0.09\%$/$-2.00\%$). Because the stricter
+leakage-controlled expanded protocol of
+Section~\ref{sec:results-expanded} finds standard-FM augmentation
+\emph{harmful}, the small negative deltas here cannot be read as augmentation
+value; this table is retained as the corrected physics-variant comparison under
+its own (primary-split) protocol.
+
+The physics content of these arms must be stated precisely. The
+pressure/wind/combined variants add ERA5 sea-level-pressure and 10\,m-wind
+covariates summarised strictly over the 96\,h causal history (regression-tested:
+mutating the target horizon cannot change the features), and their priors are
+\emph{physics-inspired statistical regularizers} — a train-only OLS penalty on
+an implied surge with an auto-calibrated frozen weight — \emph{not}
+governing-equation PDE constraints, and \emph{not} bathymetry, which was never
+downloaded. ERA5 forcing is retrospective reanalysis, so conditioning on it is
+reanalysis conditioning rather than an operational forecast input. The Wave 2.8
+six-arm ablation (Section~\ref{sec:results-physics-ablation}) extends this
+design with a conditioning-only control.
+
+\subsection{Expanded 2015--2024 evaluation}
+\label{sec:results-expanded}
+
+No existing checkpoint can be evaluated on 2022--2024, because all of them were
+trained through 2022. The expanded protocol therefore retrains from scratch:
+2015--2020 for fitting, 2021 for epoch selection, 2022--2024 touched once.
+
+The split builder is verified. Charleston and NY Bight both yield 52,441 /
+8,593 / 26,137 windows for train / validation / test. The counts are identical
+and expected: both series are gap-free, so 52,608 training hours give
+$52{,}608-167=52{,}441$ windows, 2021 (8,760~h) gives 8,593 and 2022--2024
+(26,304~h) gives 26,137. The 168~h embargo holds at both boundaries, and the
+test spans contain 40 and 51 independent POT units respectively.
+
+Validation-only selection chose epoch 13 in both regions. \textbf{The first run
+of this pilot is withdrawn}: it reported scale ratios 3.97 and 4.76 and
+downstream harm of $+8.88\%$ and $+15.85\%$, but a controlled diagnostic on an
+identical trained model showed that the shared sampler was handing raw
+metre-scale history to a generator fitted on per-sample-normalised history and
+never inverting the normalisation. The same model scores scale ratio 4.95
+through that path and \textbf{1.17} once the history is normalised, which
+matches the production benchmark's 1.05. Those numbers measured the harness, not
+Flow Matching, and they are withdrawn.
+
+\textbf{Corrected run.} After the sampler repair the generator passes to the
+INCONCLUSIVE regime: scale ratio 1.147 (Charleston) and 1.097 (NY Bight),
+Wasserstein-1 0.019 and 0.033, with the residual defect that synthetic windows
+exceed the real q95 threshold $1.6$--$1.7\times$ too often, i.e.\ the tails
+remain too heavy. The downstream answer is an \textbf{honest negative result}:
+standard-FM augmentation does not improve extreme-event MAE under this
+protocol. It degrades it by $+0.86\%$ (Charleston; sign-flip permutation
+$p=0.016$, 40 units) and $+0.92\%$ (NY Bight; $p=0.0023$, 51 units), with
+paired bootstrap CIs excluding zero. Two caveats bound the claim. First, this
+is augmentation from a generator whose tail calibration is still imperfect
+(q95 over-exceedance $1.6$--$1.7$), so it tests \emph{partially fidelious}
+augmentation, not fully calibrated augmentation. Second, the 2022--2024 span
+partially informed earlier exploratory waves of this project, so the evaluation
+is retrospective validation rather than untouched confirmatory inference. The
+six-cell follow-up (GRU and TCN $\times$ standard and tail-aware augmentation,
+multiple seeds) is reported in the Wave 2.8 results.
+
+The protocol itself is verified. The split builder produces 168~h embargoes at
+both boundaries with no cross-split window overlap, validation-only selection
+runs, preprocessing and augmentation are train-only, and the event-level
+paired machinery returns finite intervals over 40 and 51 independent units.
+What the corrected pilot establishes, beyond that readiness, is a directional
+finding under a controlled protocol: partially fidelious standard-FM
+augmentation does not help extreme-event forecasting in these two regions.
+
+\paragraph{Six-cell comparison.} The Wave 2.8 follow-up completes the design:
+$\{$A0, standard-FM, tail-aware-FM$\} \times \{$GRU, TCN$\}$ per region, with
+two generator seeds (42, 99), three downstream seeds, validation-only epoch
+selection and a frozen augmentation ratio. \textbf{No cell shows a seed-robust
+improvement.} Charleston is harmed consistently across all four augmented
+cells and both generator seeds ($+0.67\%$ to $+1.19\%$, all sign-flip
+$p<0.04$ over 40 units), with TCN hurt more than GRU. NY Bight \emph{flips
+sign with the generator seed}: seed 42 harms ($+0.45\%$ to $+1.42\%$) while
+seed 99 improves both forecasters ($-0.48\%$ to $-0.85\%$, GRU $p=3\times
+10^{-4}$) — despite \emph{worse} fidelity (scale ratio 1.250 vs 1.097).
+Tail-awareness leaves every cell essentially unchanged (differences
+$\le 0.1$ percentage points; q95 over-exceedance $1.60$–$1.73$ in all
+generators). Two conclusions follow. First, the answer to the title question
+is, for the current generator quality: \emph{generative augmentation does not
+reliably help, and can significantly harm, extreme-event forecasting under a
+leakage-controlled multi-year protocol}. Second, a methodological hazard:
+generator-seed variance alone can flip the sign of the augmentation effect,
+so single-seed augmentation studies in this domain are uninterpretable.
+
+\subsection{Six-arm physics ablation}
+\label{sec:results-physics-ablation}
+
+The Wave 2.8 ablation separates the two mechanisms conflated in
+Section~\ref{sec:results-physics}: \emph{meteorological conditioning}
+(``era5\_cond'': ERA5 pressure/wind covariates enter the network as inputs,
+no penalty) versus \emph{physics-inspired statistical regularization}
+(``pressure\_prior'', ``wind\_prior'', ``combined\_prior'': train-only OLS
+physical predictions — inverse-barometer level change, coast-normal wind
+stress (approximate onshore unit vectors, digitised per region) — penalising
+the implied clean target of the flow-matching velocity with an auto-calibrated
+frozen weight;
+``combined\_tail'': both penalties plus tail-weighted loss). Together with
+``standard'', the six arms run in both
+regions with two generator seeds (42, 99) per arm under the identical
+downstream budget of the corrected protocol. The comparison family is
+\emph{pre-specified} for mechanism isolation: (C1) era5\_cond vs standard
+(conditioning effect), (C2) pressure vs era5\_cond, (C3) wind vs era5\_cond,
+(C4) combined vs era5\_cond (regularization effects), and (C5)
+combined\_tail vs combined\_prior (tail-loss effect) — 5 contrasts
+$\times$ 2 regions $\times$ 2 forecast architectures $=$ 20 primary
+comparisons, Bonferroni $\alpha = 0.0025$, with arm-vs-A0 deltas reported
+separately as exploratory. As everywhere in this paper, the
+priors are regularizers, \emph{not} governing-equation PDE constraints, and no
+bathymetry is used (regional wind coefficients absorb fetch effects; GEBCO was
+deferred); results appear in
+Table~\ref{tab:physics-ablation} once the run completes.

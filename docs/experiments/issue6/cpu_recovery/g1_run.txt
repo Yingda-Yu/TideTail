@@ -1,0 +1,1 @@
+{"regions": 6, "crossing_events": {"ny_bight": [], "thames_north_sea": [], "pearl_river_hong_kong": [{"event_id": "pearl_river_hong_kong_event_01149", "start": 78903, "end": 78904, "cut": 78904, "assigned_split": "validation"}], "southeast_australia": [], "us_gulf_coast": [], "south_atlantic_charleston": []}}

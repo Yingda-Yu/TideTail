@@ -1,0 +1,83 @@
+\section{Audit Evidence}
+\label{sec:audit}
+
+This appendix records the traceable evidence basis for the factual claims in this
+paper. Each entry names the artifact, the producing command, and the test that
+guards it. Nothing in the main text is asserted without a row here.
+
+\subsection{Repository state}
+
+Work is on branch \texttt{trae/global-data-generative-research-20261031},
+continuing from commit \texttt{242093a}. Pull request \#23 remains a draft and
+\texttt{main} is not modified. Raw licensed datasets, credentials and checkpoints
+are never committed; only derived result artifacts and code are.
+
+\subsection{Evidence table}
+
+Each claim in the main text maps to exactly one artifact. All result artifacts
+live in \texttt{data/results/}; only file names are listed. Artifacts are
+committed, checkpoints and raw data are not.
+
+\begin{itemize}
+  \item \textbf{Union $=679$; 2024 units $=59$.}
+  \texttt{wave27\_event\_set\_audit.json}; guarded by
+  \texttt{test\_event\_set\_arithmetic.py}.
+  \item \textbf{Frozen matching protocol: strict temporal overlap.}
+  Same artifact, fields \texttt{primary\_strict} and
+  \texttt{tolerance\_sensitivity} (24\,h: 676, 48\,h: 667, 72\,h: 665).
+  The rule was frozen before downstream significance testing; no
+  matching parameter was tuned on downstream outcomes.
+  \item \textbf{No duplicate timestamps; 8,601 test windows.} Same artifact,
+  fields \texttt{window\_integrity} and \texttt{periods}.
+  \item \textbf{Zero robust augmentation survivors.}
+  \texttt{paired\_significance\_wave27.json}; guarded by
+  \texttt{test\_paired\_stats.py}.
+  \item \textbf{Generator scale ratios and gate outcomes.} The four
+  \texttt{*\_96\_72.json} files, scored by \texttt{tidetail.quality.evaluate}.
+  \item \textbf{DDPM sampler exactness.} Oracle-denoiser test in
+  \texttt{wave27\_model\_recovery.py}; max absolute error $1.1\times10^{-10}$.
+  \item \textbf{Two of three repairs refuted.} \texttt{wave27\_model\_recovery.json};
+  guarded by \texttt{test\_wave27\_model\_fixes.py}.
+  \item \textbf{ERA5 $=600/600$ partitions.} \texttt{era5\_readiness\_matrix.json};
+  produced by \texttt{verify\_era5\_readiness.py}.
+  \item \textbf{Physics features are causal.} \texttt{wave27\_physics\_fm.py};
+  guarded by \texttt{test\_physics\_causality.py}.
+  \item \textbf{Expanded split has no leakage.}
+  \texttt{wave27\_expanded\_evaluation.json}; boundary fields plus unit counts.
+  \item \textbf{Residual identity.} \texttt{test\_target\_semantics\_contract.py}:
+  MAE $=0$, $r=1$.
+\end{itemize}
+
+\subsection{Known discrepancies retained}
+
+Two discrepancies are recorded rather than resolved, because resolving them
+would require re-running experiments that the evidence already disqualifies.
+
+\begin{enumerate}
+    \item \textbf{The 707 event count.} Wave 2.5/2.6 documents added POT and TC
+    totals without computing the intersection. The corrected union is 679. The
+    old number appears in superseded audit files, which are annotated, not
+    deleted, so that the error remains traceable.
+    \item \textbf{The Diffusion-TS target.} The production Diffusion-TS run
+    consumes observed total water level by design (its decomposition is defined
+    on the full signal, enforced by
+    \texttt{test\_train\_generative\_model\_loader\_patches\_total\_water}),
+    whereas the other generators consume the residual. Its row in
+    Table~\ref{tab:generators} is therefore scored against its own target and is
+    not ranked against the other generators. This is a comparability limit, not
+    a defect.
+\end{enumerate}
+
+\subsection{Reproduction}
+
+\begin{verbatim}
+python3 -m pytest tests/ -q                     # CPU PR gate
+python3 scripts/event_set_audit.py
+python3 scripts/paired_significance_test.py
+python3 scripts/verify_era5_readiness.py
+python3 scripts/wave27_model_recovery.py --region south_atlantic_charleston
+python3 scripts/wave27_physics_fm.py
+python3 scripts/wave27_expanded_eval.py
+python3 scripts/make_wave27_figures.py
+cd paper && latexmk -pdf main.tex
+\end{verbatim}

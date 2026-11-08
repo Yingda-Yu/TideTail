@@ -1,0 +1,1400 @@
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/tidetail/baselines.py:2:1
+  |
+1 |   """Forecasting baselines — train-only thresholds and shared evaluation."""
+2 | / from __future__ import annotations
+3 | |
+4 | | from typing import Dict, Tuple
+5 | | import numpy as np
+  | |__________________^
+help: Organize imports
+  |
+4 | from typing import Dict, Tuple
+5 +
+6 | import numpy as np
+  |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/tidetail/baselines.py:4:1
+  |
+2 | from __future__ import annotations
+3 |
+4 | from typing import Dict, Tuple
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | import numpy as np
+  |
+
+UP035 `typing.Tuple` is deprecated, use `tuple` instead
+ --> src/tidetail/baselines.py:4:1
+  |
+2 | from __future__ import annotations
+3 |
+4 | from typing import Dict, Tuple
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | import numpy as np
+  |
+
+F401 [*] `typing.Dict` imported but unused
+ --> src/tidetail/baselines.py:4:20
+  |
+2 | from __future__ import annotations
+3 |
+4 | from typing import Dict, Tuple
+  |                    ^^^^
+5 | import numpy as np
+  |
+help: Remove unused import
+  |
+3 |
+  - from typing import Dict, Tuple
+4 | import numpy as np
+  |
+
+F401 [*] `typing.Tuple` imported but unused
+ --> src/tidetail/baselines.py:4:26
+  |
+2 | from __future__ import annotations
+3 |
+4 | from typing import Dict, Tuple
+  |                          ^^^^^
+5 | import numpy as np
+  |
+help: Remove unused import
+  |
+3 |
+  - from typing import Dict, Tuple
+4 | import numpy as np
+  |
+
+F401 [*] `datetime.datetime` imported but unused
+  --> src/tidetail/data.py:11:22
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import datetime, timedelta, timezone
+   |                      ^^^^^^^^
+12 | from typing import Dict, List, Optional, Tuple
+   |
+help: Remove unused import
+   |
+10 | from dataclasses import dataclass, field
+   - from datetime import datetime, timedelta, timezone
+11 + from datetime import timedelta
+12 | from typing import Dict, List, Optional, Tuple
+   |
+
+F401 [*] `datetime.timezone` imported but unused
+  --> src/tidetail/data.py:11:43
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import datetime, timedelta, timezone
+   |                                           ^^^^^^^^
+12 | from typing import Dict, List, Optional, Tuple
+   |
+help: Remove unused import
+   |
+10 | from dataclasses import dataclass, field
+   - from datetime import datetime, timedelta, timezone
+11 + from datetime import timedelta
+12 | from typing import Dict, List, Optional, Tuple
+   |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+  --> src/tidetail/data.py:12:1
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import datetime, timedelta, timezone
+12 | from typing import Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 |
+14 | import numpy as np
+   |
+
+UP035 `typing.List` is deprecated, use `list` instead
+  --> src/tidetail/data.py:12:1
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import datetime, timedelta, timezone
+12 | from typing import Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 |
+14 | import numpy as np
+   |
+
+UP035 `typing.Tuple` is deprecated, use `tuple` instead
+  --> src/tidetail/data.py:12:1
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import datetime, timedelta, timezone
+12 | from typing import Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 |
+14 | import numpy as np
+   |
+
+F401 [*] `typing.List` imported but unused
+  --> src/tidetail/data.py:12:26
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import datetime, timedelta, timezone
+12 | from typing import Dict, List, Optional, Tuple
+   |                          ^^^^
+13 |
+14 | import numpy as np
+   |
+help: Remove unused import: `typing.List`
+   |
+11 | from datetime import datetime, timedelta, timezone
+   - from typing import Dict, List, Optional, Tuple
+12 + from typing import Dict, Optional, Tuple
+13 |
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/tidetail/data.py:24:10
+   |
+22 |     units: str = "m"          # metres relative to gauge datum
+23 |     sampling_period: timedelta = field(default_factory=lambda: timedelta(minutes=10))
+24 |     lat: Optional[float] = None
+   |          ^^^^^^^^^^^^^^^
+25 |     lon: Optional[float] = None
+26 |     time: np.ndarray = field(default_factory=lambda: np.array([], dtype="datetime64[s]"))
+   |
+help: Convert to `X | None`
+   |
+23 |     sampling_period: timedelta = field(default_factory=lambda: timedelta(minutes=10))
+   -     lat: Optional[float] = None
+24 +     lat: float | None = None
+25 |     lon: Optional[float] = None
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/tidetail/data.py:25:10
+   |
+23 |     sampling_period: timedelta = field(default_factory=lambda: timedelta(minutes=10))
+24 |     lat: Optional[float] = None
+25 |     lon: Optional[float] = None
+   |          ^^^^^^^^^^^^^^^
+26 |     time: np.ndarray = field(default_factory=lambda: np.array([], dtype="datetime64[s]"))
+27 |     water_level: np.ndarray = field(default_factory=lambda: np.array([], dtype=float))
+   |
+help: Convert to `X | None`
+   |
+24 |     lat: Optional[float] = None
+   -     lon: Optional[float] = None
+25 +     lon: float | None = None
+26 |     time: np.ndarray = field(default_factory=lambda: np.array([], dtype="datetime64[s]"))
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/tidetail/data.py:28:15
+   |
+26 |     time: np.ndarray = field(default_factory=lambda: np.array([], dtype="datetime64[s]"))
+27 |     water_level: np.ndarray = field(default_factory=lambda: np.array([], dtype=float))
+28 |     metadata: Dict[str, str] = field(default_factory=dict)
+   |               ^^^^
+29 |
+30 |     @property
+   |
+help: Replace with `dict`
+   |
+27 |     water_level: np.ndarray = field(default_factory=lambda: np.array([], dtype=float))
+   -     metadata: Dict[str, str] = field(default_factory=dict)
+28 +     metadata: dict[str, str] = field(default_factory=dict)
+29 |
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/tidetail/data.py:35:24
+   |
+34 |     @property
+35 |     def start(self) -> Optional[np.datetime64]:
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^
+36 |         return self.time[0] if self.n else None
+   |
+help: Convert to `X | None`
+   |
+34 |     @property
+   -     def start(self) -> Optional[np.datetime64]:
+35 +     def start(self) -> np.datetime64 | None:
+36 |         return self.time[0] if self.n else None
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/tidetail/data.py:39:22
+   |
+38 |     @property
+39 |     def end(self) -> Optional[np.datetime64]:
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^
+40 |         return self.time[-1] if self.n else None
+   |
+help: Convert to `X | None`
+   |
+38 |     @property
+   -     def end(self) -> Optional[np.datetime64]:
+39 +     def end(self) -> np.datetime64 | None:
+40 |         return self.time[-1] if self.n else None
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/tidetail/data.py:92:32
+   |
+91 | def linear_interpolate(values: np.ndarray, max_gap_s: float = 3600,
+92 |                        time_s: Optional[np.ndarray] = None) -> np.ndarray:
+   |                                ^^^^^^^^^^^^^^^^^^^^
+93 |     """Linear interpolate NaNs / outliers, only gaps <= max_gap_s.
+   |
+help: Convert to `X | None`
+   |
+91 | def linear_interpolate(values: np.ndarray, max_gap_s: float = 3600,
+   -                        time_s: Optional[np.ndarray] = None) -> np.ndarray:
+92 +                        time_s: np.ndarray | None = None) -> np.ndarray:
+93 |     """Linear interpolate NaNs / outliers, only gaps <= max_gap_s.
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+   --> src/tidetail/data.py:130:35
+    |
+129 | def detide_harmonic(values: np.ndarray, time_s: np.ndarray,
+130 |                     constituents: Tuple[float, ...] = (2 * np.pi / 43200.0,  # M2
+    |                                   ^^^^^
+131 |                                                        2 * np.pi / 86400.0,  # K1
+132 |                                                        2 * np.pi / 18050.0,  # S2
+    |
+help: Replace with `tuple`
+    |
+129 | def detide_harmonic(values: np.ndarray, time_s: np.ndarray,
+    -                     constituents: Tuple[float, ...] = (2 * np.pi / 43200.0,  # M2
+130 +                     constituents: tuple[float, ...] = (2 * np.pi / 43200.0,  # M2
+131 |                                                        2 * np.pi / 86400.0,  # K1
+    |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+   --> src/tidetail/data.py:133:62
+    |
+131 |                                                        2 * np.pi / 86400.0,  # K1
+132 |                                                        2 * np.pi / 18050.0,  # S2
+133 |                                                        )) -> Tuple[np.ndarray, np.ndarray]:
+    |                                                              ^^^^^
+134 |     """Linear regression fit of tidal harmonics → (tide_fit, surge_residual).
+    |
+help: Replace with `tuple`
+    |
+132 |                                                        2 * np.pi / 18050.0,  # S2
+    -                                                        )) -> Tuple[np.ndarray, np.ndarray]:
+133 +                                                        )) -> tuple[np.ndarray, np.ndarray]:
+134 |     """Linear regression fit of tidal harmonics → (tide_fit, surge_residual).
+    |
+
+F401 [*] `typing.Optional` imported but unused
+  --> src/tidetail/diffusion.py:12:20
+   |
+10 | from __future__ import annotations
+11 |
+12 | from typing import Optional
+   |                    ^^^^^^^^
+13 |
+14 | import numpy as np
+   |
+help: Remove unused import: `typing.Optional`
+   |
+11 |
+   - from typing import Optional
+12 |
+   |
+
+RUF046 [*] Value being cast to `int` is already an integer
+   --> src/tidetail/diffusion.py:129:22
+    |
+127 |     memorized = int((arr >= threshold).sum())
+128 |     return {
+129 |         "n_windows": int(len(arr)),
+    |                      ^^^^^^^^^^^^^
+130 |         "memorized": memorized,
+131 |         "memorized_rate": float(memorized) / max(1, len(arr)),
+    |
+help: Remove unnecessary `int` call
+    |
+128 |     return {
+    -         "n_windows": int(len(arr)),
+129 +         "n_windows": len(arr),
+130 |         "memorized": memorized,
+    |
+
+UP035 [*] Import from `collections.abc` instead: `Sequence`
+ --> src/tidetail/evaluate.py:4:1
+  |
+2 | from __future__ import annotations
+3 |
+4 | from typing import Dict, Optional, Sequence
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 |
+6 | import numpy as np
+  |
+help: Import from `collections.abc`
+  |
+3 |
+  - from typing import Dict, Optional, Sequence
+4 + from typing import Dict, Optional
+5 + from collections.abc import Sequence
+6 |
+  |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/tidetail/evaluate.py:4:1
+  |
+2 | from __future__ import annotations
+3 |
+4 | from typing import Dict, Optional, Sequence
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 |
+6 | import numpy as np
+  |
+
+F401 [*] `typing.Optional` imported but unused
+ --> src/tidetail/evaluate.py:4:26
+  |
+2 | from __future__ import annotations
+3 |
+4 | from typing import Dict, Optional, Sequence
+  |                          ^^^^^^^^
+5 |
+6 | import numpy as np
+  |
+help: Remove unused import: `typing.Optional`
+  |
+3 |
+  - from typing import Dict, Optional, Sequence
+4 + from typing import Dict, Sequence
+5 |
+  |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/tidetail/evaluate.py:52:44
+   |
+51 | def threshold_metrics(y: np.ndarray, yhat: np.ndarray,
+52 |                       threshold: float) -> Dict[str, float]:
+   |                                            ^^^^
+53 |     """Precision/recall/false_alarm at a threshold (train-only by protocol)."""
+54 |     pred_event = yhat >= threshold
+   |
+help: Replace with `dict`
+   |
+51 | def threshold_metrics(y: np.ndarray, yhat: np.ndarray,
+   -                       threshold: float) -> Dict[str, float]:
+52 +                       threshold: float) -> dict[str, float]:
+53 |     """Precision/recall/false_alarm at a threshold (train-only by protocol)."""
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/tidetail/evaluate.py:70:57
+   |
+69 | def bootstrap_ci(values: Sequence[float], n_boot: int = 200,
+70 |                  alpha: float = 0.05, seed: int = 0) -> Dict[str, float]:
+   |                                                         ^^^^
+71 |     """95% bootstrap CI for the mean of `values`."""
+72 |     arr = np.array([v for v in values if np.isfinite(v)], dtype=float)
+   |
+help: Replace with `dict`
+   |
+69 | def bootstrap_ci(values: Sequence[float], n_boot: int = 200,
+   -                  alpha: float = 0.05, seed: int = 0) -> Dict[str, float]:
+70 +                  alpha: float = 0.05, seed: int = 0) -> dict[str, float]:
+71 |     """95% bootstrap CI for the mean of `values`."""
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/tidetail/qc.py:11:1
+   |
+ 9 |     6. QC summary report
+10 |   """
+11 | / from __future__ import annotations
+12 | |
+13 | | from dataclasses import dataclass, field
+14 | | from datetime import timedelta
+15 | | from typing import Callable, Dict, List, Optional, Tuple
+16 | |
+17 | | import numpy as np
+18 | |
+19 | | from .data import GaugeRecord, gap_mask, missing_ratio, outlier_iqr, outlier_3sigma
+   | |___________________________________________________________________________________^
+help: Organize imports
+   |
+18 |
+   - from .data import GaugeRecord, gap_mask, missing_ratio, outlier_iqr, outlier_3sigma
+   -
+19 + from .data import GaugeRecord, gap_mask, missing_ratio, outlier_3sigma, outlier_iqr
+20 |
+   |
+
+UP035 [*] Import from `collections.abc` instead: `Callable`
+  --> src/tidetail/qc.py:15:1
+   |
+13 | from dataclasses import dataclass, field
+14 | from datetime import timedelta
+15 | from typing import Callable, Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 |
+17 | import numpy as np
+   |
+help: Import from `collections.abc`
+   |
+14 | from datetime import timedelta
+   - from typing import Callable, Dict, List, Optional, Tuple
+15 + from typing import Dict, List, Optional, Tuple
+16 + from collections.abc import Callable
+17 |
+   |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+  --> src/tidetail/qc.py:15:1
+   |
+13 | from dataclasses import dataclass, field
+14 | from datetime import timedelta
+15 | from typing import Callable, Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 |
+17 | import numpy as np
+   |
+
+UP035 `typing.List` is deprecated, use `list` instead
+  --> src/tidetail/qc.py:15:1
+   |
+13 | from dataclasses import dataclass, field
+14 | from datetime import timedelta
+15 | from typing import Callable, Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 |
+17 | import numpy as np
+   |
+
+UP035 `typing.Tuple` is deprecated, use `tuple` instead
+  --> src/tidetail/qc.py:15:1
+   |
+13 | from dataclasses import dataclass, field
+14 | from datetime import timedelta
+15 | from typing import Callable, Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 |
+17 | import numpy as np
+   |
+
+F401 [*] `typing.Callable` imported but unused
+  --> src/tidetail/qc.py:15:20
+   |
+13 | from dataclasses import dataclass, field
+14 | from datetime import timedelta
+15 | from typing import Callable, Dict, List, Optional, Tuple
+   |                    ^^^^^^^^
+16 |
+17 | import numpy as np
+   |
+help: Remove unused import: `typing.Callable`
+   |
+14 | from datetime import timedelta
+   - from typing import Callable, Dict, List, Optional, Tuple
+15 + from typing import Dict, List, Optional, Tuple
+16 |
+   |
+
+F401 [*] `.data.gap_mask` imported but unused
+  --> src/tidetail/qc.py:19:32
+   |
+17 | import numpy as np
+18 |
+19 | from .data import GaugeRecord, gap_mask, missing_ratio, outlier_iqr, outlier_3sigma
+   |                                ^^^^^^^^
+help: Remove unused import: `.data.gap_mask`
+   |
+18 |
+   - from .data import GaugeRecord, gap_mask, missing_ratio, outlier_iqr, outlier_3sigma
+19 + from .data import GaugeRecord, missing_ratio, outlier_iqr, outlier_3sigma
+20 |
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/tidetail/qc.py:22:18
+   |
+22 | PHYSICAL_BOUNDS: Dict[str, Tuple[float, float]] = {
+   |                  ^^^^
+23 |     # site_code -> (lo, hi) in metres; defaults covered by DEFAULT
+24 |     "_default": (-5.0, 15.0),
+   |
+help: Replace with `dict`
+   |
+21 |
+   - PHYSICAL_BOUNDS: Dict[str, Tuple[float, float]] = {
+22 + PHYSICAL_BOUNDS: dict[str, Tuple[float, float]] = {
+23 |     # site_code -> (lo, hi) in metres; defaults covered by DEFAULT
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/tidetail/qc.py:22:28
+   |
+22 | PHYSICAL_BOUNDS: Dict[str, Tuple[float, float]] = {
+   |                            ^^^^^
+23 |     # site_code -> (lo, hi) in metres; defaults covered by DEFAULT
+24 |     "_default": (-5.0, 15.0),
+   |
+help: Replace with `tuple`
+   |
+21 |
+   - PHYSICAL_BOUNDS: Dict[str, Tuple[float, float]] = {
+22 + PHYSICAL_BOUNDS: Dict[str, tuple[float, float]] = {
+23 |     # site_code -> (lo, hi) in metres; defaults covered by DEFAULT
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/tidetail/qc.py:39:21
+   |
+37 |     n_outliers_iqr: int = 0
+38 |     n_bounds_clamped: int = 0
+39 |     bounds_applied: Tuple[float, float] = (0.0, 0.0)
+   |                     ^^^^^
+40 |     notes: List[str] = field(default_factory=list)
+   |
+help: Replace with `tuple`
+   |
+38 |     n_bounds_clamped: int = 0
+   -     bounds_applied: Tuple[float, float] = (0.0, 0.0)
+39 +     bounds_applied: tuple[float, float] = (0.0, 0.0)
+40 |     notes: List[str] = field(default_factory=list)
+   |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/tidetail/qc.py:40:12
+   |
+38 |     n_bounds_clamped: int = 0
+39 |     bounds_applied: Tuple[float, float] = (0.0, 0.0)
+40 |     notes: List[str] = field(default_factory=list)
+   |            ^^^^
+41 |
+42 |     def to_dict(self) -> Dict:
+   |
+help: Replace with `list`
+   |
+39 |     bounds_applied: Tuple[float, float] = (0.0, 0.0)
+   -     notes: List[str] = field(default_factory=list)
+40 +     notes: list[str] = field(default_factory=list)
+41 |
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/tidetail/qc.py:42:26
+   |
+40 |     notes: List[str] = field(default_factory=list)
+41 |
+42 |     def to_dict(self) -> Dict:
+   |                          ^^^^
+43 |         return {k: (list(v) if isinstance(v, tuple) else v)
+44 |                 for k, v in self.__dict__.items()}
+   |
+help: Replace with `dict`
+   |
+41 |
+   -     def to_dict(self) -> Dict:
+42 +     def to_dict(self) -> dict:
+43 |         return {k: (list(v) if isinstance(v, tuple) else v)
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/tidetail/qc.py:47:37
+   |
+47 | def _bounds_for(station_id: str) -> Tuple[float, float]:
+   |                                     ^^^^^
+48 |     return PHYSICAL_BOUNDS.get(station_id, PHYSICAL_BOUNDS["_default"])
+   |
+help: Replace with `tuple`
+   |
+46 |
+   - def _bounds_for(station_id: str) -> Tuple[float, float]:
+47 + def _bounds_for(station_id: str) -> tuple[float, float]:
+48 |     return PHYSICAL_BOUNDS.get(station_id, PHYSICAL_BOUNDS["_default"])
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/tidetail/qc.py:52:34
+   |
+51 | def qc_pipeline(rec: GaugeRecord,
+52 |                 expected_period: Optional[timedelta] = None,
+   |                                  ^^^^^^^^^^^^^^^^^^^
+53 |                 bounds: Optional[Tuple[float, float]] = None,
+54 |                 max_interp_gap_s: float = 3600.0,
+   |
+help: Convert to `X | None`
+   |
+51 | def qc_pipeline(rec: GaugeRecord,
+   -                 expected_period: Optional[timedelta] = None,
+52 +                 expected_period: timedelta | None = None,
+53 |                 bounds: Optional[Tuple[float, float]] = None,
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/tidetail/qc.py:53:25
+   |
+51 | def qc_pipeline(rec: GaugeRecord,
+52 |                 expected_period: Optional[timedelta] = None,
+53 |                 bounds: Optional[Tuple[float, float]] = None,
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+54 |                 max_interp_gap_s: float = 3600.0,
+55 |                 ) -> Tuple[GaugeRecord, QCSummary]:
+   |
+help: Convert to `X | None`
+   |
+52 |                 expected_period: Optional[timedelta] = None,
+   -                 bounds: Optional[Tuple[float, float]] = None,
+53 +                 bounds: Tuple[float, float] | None = None,
+54 |                 max_interp_gap_s: float = 3600.0,
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/tidetail/qc.py:53:34
+   |
+51 | def qc_pipeline(rec: GaugeRecord,
+52 |                 expected_period: Optional[timedelta] = None,
+53 |                 bounds: Optional[Tuple[float, float]] = None,
+   |                                  ^^^^^
+54 |                 max_interp_gap_s: float = 3600.0,
+55 |                 ) -> Tuple[GaugeRecord, QCSummary]:
+   |
+help: Replace with `tuple`
+   |
+52 |                 expected_period: Optional[timedelta] = None,
+   -                 bounds: Optional[Tuple[float, float]] = None,
+53 +                 bounds: Optional[tuple[float, float]] = None,
+54 |                 max_interp_gap_s: float = 3600.0,
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/tidetail/qc.py:55:22
+   |
+53 |                 bounds: Optional[Tuple[float, float]] = None,
+54 |                 max_interp_gap_s: float = 3600.0,
+55 |                 ) -> Tuple[GaugeRecord, QCSummary]:
+   |                      ^^^^^
+56 |     """Run full QC on a GaugeRecord. Returns cleaned copy + summary.
+   |
+help: Replace with `tuple`
+   |
+54 |                 max_interp_gap_s: float = 3600.0,
+   -                 ) -> Tuple[GaugeRecord, QCSummary]:
+55 +                 ) -> tuple[GaugeRecord, QCSummary]:
+56 |     """Run full QC on a GaugeRecord. Returns cleaned copy + summary.
+   |
+
+F401 [*] `datetime.timedelta` imported but unused
+  --> src/tidetail/splits.py:11:22
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import timedelta
+   |                      ^^^^^^^^^
+12 | from typing import Callable, Dict, List, Optional, Sequence, Tuple
+   |
+help: Remove unused import: `datetime.timedelta`
+   |
+10 | from dataclasses import dataclass, field
+   - from datetime import timedelta
+11 | from typing import Callable, Dict, List, Optional, Sequence, Tuple
+   |
+
+UP035 [*] Import from `collections.abc` instead: `Callable`, `Sequence`
+  --> src/tidetail/splits.py:12:1
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import timedelta
+12 | from typing import Callable, Dict, List, Optional, Sequence, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 |
+14 | import numpy as np
+   |
+help: Import from `collections.abc`
+   |
+11 | from datetime import timedelta
+   - from typing import Callable, Dict, List, Optional, Sequence, Tuple
+12 + from typing import Dict, List, Optional, Tuple
+13 + from collections.abc import Callable, Sequence
+14 |
+   |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+  --> src/tidetail/splits.py:12:1
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import timedelta
+12 | from typing import Callable, Dict, List, Optional, Sequence, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 |
+14 | import numpy as np
+   |
+
+UP035 `typing.List` is deprecated, use `list` instead
+  --> src/tidetail/splits.py:12:1
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import timedelta
+12 | from typing import Callable, Dict, List, Optional, Sequence, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 |
+14 | import numpy as np
+   |
+
+UP035 `typing.Tuple` is deprecated, use `tuple` instead
+  --> src/tidetail/splits.py:12:1
+   |
+10 | from dataclasses import dataclass, field
+11 | from datetime import timedelta
+12 | from typing import Callable, Dict, List, Optional, Sequence, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 |
+14 | import numpy as np
+   |
+
+F401 [*] `.data.GaugeRecord` imported but unused
+  --> src/tidetail/splits.py:16:19
+   |
+14 | import numpy as np
+15 |
+16 | from .data import GaugeRecord
+   |                   ^^^^^^^^^^^
+help: Remove unused import: `.data.GaugeRecord`
+   |
+15 |
+   - from .data import GaugeRecord
+16 |
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/tidetail/splits.py:26:12
+   |
+24 |     start_idx: int
+25 |     end_idx: int          # inclusive
+26 |     label: Optional[str] = None
+   |            ^^^^^^^^^^^^^
+27 |     metadata: Dict[str, str] = field(default_factory=dict)
+   |
+help: Convert to `X | None`
+   |
+25 |     end_idx: int          # inclusive
+   -     label: Optional[str] = None
+26 +     label: str | None = None
+27 |     metadata: Dict[str, str] = field(default_factory=dict)
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/tidetail/splits.py:27:15
+   |
+25 |     end_idx: int          # inclusive
+26 |     label: Optional[str] = None
+27 |     metadata: Dict[str, str] = field(default_factory=dict)
+   |               ^^^^
+28 |
+29 |     @property
+   |
+help: Replace with `dict`
+   |
+26 |     label: Optional[str] = None
+   -     metadata: Dict[str, str] = field(default_factory=dict)
+27 +     metadata: dict[str, str] = field(default_factory=dict)
+28 |
+   |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/tidetail/splits.py:34:74
+   |
+34 | def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> List[Tuple[int, int]]:
+   |                                                                          ^^^^
+35 |     """Return (start_idx, end_idx_inclusive) runs where flags==True.
+   |
+help: Replace with `list`
+   |
+33 |
+   - def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> List[Tuple[int, int]]:
+34 + def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> list[Tuple[int, int]]:
+35 |     """Return (start_idx, end_idx_inclusive) runs where flags==True.
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/tidetail/splits.py:34:79
+   |
+34 | def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> List[Tuple[int, int]]:
+   |                                                                               ^^^^^
+35 |     """Return (start_idx, end_idx_inclusive) runs where flags==True.
+   |
+help: Replace with `tuple`
+   |
+33 |
+   - def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> List[Tuple[int, int]]:
+34 + def group_by_boolean_flags(flags: np.ndarray, gap_tolerance: int = 1) -> List[tuple[int, int]]:
+35 |     """Return (start_idx, end_idx_inclusive) runs where flags==True.
+   |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/tidetail/splits.py:42:11
+   |
+40 |     flags = np.asarray(flags, dtype=bool)
+41 |     n = flags.size
+42 |     runs: List[Tuple[int, int]] = []
+   |           ^^^^
+43 |     i = 0
+44 |     while i < n:
+   |
+help: Replace with `list`
+   |
+41 |     n = flags.size
+   -     runs: List[Tuple[int, int]] = []
+42 +     runs: list[Tuple[int, int]] = []
+43 |     i = 0
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/tidetail/splits.py:42:16
+   |
+40 |     flags = np.asarray(flags, dtype=bool)
+41 |     n = flags.size
+42 |     runs: List[Tuple[int, int]] = []
+   |                ^^^^^
+43 |     i = 0
+44 |     while i < n:
+   |
+help: Replace with `tuple`
+   |
+41 |     n = flags.size
+   -     runs: List[Tuple[int, int]] = []
+42 +     runs: List[tuple[int, int]] = []
+43 |     i = 0
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/tidetail/splits.py:70:63
+   |
+68 | def partition_chronological(groups: Sequence[EventGroup],
+69 |                             train_frac: float, val_frac: float,
+70 |                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+   |                                                               ^^^^^
+71 |     """Split events by chronological start, ensuring each partition has ≥min_events_per_split.
+   |
+help: Replace with `tuple`
+   |
+69 |                             train_frac: float, val_frac: float,
+   -                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+70 +                             min_events_per_split: int = 1) -> tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+71 |     """Split events by chronological start, ensuring each partition has ≥min_events_per_split.
+   |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/tidetail/splits.py:70:69
+   |
+68 | def partition_chronological(groups: Sequence[EventGroup],
+69 |                             train_frac: float, val_frac: float,
+70 |                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+   |                                                                     ^^^^
+71 |     """Split events by chronological start, ensuring each partition has ≥min_events_per_split.
+   |
+help: Replace with `list`
+   |
+69 |                             train_frac: float, val_frac: float,
+   -                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+70 +                             min_events_per_split: int = 1) -> Tuple[list[EventGroup], List[EventGroup], List[EventGroup]]:
+71 |     """Split events by chronological start, ensuring each partition has ≥min_events_per_split.
+   |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/tidetail/splits.py:70:87
+   |
+68 | def partition_chronological(groups: Sequence[EventGroup],
+69 |                             train_frac: float, val_frac: float,
+70 |                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+   |                                                                                       ^^^^
+71 |     """Split events by chronological start, ensuring each partition has ≥min_events_per_split.
+   |
+help: Replace with `list`
+   |
+69 |                             train_frac: float, val_frac: float,
+   -                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+70 +                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], list[EventGroup], List[EventGroup]]:
+71 |     """Split events by chronological start, ensuring each partition has ≥min_events_per_split.
+   |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/tidetail/splits.py:70:105
+   |
+68 | def partition_chronological(groups: Sequence[EventGroup],
+69 |                             train_frac: float, val_frac: float,
+70 |                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+   |                                                                                                         ^^^^
+71 |     """Split events by chronological start, ensuring each partition has ≥min_events_per_split.
+   |
+help: Replace with `list`
+   |
+69 |                             train_frac: float, val_frac: float,
+   -                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], List[EventGroup]]:
+70 +                             min_events_per_split: int = 1) -> Tuple[List[EventGroup], List[EventGroup], list[EventGroup]]:
+71 |     """Split events by chronological start, ensuring each partition has ≥min_events_per_split.
+   |
+
+RUF046 Value being cast to `int` is already an integer
+  --> src/tidetail/splits.py:91:41
+   |
+89 |         previous_end = event.end_idx
+90 |     n = len(events)
+91 |     n_train = max(min_events_per_split, int(round(n * train_frac)))
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+92 |     n_val = max(min_events_per_split, int(round(n * val_frac)))
+93 |     n_test = n - n_train - n_val
+   |
+help: Remove unnecessary `int` call
+
+RUF046 Value being cast to `int` is already an integer
+  --> src/tidetail/splits.py:92:39
+   |
+90 |     n = len(events)
+91 |     n_train = max(min_events_per_split, int(round(n * train_frac)))
+92 |     n_val = max(min_events_per_split, int(round(n * val_frac)))
+   |                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+93 |     n_test = n - n_train - n_val
+94 |     if n_test < min_events_per_split:
+   |
+help: Remove unnecessary `int` call
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/tidetail/splits.py:115:92
+    |
+115 | def train_only_thresholds(train: np.ndarray, quantiles: Sequence[float] = (0.95, 0.99)) -> Dict[float, float]:
+    |                                                                                            ^^^^
+116 |     """Compute extreme-event thresholds from TRAIN ONLY.
+    |
+help: Replace with `dict`
+    |
+114 |
+    - def train_only_thresholds(train: np.ndarray, quantiles: Sequence[float] = (0.95, 0.99)) -> Dict[float, float]:
+115 + def train_only_thresholds(train: np.ndarray, quantiles: Sequence[float] = (0.95, 0.99)) -> dict[float, float]:
+116 |     """Compute extreme-event thresholds from TRAIN ONLY.
+    |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+   --> src/tidetail/splits.py:128:10
+    |
+126 | def indices_from_groups(groups: Sequence[EventGroup]) -> np.ndarray:
+127 |     """Return flat integer indices covered by all event groups."""
+128 |     idx: List[int] = []
+    |          ^^^^
+129 |     for g in groups:
+130 |         idx.extend(range(g.start_idx, g.end_idx + 1))
+    |
+help: Replace with `list`
+    |
+127 |     """Return flat integer indices covered by all event groups."""
+    -     idx: List[int] = []
+128 +     idx: list[int] = []
+129 |     for g in groups:
+    |
+
+F401 [*] `datetime.datetime` imported but unused
+  --> src/tidetail/synthetic.py:12:22
+   |
+10 | from __future__ import annotations
+11 |
+12 | from datetime import datetime, timedelta, timezone
+   |                      ^^^^^^^^
+13 | from typing import Dict, List, Optional, Tuple
+   |
+help: Remove unused import
+   |
+11 |
+   - from datetime import datetime, timedelta, timezone
+12 + from datetime import timedelta
+13 | from typing import Dict, List, Optional, Tuple
+   |
+
+F401 [*] `datetime.timezone` imported but unused
+  --> src/tidetail/synthetic.py:12:43
+   |
+10 | from __future__ import annotations
+11 |
+12 | from datetime import datetime, timedelta, timezone
+   |                                           ^^^^^^^^
+13 | from typing import Dict, List, Optional, Tuple
+   |
+help: Remove unused import
+   |
+11 |
+   - from datetime import datetime, timedelta, timezone
+12 + from datetime import timedelta
+13 | from typing import Dict, List, Optional, Tuple
+   |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+  --> src/tidetail/synthetic.py:13:1
+   |
+12 | from datetime import datetime, timedelta, timezone
+13 | from typing import Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+14 |
+15 | import numpy as np
+   |
+
+UP035 `typing.List` is deprecated, use `list` instead
+  --> src/tidetail/synthetic.py:13:1
+   |
+12 | from datetime import datetime, timedelta, timezone
+13 | from typing import Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+14 |
+15 | import numpy as np
+   |
+
+UP035 `typing.Tuple` is deprecated, use `tuple` instead
+  --> src/tidetail/synthetic.py:13:1
+   |
+12 | from datetime import datetime, timedelta, timezone
+13 | from typing import Dict, List, Optional, Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+14 |
+15 | import numpy as np
+   |
+
+F401 [*] `typing.Dict` imported but unused
+  --> src/tidetail/synthetic.py:13:20
+   |
+12 | from datetime import datetime, timedelta, timezone
+13 | from typing import Dict, List, Optional, Tuple
+   |                    ^^^^
+14 |
+15 | import numpy as np
+   |
+help: Remove unused import
+   |
+12 | from datetime import datetime, timedelta, timezone
+   - from typing import Dict, List, Optional, Tuple
+13 + from typing import Tuple
+14 |
+   |
+
+F401 [*] `typing.List` imported but unused
+  --> src/tidetail/synthetic.py:13:26
+   |
+12 | from datetime import datetime, timedelta, timezone
+13 | from typing import Dict, List, Optional, Tuple
+   |                          ^^^^
+14 |
+15 | import numpy as np
+   |
+help: Remove unused import
+   |
+12 | from datetime import datetime, timedelta, timezone
+   - from typing import Dict, List, Optional, Tuple
+13 + from typing import Tuple
+14 |
+   |
+
+F401 [*] `typing.Optional` imported but unused
+  --> src/tidetail/synthetic.py:13:32
+   |
+12 | from datetime import datetime, timedelta, timezone
+13 | from typing import Dict, List, Optional, Tuple
+   |                                ^^^^^^^^
+14 |
+15 | import numpy as np
+   |
+help: Remove unused import
+   |
+12 | from datetime import datetime, timedelta, timezone
+   - from typing import Dict, List, Optional, Tuple
+13 + from typing import Tuple
+14 |
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/tidetail/synthetic.py:24:31
+   |
+22 |                          include_gaps: bool = True, include_outliers: bool = True,
+23 |                          include_nans: bool = True,
+24 |                          ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+   |                               ^^^^^
+25 |     """Return (time, clean_water_level, contaminated_water_level).
+   |
+help: Replace with `tuple`
+   |
+23 |                          include_nans: bool = True,
+   -                          ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+24 +                          ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+25 |     """Return (time, clean_water_level, contaminated_water_level).
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_diffusion.py:2:1
+  |
+1 |   """CPU smoke tests for ConditionalDenoiser + memorization guardrails."""
+2 | / import numpy as np
+3 | |
+4 | | from tidetail.diffusion import (
+5 | |     ConditionalDenoiser, cosine_schedule, memorization_check,
+6 | |     quality_summary, noise_level,
+7 | | )
+  | |_^
+help: Organize imports
+   |
+4  | from tidetail.diffusion import (
+   -     ConditionalDenoiser, cosine_schedule, memorization_check,
+   -     quality_summary, noise_level,
+5  +     ConditionalDenoiser,
+6  +     cosine_schedule,
+7  +     memorization_check,
+8  +     noise_level,
+9  +     quality_summary,
+10 | )
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_leakage.py:5:1
+   |
+ 3 |   These MUST catch any accidental cross-partition contamination.
+ 4 |   """
+ 5 | / import pytest
+ 6 | | import numpy as np
+ 7 | |
+ 8 | | from tidetail.protocol import assert_disjoint_groups
+ 9 | | from tidetail.splits import (
+10 | |     EventGroup, partition_chronological, train_only_thresholds,
+11 | | )
+   | |_^
+help: Organize imports
+   |
+4  | """
+5  + import numpy as np
+6  | import pytest
+   - import numpy as np
+7  |
+8  | from tidetail.protocol import assert_disjoint_groups
+9  | from tidetail.splits import (
+   -     EventGroup, partition_chronological, train_only_thresholds,
+10 +     EventGroup,
+11 +     partition_chronological,
+12 +     train_only_thresholds,
+13 | )
+   -
+14 |
+   |
+
+F401 [*] `pytest` imported but unused
+ --> tests/test_qc.py:3:8
+  |
+1 | """QC pipeline regression tests on synthetic gauge data."""
+2 | import numpy as np
+3 | import pytest
+  |        ^^^^^^
+4 |
+5 | from tidetail.data import GaugeRecord
+  |
+help: Remove unused import: `pytest`
+  |
+2 | import numpy as np
+  - import pytest
+3 |
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_real_prime_leakage.py:6:1
+   |
+ 4 |   Skipped automatically on CI machines without the data copy.
+ 5 |   """
+ 6 | / from __future__ import annotations
+ 7 | | import csv, json, numpy as np, pytest
+ 8 | | from pathlib import Path
+   | |________________________^
+ 9 |
+10 |   DATA_ROOT = Path("/data/yingda/tidetail-data/prime-formal-2015-2024/derived/prime_coast")
+   |
+help: Organize imports
+   |
+6  | from __future__ import annotations
+   - import csv, json, numpy as np, pytest
+7  +
+8  + import csv
+9  + import json
+10 | from pathlib import Path
+11 |
+12 + import numpy as np
+13 + import pytest
+14 +
+15 | DATA_ROOT = Path("/data/yingda/tidetail-data/prime-formal-2015-2024/derived/prime_coast")
+   |
+
+SIM115 Use a context manager for opening files
+  --> tests/test_real_prime_leakage.py:26:26
+   |
+24 |     def test_chronological_splits(self, region):
+25 |         base = DATA_ROOT / region
+26 |         meta = json.load(open(base / "train_only_metadata_v1.json"))
+   |                          ^^^^
+27 |         rows = list(csv.DictReader(open(base / "target_timeline_v1.csv")))
+28 |         train_end = int(meta["train_end_index"])
+   |
+
+SIM115 Use a context manager for opening files
+  --> tests/test_real_prime_leakage.py:27:36
+   |
+25 |         base = DATA_ROOT / region
+26 |         meta = json.load(open(base / "train_only_metadata_v1.json"))
+27 |         rows = list(csv.DictReader(open(base / "target_timeline_v1.csv")))
+   |                                    ^^^^
+28 |         train_end = int(meta["train_end_index"])
+29 |         val_end = int(meta["validation_end_index"])
+   |
+
+SIM115 Use a context manager for opening files
+  --> tests/test_real_prime_leakage.py:37:26
+   |
+35 |     def test_train_only_thresholds(self, region):
+36 |         base = DATA_ROOT / region
+37 |         meta = json.load(open(base / "train_only_metadata_v1.json"))
+   |                          ^^^^
+38 |         rows = list(csv.DictReader(open(base / "target_timeline_v1.csv")))
+39 |         train_end = int(meta["train_end_index"])
+   |
+
+SIM115 Use a context manager for opening files
+  --> tests/test_real_prime_leakage.py:38:36
+   |
+36 |         base = DATA_ROOT / region
+37 |         meta = json.load(open(base / "train_only_metadata_v1.json"))
+38 |         rows = list(csv.DictReader(open(base / "target_timeline_v1.csv")))
+   |                                    ^^^^
+39 |         train_end = int(meta["train_end_index"])
+40 |         all_obs = np.array([_f(r.get("observed_total_water_level_m", "")) for r in rows])
+   |
+
+SIM115 Use a context manager for opening files
+  --> tests/test_real_prime_leakage.py:49:38
+   |
+47 |     def test_disjoint_event_groups(self, region):
+48 |         base = DATA_ROOT / region
+49 |         events = list(csv.DictReader(open(base / "event_table_v1.csv")))
+   |                                      ^^^^
+50 |         t = {e["event_id"] for e in events if e["split"] == "train"}
+51 |         v = {e["event_id"] for e in events if e["split"] == "validation"}
+   |
+
+I001 Import block is un-sorted or un-formatted
+  --> tests/test_real_prime_leakage.py:61:9
+   |
+59 |     def test_seasonal_beats_persistence(self, region):
+60 |         """Seasonal MAE should beat raw persistence on real tide data."""
+61 |         import sys; sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+   |         ^^^^^^^^^^
+62 |         from tidetail.baselines import persistence, seasonal_baseline
+63 |         base = DATA_ROOT / region
+   |
+help: Organize imports
+
+SIM115 Use a context manager for opening files
+  --> tests/test_real_prime_leakage.py:64:26
+   |
+62 |         from tidetail.baselines import persistence, seasonal_baseline
+63 |         base = DATA_ROOT / region
+64 |         meta = json.load(open(base / "train_only_metadata_v1.json"))
+   |                          ^^^^
+65 |         rows = list(csv.DictReader(open(base / "target_timeline_v1.csv")))
+66 |         all_obs = np.array([_f(r.get("observed_total_water_level_m", "")) for r in rows])
+   |
+
+SIM115 Use a context manager for opening files
+  --> tests/test_real_prime_leakage.py:65:36
+   |
+63 |         base = DATA_ROOT / region
+64 |         meta = json.load(open(base / "train_only_metadata_v1.json"))
+65 |         rows = list(csv.DictReader(open(base / "target_timeline_v1.csv")))
+   |                                    ^^^^
+66 |         all_obs = np.array([_f(r.get("observed_total_water_level_m", "")) for r in rows])
+67 |         test = all_obs[int(meta["validation_end_index"]):]
+   |
+
+PIE808 [*] Unnecessary `start` argument in `range`
+  --> tests/test_real_prime_leakage.py:70:24
+   |
+68 |         horizon, input_len = 24, 72
+69 |         windows = []
+70 |         for s in range(0, len(test) - horizon - input_len + 1):
+   |                        ^
+71 |             x = test[s:s + input_len]; y = test[s + input_len:s + input_len + horizon]
+72 |             if np.isfinite(x).all() and np.isfinite(y).all():
+   |
+help: Remove `start` argument
+   |
+69 |         windows = []
+   -         for s in range(0, len(test) - horizon - input_len + 1):
+70 +         for s in range(len(test) - horizon - input_len + 1):
+71 |             x = test[s:s + input_len]; y = test[s + input_len:s + input_len + horizon]
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_splits.py:2:1
+  |
+1 |   """Event-grouped chronological split tests."""
+2 | / import pytest
+3 | | import numpy as np
+4 | |
+5 | | from tidetail.splits import (
+6 | |     EventGroup, group_by_boolean_flags, partition_chronological,
+7 | |     indices_from_groups,
+8 | | )
+  | |_^
+help: Organize imports
+   |
+1  | """Event-grouped chronological split tests."""
+2  + import numpy as np
+3  | import pytest
+   - import numpy as np
+4  |
+5  | from tidetail.splits import (
+   -     EventGroup, group_by_boolean_flags, partition_chronological,
+6  +     EventGroup,
+7  +     group_by_boolean_flags,
+8  |     indices_from_groups,
+9  +     partition_chronological,
+10 | )
+   |
+
+F401 [*] `pytest` imported but unused
+ --> tests/test_splits.py:2:8
+  |
+1 | """Event-grouped chronological split tests."""
+2 | import pytest
+  |        ^^^^^^
+3 | import numpy as np
+  |
+help: Remove unused import: `pytest`
+  |
+1 | """Event-grouped chronological split tests."""
+  - import pytest
+2 | import numpy as np
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_synthetic.py:2:1
+  |
+1 |   """Synthetic-data deterministic behaviour."""
+2 | / import numpy as np
+3 | |
+4 | | from tidetail.synthetic import make_toy_tide_series, make_toy_gauge
+  | |___________________________________________________________________^
+help: Organize imports
+  |
+3 |
+  - from tidetail.synthetic import make_toy_tide_series, make_toy_gauge
+4 + from tidetail.synthetic import make_toy_gauge, make_toy_tide_series
+5 |
+  |
+
+RUF059 Unpacked variable `t` is never used
+  --> tests/test_synthetic.py:16:5
+   |
+15 | def test_toy_series_has_extreme_events():
+16 |     t, clean, _ = make_toy_tide_series(n_days=60, seed=0, include_storm=True)
+   |     ^
+17 |     # storm bumps push surge far above M2 amplitude
+18 |     assert np.nanmax(clean) > 3.0  # 1.2 M2 + K1 + storm bump
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+Found 89 errors.
+[*] 63 fixable with the `--fix` option (3 hidden fixes can be enabled with the `--unsafe-fixes` option).

@@ -1,0 +1,414 @@
+{
+  "queue_version": "2.8-wave28",
+  "created": "2026-11-02",
+  "last_updated": "2026-11-08T13:50:00Z",
+  "branch": "trae/global-data-generative-research-20261031",
+  "head_sha": "858281e + interim docs commit",
+  "pr": 23,
+  "pr_state": "DRAFT — do not merge main",
+  "active_gpu_policy": "GPU0 PROHIBITED. All other GPUs occupied by other users at Wave 2.8 launch (checked with nvidia-smi 2026-11-08). Wave 2.8 runs CPU-only with torch.set_num_threads(<=8). No GPU job was started, duplicated or terminated.",
+  "disk": "monitor before downloads; ERA5 is complete so no further bulk downloads are planned; GEBCO not downloaded (deferred, documented)",
+  "scientific_framework": {
+    "independent_unit_definition": "168h POT q95 declustering + canonical TC overlay, deduplicated by one-to-one peak matching; FROZEN PROTOCOL: strict temporal overlap (no tolerance parameter); tolerance sensitivity 24h:676, 48h:667, 72h:665",
+    "target_semantics": "water_level_m IS ALREADY the non-tidal residual; total observed = residual + tide; never double-subtract",
+    "corrections_applied_in_wave28": [
+      "E26 sampling-path defect fixed and regression-tested: sample_windows now normalises history per sample and de-normalises output (tests/test_wave28_physics.py, tests/test_physics_causality.py).",
+      "Corrected expanded-year rerun (2026-11-08): fidelity restored (scale 1.147/1.097, W1 0.019/0.033, INCONCLUSIVE) and standard-FM augmentation harms extreme-event MAE by +0.86% (p_perm 0.016, 40 units) / +0.92% (p_perm 0.0023, 51 units) — honest negative result, retrospective caveat.",
+      "Event-matching protocol frozen: strict temporal overlap; no matching parameter tuned on downstream outcomes (documented in 6-results.tex and a-audit.tex)."
+    ]
+  },
+  "stages": {
+    "W27-P1": "Verify Wave 2.6 — COMPLETE (2026-11-05)",
+    "W27-P2": "ERA5 completion + readiness — COMPLETE (600/600 partitions)",
+    "W27-P3": "Generative baselines diagnostic pilots — COMPLETE",
+    "W27-P4": "Physics-guided FM (5-variant) corrected rerun — COMPLETE 2026-11-08 (all cells fidelity-INCONCLUSIVE post-E26; no downstream effect survives Bonferroni)",
+    "W27-P5": "Expanded evaluation — CORRECTED RERUN COMPLETE (2026-11-08)",
+    "W27-P6": "Manuscript + figures — COMPLETE (PDF compiled; Wave 2.8 sections updated)",
+    "W27-P7": "Status/queue sync, tests, commit, push — IN PROGRESS",
+    "W28-P1": "Physics-guided FM 6-arm factorial (conditioning-only control + physical penalties) — RUNNING under systemd unit tidetail-wave28physics (session-independent)",
+    "W28-P2": "Expanded 6-cell comparison (A0/standard/tail-aware x GRU/TCN, multi-seed) — COMPLETE + INDEPENDENTLY VERIFIED (honest negative, exploratory framing)",
+    "W28-P3": "7-family generative benchmark — COMPLETE both regions (PILOT framing; NY Bight via systemd, Charleston merged with verified identical protocol)",
+    "W28-P4": "Event-matching protocol frozen + null-based paired inference — COMPLETE",
+    "W28-P5": "Manuscript/figures/acceptance reports — IN PROGRESS"
+  },
+  "tasks": [
+    {
+      "task_id": "W27-A01",
+      "stage": "W27-P1",
+      "description": "Independent rerun of the event-set audit from raw cluster artifacts; correct union arithmetic; verify 2024 counts and absence of duplicate events or window leakage.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "data/results/wave27_event_set_audit.json",
+        "docs/audits/WAVE25_EVENT_COUNT_RECONCILIATION.md",
+        "docs/audits/WAVE26_EVENT_SET_AUDIT.md"
+      ],
+      "tests": [
+        "tests/test_event_set_arithmetic.py"
+      ],
+      "actual_findings": {
+        "union_2015_2024": 679,
+        "pot": 634,
+        "tc": 73,
+        "matched": 28,
+        "units_2024": 59,
+        "duplicate_timestamps": 0,
+        "test_windows": "8601 in four regions; 6968 Thames",
+        "per_region_union": {
+          "ny_bight": 178,
+          "us_gulf_coast": 138,
+          "south_atlantic_charleston": 143,
+          "southeast_australia": 101,
+          "thames_north_sea": 119
+        }
+      }
+    },
+    {
+      "task_id": "W27-A02",
+      "stage": "W27-P1",
+      "description": "Rerun paired significance with within-architecture pairing, corrected bootstrap p-value, and Monte-Carlo resolution below the correction threshold; add baseline-seed robustness.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "data/results/paired_significance_wave27.json",
+        "docs/audits/WAVE26_PAIRED_SIGNIFICANCE_AUDIT.md",
+        "docs/audits/WAVE26_POWER_REASSESSMENT.md"
+      ],
+      "tests": [
+        "tests/test_paired_stats.py"
+      ],
+      "actual_findings": {
+        "family_size": 320,
+        "bonferroni_alpha": 0.00015625,
+        "seed_robust_survivors": 0,
+        "seed_fragile_nominal_survivors": 3,
+        "architecture": {
+          "gru": "86/160 improved, mean -0.17%",
+          "tcn": "110/160 improved, mean -7.08%"
+        },
+        "region_mean_delta_pct": {
+          "ny_bight": "-3.41 / -13.14",
+          "us_gulf_coast": "-2.33 / -5.37",
+          "south_atlantic_charleston": "-4.30 / -0.09",
+          "southeast_australia": "-0.59 / -21.69",
+          "thames_north_sea": "+9.78 / +4.88"
+        },
+        "max_baseline_seed_spread": "25% (se_aus TCN 0.0713 vs 0.0569 m)",
+        "coverage": "320-test family does not enumerate tail-aware predictions or discarded hyper-parameters; correction is anti-conservative"
+      }
+    },
+    {
+      "task_id": "W27-E01",
+      "stage": "W27-P2",
+      "description": "Finish and verify ERA5: partition completeness, decode, timestamps, CRS, units, station alignment; build five-region readiness matrix.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "data/results/era5_readiness_matrix.json",
+        "docs/experiments/WAVE27_PHYSICS_FM.md"
+      ],
+      "actual_findings": {
+        "partitions": "600/600",
+        "hours_per_region": "87672/87672",
+        "month_failures": 0,
+        "continuity": "119/119",
+        "grid": "0.25 deg regular_ll 17x17",
+        "variables": "u10, v10 (m/s); msl (Pa); expver 0001",
+        "anchor_km": {
+          "ny_bight": 4.5,
+          "us_gulf_coast": 9.1,
+          "south_atlantic_charleston": 11.7,
+          "southeast_australia": 11.0,
+          "thames_north_sea": 6.6
+        },
+        "all_regions_integrity_ok": true
+      }
+    },
+    {
+      "task_id": "W27-R01",
+      "stage": "W27-P3",
+      "description": "Controlled diagnostic pilots for Conditional VAE, TimeGrad and Diffusion-TS: isolate one defect per family, compare legacy vs repaired at two budgets, preserve negative results.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "data/results/wave27_model_recovery.json",
+        "docs/experiments/WAVE27_MODEL_RECOVERY.md"
+      ],
+      "tests": [
+        "tests/test_wave27_model_fixes.py"
+      ],
+      "actual_findings": {
+        "oracle_sampler_max_abs_error": 1.1e-10,
+        "vae": "legacy scale 3.29, repaired 7.26; 0/32 active dims both -> repair REFUTED",
+        "timegrad": "legacy 10.55, repaired sum 6.09, repaired mean 1.22e5 -> PARTIAL, still failing",
+        "diffusion_ts": "legacy 10.98, repaired NaN at epoch 24 -> repair REFUTED",
+        "scope": "single region (Charleston), CPU, 20k train windows; family-level verdicts explicitly withheld"
+      }
+    },
+    {
+      "task_id": "W27-PH01",
+      "stage": "W27-P4",
+      "description": "Physics-guided Flow Matching: standard, tail-aware, pressure-prior, wind-prior and combined variants on verified ERA5, with causal history-only features and a fixed downstream budget.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "started_utc": "2026-11-08T08:11:00Z",
+      "result_paths": [
+        "data/results/wave27_physics_fm.json",
+        "docs/experiments/WAVE27_PHYSICS_FM.md"
+      ],
+      "tests": [
+        "tests/test_physics_causality.py"
+      ],
+      "acceptance_criteria": [
+        "Physics features read only the 96h conditioning history, never the 72h target horizon",
+        "Train-only normalisation statistics",
+        "Identical downstream budget across A0 and all variants",
+        "Fidelity gate reported per variant",
+        "Bathymetry variant NOT claimed: GEBCO not downloaded",
+        "Retrospective reanalysis conditioning labelled as such, not as an operational forecast"
+      ],
+      "actual_findings": {
+        "elapsed_s": 7448,
+        "fidelity": "INCONCLUSIVE all 10 variant×region cells (scale 0.869–1.077, W1 0.024–0.139)",
+        "downstream_delta_pct": {
+          "charleston": {
+            "standard": -2.2,
+            "tail_aware": -2.09,
+            "pressure": -1.95,
+            "wind": 1.25,
+            "combined": 0.09
+          },
+          "ny_bight": {
+            "standard": -2.02,
+            "tail_aware": -2.04,
+            "pressure": -1.88,
+            "wind": -1.85,
+            "combined": -2.0
+          }
+        },
+        "paired_signflip_p": "nominal p<0.05 in 8/10 cells but NOTHING survives Bonferroni α=0.005; single downstream seed 42; exploratory",
+        "interpretation": "no physics arm beats standard consistently; wind sign flips across regions; arms are statistical regularization NOT PDE; expanded-year harm result supersedes for augmentation-value claims",
+        "artifact": "data/results/wave27_physics_fm.json sha256 53f575208c33939bc4989f9e6e17c9005fe1e2aa1ca934f493ba91544610c93f"
+      }
+    },
+    {
+      "task_id": "W27-X01",
+      "stage": "W27-P5",
+      "description": "Expanded 2015-2020 train / 2021 val / 2022-2024 test protocol with from-scratch Standard FM vs A0 in Charleston and NY Bight; validation-only selection; event-level paired uncertainty.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "data/results/wave27_expanded_evaluation.json",
+        "docs/experiments/WAVE27_EXPANDED_EVALUATION.md"
+      ],
+      "actual_findings": {
+        "windows": "52441 / 8593 / 26137 both regions (expected for gap-free series)",
+        "embargo_ok": true,
+        "selected_epoch": 13,
+        "fidelity_corrected_2026_11_08": "INCONCLUSIVE both (scale 1.147 / 1.097, W1 0.019 / 0.033, q95 exceed ratio 1.6 / 1.7)",
+        "delta_extreme_mae_pct_corrected": {
+          "south_atlantic_charleston": 0.86,
+          "ny_bight": 0.92
+        },
+        "paired_p_perm_corrected": {
+          "south_atlantic_charleston": 0.016,
+          "ny_bight": 0.0023
+        },
+        "verdict": "honest negative result: fidelity-repaired standard-FM augmentation slightly HARMS extreme-event MAE under the leakage-controlled multi-year protocol (retrospective caveat: 2022-2024 partially informed earlier waves)"
+      },
+      "required_followup": "six-cell comparison running as W28-P02"
+    },
+    {
+      "task_id": "W27-M01",
+      "stage": "W27-P6",
+      "description": "Revise the manuscript around the provisional framing (architecture dependence, physical priors, independent-event validation); regenerate figures from artifacts only; compile and inspect the PDF.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "paper/main.tex",
+        "paper/sections/1-introduction.tex",
+        "paper/sections/6-results.tex",
+        "paper/sections/7-discussion.tex",
+        "paper/sections/8-conclusion.tex",
+        "paper/figures/W27_fidelity_gate.pdf",
+        "paper/figures/W27_architecture_region.pdf",
+        "paper/figures/W27_event_census.pdf",
+        "paper/figures/W27_recovery.pdf",
+        "paper/figures/W27_baseline_seed.pdf",
+        "paper/figures/W27_schematic.pdf",
+        "paper/main.pdf"
+      ],
+      "tests": [
+        "scripts/make_wave27_figures.py"
+      ]
+    },
+    {
+      "task_id": "W27-S01",
+      "stage": "W27-P7",
+      "description": "Reconcile queue with real processes, update claims ledger, run the CPU pytest gate, commit and push to PR #23 without touching main.",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "gpu": false
+    },
+    {
+      "task_id": "W27-N01",
+      "stage": "NEXT",
+      "description": "Fidelity-aware FM epoch selection for the expanded protocol (select on validation loss subject to scale ratio in [0.5,2.0]), then rerun the 2022-2024 comparison.",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "gpu": false,
+      "dependencies": [
+        "W27-X01"
+      ]
+    },
+    {
+      "task_id": "W27-N02",
+      "stage": "NEXT",
+      "description": "VAE free-bits / latent-dropout / learned conditional prior so that training and sampling share one distribution; the current posterior-collapse repair is refuted.",
+      "priority": "MEDIUM",
+      "status": "PENDING",
+      "gpu": false,
+      "dependencies": [
+        "W27-R01"
+      ]
+    },
+    {
+      "task_id": "W27-N03",
+      "stage": "NEXT",
+      "description": "Diffusion-TS with a numerically stable parameterisation (predict x0 or v with SNR weighting) instead of dividing by sqrt(alpha_bar); the current x0-spectrum repair diverges.",
+      "priority": "MEDIUM",
+      "status": "PENDING",
+      "gpu": false,
+      "dependencies": [
+        "W27-R01"
+      ]
+    },
+    {
+      "task_id": "W27-N04",
+      "stage": "NEXT",
+      "description": "Bathymetry-conditioned physics FM once GEBCO is downloaded and approved; not claimed in Wave 2.7 or 2.8.",
+      "priority": "LOW",
+      "status": "BLOCKED",
+      "blocked_by": "GEBCO not downloaded; requires approval for the data volume",
+      "gpu": false
+    },
+    {
+      "task_id": "W28-P01",
+      "stage": "W28-P1",
+      "description": "Genuine physics-guided FM: 6-arm factorial (standard / era5_cond conditioning-only control / pressure_prior / wind_prior / combined_prior / combined_tail) with physical penalty on the implied clean estimate x1_hat = x_t + (1-t)v, train-only OLS physics regression (inverse barometer + coast-normal wind stress), auto-calibrated frozen lambda, GRU+TCN downstream, event-level paired sign-flip/bootstrap inference, 2 regions x 2 FM seeds.",
+      "priority": "HIGH",
+      "status": "RUNNING",
+      "gpu": false,
+      "running_pid": "systemd unit tidetail-wave28physics (transient, started 2026-11-08T08:11Z)",
+      "result_paths": [
+        "data/results/wave28_physics_fm.json",
+        "data/results/checkpoints/wave28_physics/",
+        "scripts/wave28_physics_fm.py"
+      ],
+      "tests": [
+        "tests/test_wave28_physics.py"
+      ],
+      "acceptance_criteria": [
+        "Conditioning identical across era5_cond..combined_tail arms (only penalty differs)",
+        "Physical features causal (96h history only), units verified (Pa->hPa IB, wind stress bulk formula)",
+        "Coast-normal vectors documented as approximations",
+        "Bathymetry NOT claimed: GEBCO deferred",
+        "Lambda auto-calibrated on first batch, frozen; no test-set tuning"
+      ]
+    },
+    {
+      "task_id": "W28-P02",
+      "stage": "W28-P2",
+      "description": "Expanded-year 6-cell comparison: A0/standard-FM/tail-aware-FM x GRU/TCN per region, FM seeds {42,99}, downstream seeds {42,99,7}, validation-only selection, frozen augmentation ratio, retest disclosure.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "data/results/wave28_expanded_eval.json",
+        "scripts/wave28_expanded_eval.py"
+      ],
+      "actual_findings": {
+        "verdict": "honest negative (EXPLORATORY, not confirmatory): no seed-robust improvement in any of the 6 cells",
+        "charleston": "harmed in all 4 cells: GRU +0.73/+1.12%, TCN +1.06/+1.12% (std/tail); sign-flip p 0.0000-0.0058; 3/4 cells survive Bonferroni alpha=0.00625",
+        "ny_bight": "mean delta small (-0.20..+0.47%) but sign flips with FM seed (seed42 positive, seed99 negative) - not seed-robust",
+        "multiplicity": "8 paired comparisons; Bonferroni alpha=0.00625 reported alongside raw p; 2022-2024 retest partially informed earlier waves (disclosed)"
+      }
+    },
+    {
+      "task_id": "W28-P03",
+      "stage": "W28-P3",
+      "description": "Fair 7-family generative benchmark: flow_matching, tail_aware_fm, cvae, timegrad, ddpm_cond, wgan_gp (new), diffusion_ts (total-water target reconstructed to residual via tide subtraction). Zero search budget for all families; params/steps/wall-clock reported; failed families reported not excluded.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "data/results/wave28_gen_benchmark.json",
+        "data/results/wave28_gen_benchmark_charleston_defaults.json",
+        "src/tidetail/models/wgan_gp.py",
+        "scripts/wave28_gen_benchmark.py"
+      ],
+      "tests": [
+        "tests/test_wgan_gp.py"
+      ],
+      "actual_findings": {
+        "ny_bight_run": "systemd unit tidetail-wave28bench, exit 0, 4562 s, run wave28bench_20261108T081124Z_e0cee1db",
+        "charleston_merged_from": "data/results/wave28_gen_benchmark_charleston_defaults.json (protocol fields verified identical before merge)",
+        "merged_artifact": "data/results/wave28_gen_benchmark.json sha256 3656e1ed706c1e5cc048be6e14719c67c8cfd2d227e866f935517ed4c5ae9170",
+        "fidelity": "FM 1.077/0.905, tailFM 1.061/0.903, wgan_gp 0.959/0.831 PASS both regions; cvae 2.775/2.164, timegrad 25322/814407, ddpm 3.870/3.574, dts 29.46/NaN REJECT",
+        "downstream": "28 comparisons, none survives Bonferroni α=0.0018; nominal FM NY Bight −1.6% p=0.023",
+        "interpretation": "PILOT only: 10 epochs, zero search, equal epochs ≠ equal compute; failures are implementation-at-budget statements, not family verdicts; dts NaN in NY Bight is honest negative",
+        "doc": "docs/experiments/WAVE28_GEN_BENCHMARK.md (full training-budget table)"
+      }
+    },
+    {
+      "task_id": "W28-P04",
+      "stage": "W28-P4",
+      "description": "Freeze event-matching protocol (strict temporal overlap; tolerance sensitivity documented); null-based sign-flip paired inference; background -999 excluded from primary estimand.",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "gpu": false,
+      "result_paths": [
+        "paper/sections/6-results.tex",
+        "paper/sections/a-audit.tex"
+      ]
+    }
+  ],
+  "superseded_claims": [
+    {
+      "claim": "W20-D02: charleston 4 significant A3 improvements, best -16.0%",
+      "status": "WITHDRAWN",
+      "reason": "cross-architecture pairing, bootstrap p-value inflated ~5000x, multiplicity family incomplete"
+    },
+    {
+      "claim": "W20-G03: Diffusion-TS target verified correct",
+      "status": "CONFIRMED WITH COMPARABILITY LIMIT",
+      "reason": "the target is observed total water level by design (guarded by test_target_semantics_contract); the residual would be wrong for this model. The limit is that its scale ratio is scored against a different target from the VAE/TimeGrad/Flow Matching rows, so the four rows must not be ranked as a single-target benchmark"
+    },
+    {
+      "claim": "Event union 707",
+      "status": "CORRECTED",
+      "reason": "28 TC peaks already lie inside POT clusters; union is 679"
+    },
+    {
+      "claim": "Wave 2.6 Charleston 5/48 multiplicity-adjusted findings",
+      "status": "WITHDRAWN",
+      "reason": "0 seed-robust survivors after correction"
+    },
+    {
+      "claim": "Wave 2.7 expanded-eval fidelity REJECTED (3.97/4.76) with +8.88%/+15.85% downstream harm; physics variants REJECTED (3.19-4.09) with deltas -1.60..+9.44 / +3.05..+4.69",
+      "status": "WITHDRAWN",
+      "reason": "E26 sampling-path defect: sample_windows fed raw metre-scale history to a generator fitted on per-sample-normalised history and never inverted the normalisation. Controlled diagnostic on an identical model: scale 4.95 raw vs 1.17 normalised (production benchmark 1.05). Pre-fix artifacts retained as data/results/wave27_*_prefix_sampling_bug.json; both pilots rerun with the corrected sampler"
+    }
+  ],
+  "acceptance_gate": {
+    "wave2_7": "physics FM artifact + docs finalised; manuscript PDF compiled; pytest green on CPU; PR #23 updated (draft)",
+    "next": "fidelity-aware expansion rerun (W27-N01), then VAE prior fix (W27-N02) and stable Diffusion-TS objective (W27-N03)"
+  }
+}

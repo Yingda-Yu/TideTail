@@ -20,3 +20,10 @@ __pycache__/
 *.parquet
 *.nc
 *.zarr
+
+# LaTeX build artifacts
+paper/build/
+
+# paper build logs (aux/pdf are tracked; transient logs are not)
+paper/build.log
+paper/pass2.log
