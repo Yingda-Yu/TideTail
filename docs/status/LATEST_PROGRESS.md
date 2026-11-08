@@ -1,47 +1,44 @@
 # LATEST PROGRESS — TideTail Wave 2.8 (Three Publication-Critical Experiments)
 
-**Last updated**: 2026-11-08 16:20 CST (Wave 2.8 in execution, systemd-persistent)
-**Head SHA**: `1106ecb` (runner) ← `9b790a6` (E26 fix) on top of `8a45765`
-**Branch**: `trae/global-data-generative-research-20261031` (pushed)
+**Last updated**: 2026-11-08 21:50 CST
+**Head SHA**: `858281e` + interim docs commit (this wave)
+**Branch**: `trae/global-data-generative-research-20261031`
 **PR**: #23 (Draft — DO NOT MERGE main)
 
 ---
 
-## Wave 2.8 current state (updated 2026-11-08 16:20)
+## Wave 2.8 current state (updated 2026-11-08 21:50)
 
 | Priority | Status | Evidence |
 |---|---|---|
-| P0 execution reliability | **DONE** | Root cause confirmed with evidence: experiment children lived under the trae-sandbox exec tree and were killed at context compaction (NOT OOM). All long jobs now run under `systemd-run --user` transient units (`tidetail-wave27`, `tidetail-wave28physics`, `tidetail-wave28bench`), PPID = systemd user manager (uid 1018, linger on) — verified to survive conversation resets. Artifact protection via `scripts/tidetail_run.sh` (commit `1106ecb`): immutable per-run dirs, backup-before-overwrite, append-only `data/results/RUN_MANIFEST.jsonl` |
-| P0 state recovery | DONE | Wave 2.7 E26 fix committed `9b790a6` (includes sha256 of the code actually used by running processes); 16 regression tests pass |
-| P0 expanded rerun | DONE | `data/results/wave27_expanded_evaluation.json`: fidelity INCONCLUSIVE (scale 1.147/1.097); downstream honest negative (+0.86%/+0.92% harm vs A0) |
-| P2 6-cell expanded | **DONE + INDEPENDENTLY VERIFIED** | `data/results/wave28_expanded_eval.json` (2026-11-08): Charleston harmed in all 4 cells (+0.67..+1.19%; sign-flip p 0.0000–0.0058; 3/4 cells survive Bonferroni α=0.00625); NY Bight sign flips with FM seed (seed42 +, seed99 −), no seed-robust effect anywhere. Reported as **exploratory** (multiple comparisons, historical test-set reuse disclosed in artifact) |
-| P0 physics rerun | RUNNING (systemd) | `scripts/wave27_physics_fm.py` corrected rerun, unit `tidetail-wave27`, ETA ~18:10 CST |
-| P1 physics 6-arm | RUNNING (systemd) | `scripts/wave28_physics_fm.py`: standard / era5_cond (conditioning-only control) / pressure_prior / wind_prior / combined_prior / combined_tail; physical penalty on implied clean estimate x1_hat = x_t+(1−t)v; train-only OLS physics regression; auto-calibrated frozen λ; unit `tidetail-wave28physics`, ETA ~20:30–21:30 CST |
-| P3 7-family benchmark | Charleston **DONE** (pilot); NY Bight RUNNING (systemd) | Charleston result preserved at `data/results/wave28_gen_benchmark_charleston_defaults.json` (+ /tmp copy): 7 families, 14 event pairs, epochs=10 seed=42 downstream_seeds=[42,99,7]. FM scale 1.077 w1 0.029; tailFM 1.061/0.028; cvae 2.775 REJECT; timegrad REJECT; ddpm 3.870; wgan_gp 0.959/0.078; dts REJECT; A0 GRU 0.1058; FM deltas GRU −0.68% p=0.257 / TCN −1.63% p=0.135. **Interpreted as PILOT only** (equal epochs ≠ equal compute/convergence; per-family params/opt-steps/train-time recorded; zero search budget for all families). NY Bight run under unit `tidetail-wave28bench`, ETA ~18:15 CST; Charleston region dict must be merged back into final `wave28_gen_benchmark.json` (identical protocol/seeds verified) |
-| P4 matching protocol | DONE | Frozen strict-overlap rule (union 679) with tolerance sensitivity (24h: 676, 48h: 667, 72h: 665) documented in `6-results.tex` + `a-audit.tex` |
-| P5 manuscript | PARTIAL | Expanded-year section rewritten (exploratory framing); physics/benchmark sections pending final artifacts; benchmark must be labelled pilot with full training-budget table |
-| P6 commit/push | PENDING | After running experiments complete: figures, acceptance matrix, tests, PDF, push PR #23 |
+| P0 execution reliability | **DONE** | systemd user units survived context resets; **lesson: 3 concurrent CPU jobs triggered systemd-oomd kill of wave28physics at 17:28** — relaunched 21:39 alone (133 GB free) |
+| P0-2 artifact protection | DONE (in use) | `scripts/tidetail_run.sh` immutable run dirs + backup-before-overwrite + append-only `data/results/RUN_MANIFEST.jsonl`; benchmark merge done with backup + atomic replace |
+| P0-3 E26 fix | DONE (committed `9b790a6`) | Running processes' code SHA `1106ecb` recorded in run `env.txt`; 311 pytest pass |
+| P2 6-cell expanded | DONE + VERIFIED | `data/results/wave28_expanded_eval.json` — honest negative, exploratory framing |
+| P0 physics rerun (W27-P4) | **DONE 2026-11-08 18:15** | `data/results/wave27_physics_fm.json` (exit 0, 7,448 s): all 10 variant×region cells fidelity-INCONCLUSIVE (E26 fix verified at full scale); downstream deltas −2.2%..+1.3%, **nothing survives Bonferroni α=0.005** (10 comparisons, single downstream seed 42); wind arm harms Charleston (+1.25% p=0.024) but helps NY Bight — no physics arm beats standard consistently; expanded-year harm result supersedes for augmentation-value claims. Doc §5.1 updated |
+| P3 7-family benchmark | **DONE (both regions)** 2026-11-08 17:27 | NY Bight completed under systemd (exit 0, 4,562 s); Charleston dict merged (protocol fields verified identical) → `data/results/wave28_gen_benchmark.json` sha256 `3656e1ed…`; FM/tailFM/wgan_gp pass fidelity both regions; cvae/timegrad/ddpm/dts REJECT (dts→NaN in NY Bight); 28 downstream comparisons — none survives Bonferroni; **PILOT framing only**. Doc `docs/experiments/WAVE28_GEN_BENCHMARK.md` written with full training-budget table |
+| P1 physics 6-arm | **RUNNING (relaunch 21:39, ETA ~03:30)** | unit `tidetail-wave28physics`, run `wave28physics_20261108T133917Z_39437029`; killed once by systemd-oomd during 3-way concurrency; incremental saves in place |
+| P5 manuscript | PARTIAL | Expanded section done; benchmark pilot + wave27 §5.1 docs done; **paper 6-results.tex updates for benchmark + wave27 physics pending**; wave28 physics section pending final artifact |
+| P6 acceptance/commit/push | PENDING | pytest baseline 311 pass re-verified 2026-11-08 21:30 |
+
+**Remaining sequence**: wave28physics finishes (~03:30) → WAVE28_PHYSICS_FM.md + ledger E29 → paper sections (benchmark pilot table, wave27 physics, wave28 ablation) → regenerate W28_physics_ablation.pdf → acceptance matrix → pytest → latexmk PDF + visual inspect → simulated peer review → LATEST_PROGRESS/TASK_QUEUE/REGISTRY/CLAIMS_LEDGER → commit + push PR #23.
 
 **Wave 2.8 headline findings so far**
 
-1. **The E26 fix converts the expanded-year story**: generators now pass to
-   INCONCLUSIVE fidelity (scale ~1.1), and standard-FM augmentation shows a
-   small, consistent, statistically significant **harm** (+0.86% / +0.92%
-   extreme-event MAE, p_perm ≤ 0.016) — an honest negative result under the
-   leakage-controlled multi-year protocol (retrospective caveat recorded).
-   Six-cell two-region comparison strengthens this: no cell shows a
-   seed-robust improvement; Charleston is consistently harmed.
-2. Tail calibration (q95 over-exceedance 1.6–1.7) remains the generator's
-   main fidelity defect — motivating the tail-aware cells in the completed
-   six-cell comparison.
-3. Seven-family benchmark (Charleston pilot): only the two FM variants and
-   WGAN-GP pass the fidelity gate; CVAE/TimeGrad/DDPM/Diffusion-TS fail at
-   10 epochs with zero search budget. This is a **pilot observation about
-   implementation stability under a fixed budget**, NOT a final model-family
-   ranking (P0-4 interpretation rule).
+1. E26 fix restores fidelity everywhere it is applied (wave27 physics: 10/10
+   cells INCONCLUSIVE; expanded rerun: 2/2 INCONCLUSIVE).
+2. Under the leakage-controlled expanded-year protocol, standard-FM
+   augmentation **harms** extreme-event MAE (+0.86%/+0.92%) — honest negative;
+   six-cell comparison: no seed-robust improvement anywhere.
+3. Physics arms (statistical regularization, NOT PDE): no arm beats standard
+   consistently; wind-prior sign flips across regions.
+4. Seven-family pilot: only FM/tailFM/WGAN-GP pass fidelity at 10 epochs +
+   zero search; failures are implementation-at-budget statements, not
+   family verdicts.
 
-**Environment**: GPU0 prohibited; all other GPUs occupied by other users
-(verified 2026-11-08). All Wave 2.8 experiments run on CPU with thread caps.
+**Environment**: CPU-only (`CUDA_VISIBLE_DEVICES=""`); avoid launching >1
+concurrent heavy job — systemd-oomd killed wave28physics during 3-way
+concurrency (evidence in `journalctl --user -u tidetail-wave28physics`).
 
 ---
 

@@ -127,11 +127,56 @@ normalisation: scale 4.95 raw versus 1.17 normalised on the identical model.
 `sample_windows`, guarded by
 `tests/test_physics_causality.py::test_sample_windows_normalises_history_and_de_normalises_output`.
 
-### 5.1 Corrected run
+### 5.1 Corrected run (COMPLETE, 2026-11-08)
 
-Being rerun with `CUDA_VISIBLE_DEVICES=""` on CPU. Results will be inserted here
-from the refreshed `data/results/wave27_physics_fm.json`; no value is typed by
-hand.
+Rerun with `CUDA_VISIBLE_DEVICES=""` on CPU under systemd unit `tidetail-wave27`
+(run `wave27_20261108T081124Z_16955577`, exit 0, 7,448 s, code SHA `1106ecbb`,
+command: `python3 -u scripts/wave27_physics_fm.py` with defaults — epochs 10,
+n-test 200, n-aug 2,000, generator draws seeded 42/43/44, downstream GRU seed
+42, artifact sha256 `53f575208c33939bc4989f9e6e17c9005fe1e2aa1ca934f493ba91544610c93f`).
+All values below are read from the refreshed
+`data/results/wave27_physics_fm.json`; no value is typed by hand.
+
+**Fidelity: every variant is INCONCLUSIVE in both regions** (scale 0.869–1.077,
+W1 0.024–0.139). The E26 fix restores generator fidelity for all ten
+variant × region cells.
+
+Downstream extreme-unit MAE delta vs A0 (paired per-unit sign-flip test on the
+14/15 extreme units; A0 GRU extreme MAE: Charleston 0.1074, NY Bight 0.1173):
+
+| Variant | Charleston Δ | p | NY Bight Δ | p |
+|---|---:|---:|---:|---:|
+| standard | −2.20% | 0.052 | −2.02% | 0.037 |
+| tail_aware | −2.09% | 0.056 | −2.04% | 0.031 |
+| pressure | −1.95% | 0.045 | −1.88% | 0.030 |
+| wind | **+1.25%** | 0.024 | −1.85% | 0.026 |
+| combined | +0.09% | 0.813 | −2.00% | 0.029 |
+
+**Interpretation (P0-4 rules applied):**
+
+1. Ten variant × region comparisons at a *single* generator draw-set and a
+   *single* downstream seed (42); nominal p < 0.05 in 8/10 cells but **nothing
+   survives Bonferroni (α = 0.005)**. These deltas are exploratory.
+2. The sign pattern is inconsistent for physics arms: the wind-prior arm
+   *harms* Charleston (+1.25%, the only nominally significant harm) while the
+   same arm improves NY Bight (−1.85%); the combined arm is a no-effect in
+   Charleston (+0.09%, p = 0.81). **No physics arm beats `standard`
+   consistently** — physical penalties/auto-calibrated λ provide no robust
+   downstream gain over plain conditioning.
+3. These arms are **physics-inspired statistical regularization** (train-only
+   OLS penalty on implied surge; auto-calibrated frozen λ), not
+   governing-equation PDE constraints; era5 conditioning is retrospective
+   reanalysis, not an operational forecast product. No bathymetry is used
+   (GEBCO not downloaded).
+4. Consistency check across protocols: on the same-day corrected
+   expanded-year protocol (Wave 2.8 `wave27_expanded_evaluation.json`), which
+   uses from-scratch training on a leakage-controlled multi-year split,
+   standard-FM augmentation *harmed* extreme-event MAE (+0.86%/+0.92%).
+   The −2% improvements here come from the older primary-split protocol with
+   a pre-trained augmentation budget and a single downstream seed; they do not
+   replicate under the stricter split. The expanded-year result supersedes
+   this table for augmentation-value claims; this table is retained as the
+   corrected-E26 physics-variant comparison under its own protocol.
 
 ---
 

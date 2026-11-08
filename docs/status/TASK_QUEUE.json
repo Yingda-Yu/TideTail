@@ -1,11 +1,11 @@
 {
   "queue_version": "2.8-wave28",
   "created": "2026-11-02",
-  "last_updated": "2026-11-08T08:25:00Z",
+  "last_updated": "2026-11-08T13:50:00Z",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "1106ecb (pushed; E26 fix = 9b790a6)",
+  "head_sha": "858281e + interim docs commit",
   "pr": 23,
-  "pr_state": "DRAFT \u2014 do not merge main",
+  "pr_state": "DRAFT — do not merge main",
   "active_gpu_policy": "GPU0 PROHIBITED. All other GPUs occupied by other users at Wave 2.8 launch (checked with nvidia-smi 2026-11-08). Wave 2.8 runs CPU-only with torch.set_num_threads(<=8). No GPU job was started, duplicated or terminated.",
   "disk": "monitor before downloads; ERA5 is complete so no further bulk downloads are planned; GEBCO not downloaded (deferred, documented)",
   "scientific_framework": {
@@ -18,18 +18,18 @@
     ]
   },
   "stages": {
-    "W27-P1": "Verify Wave 2.6 \u2014 COMPLETE (2026-11-05)",
-    "W27-P2": "ERA5 completion + readiness \u2014 COMPLETE (600/600 partitions)",
-    "W27-P3": "Generative baselines diagnostic pilots \u2014 COMPLETE",
-    "W27-P4": "Physics-guided FM (5-variant conditioning) \u2014 corrected rerun RUNNING under systemd unit tidetail-wave27 (session-independent)",
-    "W27-P5": "Expanded evaluation \u2014 CORRECTED RERUN COMPLETE (2026-11-08)",
-    "W27-P6": "Manuscript + figures \u2014 COMPLETE (PDF compiled; Wave 2.8 sections updated)",
-    "W27-P7": "Status/queue sync, tests, commit, push \u2014 IN PROGRESS",
-    "W28-P1": "Physics-guided FM 6-arm factorial (conditioning-only control + physical penalties) \u2014 RUNNING under systemd unit tidetail-wave28physics (session-independent)",
-    "W28-P2": "Expanded 6-cell comparison (A0/standard/tail-aware x GRU/TCN, multi-seed) \u2014 COMPLETE + INDEPENDENTLY VERIFIED (honest negative, exploratory framing)",
-    "W28-P3": "7-family generative benchmark (incl. new conditional WGAN-GP) \u2014 Charleston COMPLETE (pilot, preserved artifact); NY Bight RUNNING under systemd unit tidetail-wave28bench",
-    "W28-P4": "Event-matching protocol frozen + null-based paired inference \u2014 COMPLETE",
-    "W28-P5": "Manuscript/figures/acceptance reports \u2014 IN PROGRESS"
+    "W27-P1": "Verify Wave 2.6 — COMPLETE (2026-11-05)",
+    "W27-P2": "ERA5 completion + readiness — COMPLETE (600/600 partitions)",
+    "W27-P3": "Generative baselines diagnostic pilots — COMPLETE",
+    "W27-P4": "Physics-guided FM (5-variant) corrected rerun — COMPLETE 2026-11-08 (all cells fidelity-INCONCLUSIVE post-E26; no downstream effect survives Bonferroni)",
+    "W27-P5": "Expanded evaluation — CORRECTED RERUN COMPLETE (2026-11-08)",
+    "W27-P6": "Manuscript + figures — COMPLETE (PDF compiled; Wave 2.8 sections updated)",
+    "W27-P7": "Status/queue sync, tests, commit, push — IN PROGRESS",
+    "W28-P1": "Physics-guided FM 6-arm factorial (conditioning-only control + physical penalties) — RUNNING under systemd unit tidetail-wave28physics (session-independent)",
+    "W28-P2": "Expanded 6-cell comparison (A0/standard/tail-aware x GRU/TCN, multi-seed) — COMPLETE + INDEPENDENTLY VERIFIED (honest negative, exploratory framing)",
+    "W28-P3": "7-family generative benchmark — COMPLETE both regions (PILOT framing; NY Bight via systemd, Charleston merged with verified identical protocol)",
+    "W28-P4": "Event-matching protocol frozen + null-based paired inference — COMPLETE",
+    "W28-P5": "Manuscript/figures/acceptance reports — IN PROGRESS"
   },
   "tasks": [
     {
@@ -154,9 +154,8 @@
       "stage": "W27-P4",
       "description": "Physics-guided Flow Matching: standard, tail-aware, pressure-prior, wind-prior and combined variants on verified ERA5, with causal history-only features and a fixed downstream budget.",
       "priority": "HIGH",
-      "status": "RUNNING",
+      "status": "COMPLETE",
       "gpu": false,
-      "running_pid": "systemd unit tidetail-wave27 (transient, started 2026-11-08T08:11Z)",
       "started_utc": "2026-11-08T08:11:00Z",
       "result_paths": [
         "data/results/wave27_physics_fm.json",
@@ -172,7 +171,30 @@
         "Fidelity gate reported per variant",
         "Bathymetry variant NOT claimed: GEBCO not downloaded",
         "Retrospective reanalysis conditioning labelled as such, not as an operational forecast"
-      ]
+      ],
+      "actual_findings": {
+        "elapsed_s": 7448,
+        "fidelity": "INCONCLUSIVE all 10 variant×region cells (scale 0.869–1.077, W1 0.024–0.139)",
+        "downstream_delta_pct": {
+          "charleston": {
+            "standard": -2.2,
+            "tail_aware": -2.09,
+            "pressure": -1.95,
+            "wind": 1.25,
+            "combined": 0.09
+          },
+          "ny_bight": {
+            "standard": -2.02,
+            "tail_aware": -2.04,
+            "pressure": -1.88,
+            "wind": -1.85,
+            "combined": -2.0
+          }
+        },
+        "paired_signflip_p": "nominal p<0.05 in 8/10 cells but NOTHING survives Bonferroni α=0.005; single downstream seed 42; exploratory",
+        "interpretation": "no physics arm beats standard consistently; wind sign flips across regions; arms are statistical regularization NOT PDE; expanded-year harm result supersedes for augmentation-value claims",
+        "artifact": "data/results/wave27_physics_fm.json sha256 53f575208c33939bc4989f9e6e17c9005fe1e2aa1ca934f493ba91544610c93f"
+      }
     },
     {
       "task_id": "W27-X01",
@@ -324,9 +346,8 @@
       "stage": "W28-P3",
       "description": "Fair 7-family generative benchmark: flow_matching, tail_aware_fm, cvae, timegrad, ddpm_cond, wgan_gp (new), diffusion_ts (total-water target reconstructed to residual via tide subtraction). Zero search budget for all families; params/steps/wall-clock reported; failed families reported not excluded.",
       "priority": "HIGH",
-      "status": "RUNNING",
+      "status": "COMPLETE",
       "gpu": false,
-      "running_pid": "systemd unit tidetail-wave28bench (transient, started 2026-11-08T08:11Z)",
       "result_paths": [
         "data/results/wave28_gen_benchmark.json",
         "data/results/wave28_gen_benchmark_charleston_defaults.json",
@@ -337,7 +358,13 @@
         "tests/test_wgan_gp.py"
       ],
       "actual_findings": {
-        "charleston_pilot": "COMPLETE and preserved: FM scale 1.077/W1 0.029; tailFM 1.061/0.028; wgan_gp 0.959/0.078; cvae 2.775 REJECT; timegrad REJECT; ddpm 3.870; dts REJECT; FM deltas GRU -0.68% p=0.257 / TCN -1.63% p=0.135; 14 event pairs; interpretation: PILOT (10 epochs, zero search budget, equal epochs != equal compute)"
+        "ny_bight_run": "systemd unit tidetail-wave28bench, exit 0, 4562 s, run wave28bench_20261108T081124Z_e0cee1db",
+        "charleston_merged_from": "data/results/wave28_gen_benchmark_charleston_defaults.json (protocol fields verified identical before merge)",
+        "merged_artifact": "data/results/wave28_gen_benchmark.json sha256 3656e1ed706c1e5cc048be6e14719c67c8cfd2d227e866f935517ed4c5ae9170",
+        "fidelity": "FM 1.077/0.905, tailFM 1.061/0.903, wgan_gp 0.959/0.831 PASS both regions; cvae 2.775/2.164, timegrad 25322/814407, ddpm 3.870/3.574, dts 29.46/NaN REJECT",
+        "downstream": "28 comparisons, none survives Bonferroni α=0.0018; nominal FM NY Bight −1.6% p=0.023",
+        "interpretation": "PILOT only: 10 epochs, zero search, equal epochs ≠ equal compute; failures are implementation-at-budget statements, not family verdicts; dts NaN in NY Bight is honest negative",
+        "doc": "docs/experiments/WAVE28_GEN_BENCHMARK.md (full training-budget table)"
       }
     },
     {
