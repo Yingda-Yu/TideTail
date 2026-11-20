@@ -211,8 +211,9 @@ def main() -> None:
                 gen = base.sample_windows(model, spl["test_h"],
                                           np.zeros((n_test, 0), np.float32),
                                           np.arange(n_test), draws=3)
+                tr_ref = spl["train_t"][:2000]
                 rep = evaluate(real, gen.reshape(-1, HORIZON),
-                               train_ref=spl["train_t"])
+                               train_ref=tr_ref)
                 gen_train = base.sample_windows(
                     model, down["train_h"],
                     np.zeros((n_down, 0), np.float32), gidx, draws=1)[0]
