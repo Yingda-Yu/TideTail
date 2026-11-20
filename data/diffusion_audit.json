@@ -1,0 +1,35 @@
+{
+  "audit_version": "2026-10-31-P3",
+  "git_sha": "84b74ee",
+  "schedules": {
+    "cosine": {
+      "terminal_alpha_bar": 5.928319524173276e-07,
+      "terminal_amplification": 1298.7754466055558
+    },
+    "cosine1000_subsample": {
+      "terminal_alpha_bar": 0.0005884924321435392,
+      "terminal_amplification": 41.20991623154088
+    },
+    "linear": {
+      "terminal_alpha_bar": 0.5233181118965149,
+      "terminal_amplification": 0.9544022236848708
+    }
+  },
+  "architecture": {
+    "M2_DiffusionTS_ResidualDenoiser_params": 39425,
+    "M4_FlowMatching_VelocityTCN_params": 27937,
+    "notes": [
+      "M2 uses 3\u00d7 wider history input (residual+trend+seasonal)",
+      "M2 has 5 dilated blocks vs M4 has 4 blocks",
+      "Neither model is a strict parity baseline",
+      "M2 reverse sampler is standard Ho 2020 DDPM \u2014 math verified correct",
+      "Per-sample residual z-score norm applies SAME coeffs to history and target \u2014 correct",
+      "DiffusionTS decomposes FULL water level internally; FlowMatching models residual directly"
+    ]
+  },
+  "open_questions": [
+    "M2 was trained only 3 epochs \u2014 insufficient; 50 ep retraining in progress",
+    "If 50 ep M2 still REJECTED \u2192 DDPM residual decomposition has fundamental issue",
+    "If 50 ep M2 \u2192 INCONCLUSIVE \u2192 prior failure was training budget, not architecture"
+  ]
+}

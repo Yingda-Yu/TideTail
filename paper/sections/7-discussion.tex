@@ -1,0 +1,192 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Why Flow Matching produces plausible samples}
+\label{subsec:why-fm}
+
+Flow Matching is the only generator that passes the fidelity gate in every
+wave of our programme — including the seven-family pilot of
+Section~\ref{sec:results-benchmark-pilot}, where its two variants and WGAN-GP
+are the only \textsc{inconclusive} (not \textsc{rejected}) generators
+under the hard scale window $[0.5, 2.0]$ (WGAN-GP sits at 0.831–0.959, i.e.\
+mildly under-dispersed, and the pilot is a fixed-budget comparison, so this is
+not a family verdict). Three structural
+differences explain Flow Matching's robustness, and each is a mechanism
+rather than an empirical coincidence.
+
+\begin{enumerate}
+    \item \textbf{One regression, one ODE.} The training objective is a single
+    velocity-regression loss on straight-line interpolants between a Gaussian
+    prior and the data. Inference integrates the learned field forward with a
+    fixed-step Euler solver. There is no chain of 64 conditional updates whose
+    errors compound, so the failure mode that dominates DDPM --- amplification of
+    terminal-step epsilon error --- simply does not exist.
+    \item \textbf{No small-variance sub-space.} Diffusion-TS first decomposes the
+    signal into trend, seasonal and residual components and diffuses the
+    residual, which concentrates the problem into a low-variance sub-space where
+    a fixed absolute epsilon error is relatively enormous. Flow Matching diffuses
+    nothing: it transports the full conditional residual distribution, so the
+    signal-to-noise ratio of the regression target stays constant across
+    training.
+    \item \textbf{Conditioning enters as a feature, not as an additive bias.} The
+    velocity network is a temporal convolutional network that consumes the
+    history (and, in our physics variants, causal ERA5 summaries) directly, so
+    conditioning cannot be lost through a rank deficiency such as the scalar
+    latent broadcast that crippled the VAE.
+\end{enumerate}
+
+This does not make Flow Matching \emph{sufficient}: every FM run is formally
+inconclusive because peak-tail agreement is not established at ten runs. It
+makes it the only generator that is currently \emph{eligible} for a downstream
+test.
+
+\subsection{Why the other three implementations struggled}
+\label{subsec:why-others}
+
+None of the three failures is a property of its model family.
+
+\paragraph{Conditional VAE: a sampling-path mismatch.}
+The original defect (a scalar latent projection) was real and worth fixing, but
+fixing it made sampling \emph{worse}. The reason is that the VAE samples from
+$\mathcal{N}(0,I)$ while training fits a conditional posterior whose aggregate
+has collapsed to a narrow distribution (0/32 active dimensions). The decoder is
+therefore always evaluated slightly off-manifold, and a stronger
+$z\mapsto$horizon path amplifies the discrepancy. The correct remedy is to make
+training and sampling share a distribution --- free-bits KL, latent dropout, or a
+learned conditional prior --- none of which we ran. Posterior collapse worsened
+with training length (16/32 active dimensions at 4,000 windows versus 0/32 at
+20,000), which is the standard dynamic and not a dataset property.
+
+\paragraph{TimeGrad: an unstable autoregressive state.}
+Consuming the ignored memory was necessary and helped (scale 10.55 $\rightarrow$
+6.09), but the memory definition itself is unstable. A raw cumulative sum grows
+monotonically across 72 horizon steps and was never seen during teacher-forced
+training, so it diverges ($1.9\times10^{7}$ in the smaller pilot). A mean
+aggregation removes the growth but also removes the signal, and the recursion
+diverges in the opposite direction ($1.22\times10^{5}$). A bounded or decayed
+memory is the obvious next hypothesis; we did not test it.
+
+\paragraph{Diffusion-TS: numerical amplification in the objective.}
+The original Fourier defect (noise spectrum versus clean spectrum) was real. The
+repair replaced it with the implied clean signal, which requires dividing by
+$\sqrt{\bar\alpha_t}$. At the terminal step this factor is $\approx0.024$, so
+both the value and its gradient are amplified roughly $41\times$; the run reaches
+NaN. The lesson is that an objective which is algebraically correct can still be
+numerically unusable at a schedule's endpoint, and that a 2$\times$ improvement
+observed at a small budget can reverse once the model actually fits the data.
+
+\subsection{Why GRU and TCN respond differently}
+\label{subsec:why-arch}
+
+Under corrected within-architecture pairing, the TCN improves in 110 of 160
+comparisons (mean $-7.08\%$) while the GRU improves in 86 of 160 (mean
+$-0.17\%$; Figure~\ref{fig:arch}). This is a large relative difference and it
+reverses the earlier, incorrectly paired conclusion that architecture effects
+dwarf augmentation effects.
+
+We can state the comparison and bound the explanation, but we cannot yet prove
+the mechanism. The most plausible account is capacity allocation: the TCN's
+dilated receptive field integrates the full 96\,h history through stacked
+convolutions, and synthetic windows add high-frequency, storm-like variability
+that the convolutional filters can exploit as data-driven regularisation. The
+GRU's gating saturates on the same inputs, so extra samples shift the operating
+point rather than the effective receptive field. An alternative account is that
+the GRU is already closer to its achievable error floor on these splits, leaving
+less head for augmentation to recover. Both accounts predict the observed
+direction; discriminating between them requires a receptive-field ablation and a
+learning-curve study that we did not run, and we therefore present them as
+hypotheses rather than findings.
+
+\subsection{Why some regions benefit and others do not}
+\label{subsec:why-region}
+
+Thames is the only region where augmentation harms both architectures
+(+9.78\% GRU, +4.88\% TCN; Figure~\ref{fig:arch}). The physical reading is
+straightforward but \emph{not} established: Thames has the largest tidal range
+in the set ($\pm3.3$~m from FES2022, i.e. a 6.6~m range), and surge is
+estimated to account for only 20--30\% of total water-level variance. A
+generator fitted to that residual therefore produces samples dominated by noise,
+and appending them adds variance without adding storm information. Thames also
+has 24.7\% NaN gaps in its source series, which further weakens the fit.
+
+This is a hypothesis, not a causal finding: across the five regions the
+correlation between tidal range and augmentation effect is $r=0.66$ with
+$N=5$, which is not statistically significant and cannot separate tidal range
+from storm climatology, series length or data quality.
+
+Southeast Australia shows the largest TCN gain ($-21.69\%$) yet essentially no
+GRU gain ($-0.59\%$), with the GRU baseline already at 0.043~m. A large
+\emph{relative} change on a small absolute error is easy to obtain and should not
+be read as a large operational benefit. NY Bight and the Gulf show moderate
+gains for both architectures; Charleston, the region where the withdrawn
+``significant'' claim originated, shows $-4.30\%$ for the GRU and $-0.09\%$ for
+the TCN under correction.
+
+A single cross-region correlation (tidal range versus gain, $N=5$) cannot
+support a causal claim, and we do not make one.
+
+\subsection{What independent-event evaluation changes}
+\label{subsec:why-events}
+
+Three things change, and all three move in the conservative direction.
+
+First, \textbf{the effective sample size collapses}. A 2024 test split supplies
+6--15 extreme units per region, not thousands of windows, so the standard error
+of an extreme-window MAE is an order of magnitude larger than a window-level
+analysis implies. Second, \textbf{multiplicity becomes binding}. A 320-test
+family at $\alpha=1.563\times10^{-4}$ is not satisfied by any of the 320
+comparisons once pairing is fixed. Third, \textbf{baseline variability becomes
+comparable to the effect}. Identical A0 recipes differ by up to 25\% across seeds
+(Figure~\ref{fig:seedvar}), which is the same order as the mean augmentation
+effect in most regions. Any claim resting on a single baseline seed is therefore
+unsupported, whether or not it clears a nominal p-value.
+
+One honest limitation remains: the 320-test family does not cover the full search
+space, because tail-aware predictions and discarded hyper-parameters were never
+materialised. The correction is anti-conservative, which strengthens rather than
+weakens the conclusion that nothing survives.
+
+\subsection{Do physical priors help?}
+\label{subsec:why-physics}
+
+\emph{Pending: the first full-data physics run is withdrawn for the sampling-path
+defect (Section~\ref{sec:results-expanded}), so no statement about whether
+physical priors help can be made until the corrected run completes. What is
+already established is the constraint: the ERA5 anchors lie 4.5--11.7~km from
+the tide gauges while the reanalysis cell is about 28~km across, so a
+reanalysis-conditioned experiment tests only whether a coarse regional
+pressure/wind summary carries usable information, not whether local winds do.}
+
+\subsection{Limitations}
+\label{subsec:limitations}
+
+\begin{itemize}
+    \item \textbf{Resolution.} ERA5 is 0.25$^\circ$; the Charleston anchor is
+    11.7~km from its cell centre, so near-coastal pressure and wind are cell
+    averages. No downscaling was attempted.
+    \item \textbf{Causality.} Physics covariates are causal (history only), but
+    the forcing is reanalysis. This is a reanalysis-conditioned experiment, not
+    an operational forecast experiment.
+    \item \textbf{Event units.} The expanded 2022--2024 units are POT-only, since
+    the canonical-TC overlay is absent from the existing prediction archives.
+    \item \textbf{Checkpoint reuse.} No existing checkpoint can be evaluated on
+    2022--2024; the expanded protocol required retraining from scratch.
+    \item \textbf{Compute.} All recovery pilots are single-region CPU runs;
+    GPU0 is prohibited and every other GPU was occupied. Conclusions are
+    correspondingly scoped.
+    \item \textbf{Thames data quality.} 24.7\% of the source timeline is NaN,
+    which both reduces its unit count and weakens any generator fitted to it.
+    \item \textbf{Pilot budgets.} The seven-family comparison gives every
+    family ten epochs, fixed defaults and zero hyperparameter search; equal
+    epochs are neither equal compute nor evidence of convergence, so its
+    rejections are implementation-at-budget statements, not family verdicts.
+    Its fidelity statistics are additionally computed on the first 200
+    consecutive test windows (a single early-winter slice); a
+    season-stratified revised evaluation is reported separately and the pilot
+    artifact is preserved unchanged.
+    \item \textbf{Downstream seed coverage.} The physics and benchmark
+    studies draw one generator sample set per seed; generator-seed variance
+    alone can flip augmentation signs (Section~\ref{sec:results-expanded}),
+    so per-seed direction consistency, not a single p-value, is the
+    robustness criterion.
+\end{itemize}

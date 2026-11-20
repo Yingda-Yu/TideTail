@@ -1,0 +1,123 @@
+{
+  "audit_version": "wave27_v1",
+  "verified_at": "2026-11-05T13:57:01.684005+00:00",
+  "grid": "0.25 degree regular_ll, 17x17 points",
+  "variables": {
+    "u10": "m s**-1",
+    "v10": "m s**-1",
+    "msl": "Pa"
+  },
+  "all_regions_integrity_ok": true,
+  "regions": {
+    "ny_bight": {
+      "files_present": 120,
+      "files_expected": 120,
+      "file_completeness_pct": 100.0,
+      "hourly_rows_present": 87672,
+      "hourly_rows_expected": 87672,
+      "hour_completeness_pct": 100.0,
+      "months_ok": 120,
+      "months_failed": 0,
+      "month_continuity_checks": 119,
+      "month_continuity_ok": 119,
+      "anchor_station": {
+        "lat": 40.71,
+        "lon": -74.01
+      },
+      "nearest_grid": {
+        "grid_lat": 40.75,
+        "grid_lon": -74.0,
+        "distance_km": 4.5
+      },
+      "failures": []
+    },
+    "us_gulf_coast": {
+      "files_present": 120,
+      "files_expected": 120,
+      "file_completeness_pct": 100.0,
+      "hourly_rows_present": 87672,
+      "hourly_rows_expected": 87672,
+      "hour_completeness_pct": 100.0,
+      "months_ok": 120,
+      "months_failed": 0,
+      "month_continuity_checks": 119,
+      "month_continuity_ok": 119,
+      "anchor_station": {
+        "lat": 29.33,
+        "lon": -94.77
+      },
+      "nearest_grid": {
+        "grid_lat": 29.25,
+        "grid_lon": -94.75,
+        "distance_km": 9.1
+      },
+      "failures": []
+    },
+    "south_atlantic_charleston": {
+      "files_present": 120,
+      "files_expected": 120,
+      "file_completeness_pct": 100.0,
+      "hourly_rows_present": 87672,
+      "hourly_rows_expected": 87672,
+      "hour_completeness_pct": 100.0,
+      "months_ok": 120,
+      "months_failed": 0,
+      "month_continuity_checks": 119,
+      "month_continuity_ok": 119,
+      "anchor_station": {
+        "lat": 32.78,
+        "lon": -79.87
+      },
+      "nearest_grid": {
+        "grid_lat": 32.75,
+        "grid_lon": -79.75,
+        "distance_km": 11.7
+      },
+      "failures": []
+    },
+    "southeast_australia": {
+      "files_present": 120,
+      "files_expected": 120,
+      "file_completeness_pct": 100.0,
+      "hourly_rows_present": 87672,
+      "hourly_rows_expected": 87672,
+      "hour_completeness_pct": 100.0,
+      "months_ok": 120,
+      "months_failed": 0,
+      "month_continuity_checks": 119,
+      "month_continuity_ok": 119,
+      "anchor_station": {
+        "lat": -34.5,
+        "lon": 150.87
+      },
+      "nearest_grid": {
+        "grid_lat": -34.5,
+        "grid_lon": 150.75,
+        "distance_km": 11.0
+      },
+      "failures": []
+    },
+    "thames_north_sea": {
+      "files_present": 120,
+      "files_expected": 120,
+      "file_completeness_pct": 100.0,
+      "hourly_rows_present": 87672,
+      "hourly_rows_expected": 87672,
+      "hour_completeness_pct": 100.0,
+      "months_ok": 120,
+      "months_failed": 0,
+      "month_continuity_checks": 119,
+      "month_continuity_ok": 119,
+      "anchor_station": {
+        "lat": 51.45,
+        "lon": 0.8
+      },
+      "nearest_grid": {
+        "grid_lat": 51.5,
+        "grid_lon": 0.75,
+        "distance_km": 6.6
+      },
+      "failures": []
+    }
+  }
+}

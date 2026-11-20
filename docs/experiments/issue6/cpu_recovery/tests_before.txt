@@ -1,0 +1,50 @@
+FFF...FF                                                                 [100%]
+=================================== FAILURES ===================================
+________________ test_sampler_refuses_nonfinite_prediction[nan] ________________
+
+value = nan
+
+    @pytest.mark.parametrize("value", [float("nan"), float("inf")])
+    def test_sampler_refuses_nonfinite_prediction(value):
+>       with pytest.raises(ValueError, match="nonfinite"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_sampling_integrity.py:22: Failed
+________________ test_sampler_refuses_nonfinite_prediction[inf] ________________
+
+value = inf
+
+    @pytest.mark.parametrize("value", [float("nan"), float("inf")])
+    def test_sampler_refuses_nonfinite_prediction(value):
+>       with pytest.raises(ValueError, match="nonfinite"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_sampling_integrity.py:22: Failed
+____________________ test_sampler_refuses_nonfinite_history ____________________
+
+    def test_sampler_refuses_nonfinite_history():
+>       with pytest.raises(ValueError, match="nonfinite"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_sampling_integrity.py:27: Failed
+__________ test_finite_exploding_or_collapsed_samples_fail_scale_gate __________
+
+    def test_finite_exploding_or_collapsed_samples_fail_scale_gate():
+>       from tidetail.torch_diffusion import sample_diagnostics
+E       ImportError: cannot import name 'sample_diagnostics' from 'tidetail.torch_diffusion' (/data/yingda/spartina-agent/worktrees/spartina/440c95e0/src/tidetail/torch_diffusion.py)
+
+tests/test_sampling_integrity.py:74: ImportError
+___________________ test_invalid_scale_reference_is_rejected ___________________
+
+    def test_invalid_scale_reference_is_rejected():
+>       from tidetail.torch_diffusion import sample_diagnostics
+E       ImportError: cannot import name 'sample_diagnostics' from 'tidetail.torch_diffusion' (/data/yingda/spartina-agent/worktrees/spartina/440c95e0/src/tidetail/torch_diffusion.py)
+
+tests/test_sampling_integrity.py:86: ImportError
+=========================== short test summary info ============================
+FAILED tests/test_sampling_integrity.py::test_sampler_refuses_nonfinite_prediction[nan] - Failed: DID NOT RAISE ValueError
+FAILED tests/test_sampling_integrity.py::test_sampler_refuses_nonfinite_prediction[inf] - Failed: DID NOT RAISE ValueError
+FAILED tests/test_sampling_integrity.py::test_sampler_refuses_nonfinite_history - Failed: DID NOT RAISE ValueError
+FAILED tests/test_sampling_integrity.py::test_finite_exploding_or_collapsed_samples_fail_scale_gate - ImportError: cannot import name 'sample_diagnostics' from 'tidetail.torch_diffusion' (/data/yingda/spartina-agent/worktrees/spartina/440c95e0/src/tidetail/torch_diffusion.py)
+FAILED tests/test_sampling_integrity.py::test_invalid_scale_reference_is_rejected - ImportError: cannot import name 'sample_diagnostics' from 'tidetail.torch_diffusion' (/data/yingda/spartina-agent/worktrees/spartina/440c95e0/src/tidetail/torch_diffusion.py)
+5 failed, 3 passed in 2.47s

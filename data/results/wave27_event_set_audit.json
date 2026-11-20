@@ -1,0 +1,1133 @@
+{
+  "audit_version": "wave27_v1",
+  "identity_checked": "union = POT + TC - matched_overlap",
+  "periods": {
+    "2024": {
+      "regions": {
+        "ny_bight": {
+          "primary_strict": {
+            "pot_total": 15,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 15,
+            "tc_only": 0,
+            "union": 15
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 15,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 15,
+              "tc_only": 0,
+              "union": 15
+            },
+            "tol_24h": {
+              "pot_total": 15,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 15,
+              "tc_only": 0,
+              "union": 15
+            },
+            "tol_48h": {
+              "pot_total": 15,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 15,
+              "tc_only": 0,
+              "union": 15
+            },
+            "tol_72h": {
+              "pot_total": 15,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 15,
+              "tc_only": 0,
+              "union": 15
+            }
+          }
+        },
+        "us_gulf_coast": {
+          "primary_strict": {
+            "pot_total": 11,
+            "tc_total": 6,
+            "matched_overlap": 2,
+            "pot_only": 9,
+            "tc_only": 4,
+            "union": 15
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 11,
+              "tc_total": 6,
+              "matched_overlap": 2,
+              "pot_only": 9,
+              "tc_only": 4,
+              "union": 15
+            },
+            "tol_24h": {
+              "pot_total": 11,
+              "tc_total": 6,
+              "matched_overlap": 3,
+              "pot_only": 8,
+              "tc_only": 3,
+              "union": 14
+            },
+            "tol_48h": {
+              "pot_total": 11,
+              "tc_total": 6,
+              "matched_overlap": 3,
+              "pot_only": 8,
+              "tc_only": 3,
+              "union": 14
+            },
+            "tol_72h": {
+              "pot_total": 11,
+              "tc_total": 6,
+              "matched_overlap": 3,
+              "pot_only": 8,
+              "tc_only": 3,
+              "union": 14
+            }
+          }
+        },
+        "south_atlantic_charleston": {
+          "primary_strict": {
+            "pot_total": 13,
+            "tc_total": 2,
+            "matched_overlap": 1,
+            "pot_only": 12,
+            "tc_only": 1,
+            "union": 14
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 13,
+              "tc_total": 2,
+              "matched_overlap": 1,
+              "pot_only": 12,
+              "tc_only": 1,
+              "union": 14
+            },
+            "tol_24h": {
+              "pot_total": 13,
+              "tc_total": 2,
+              "matched_overlap": 1,
+              "pot_only": 12,
+              "tc_only": 1,
+              "union": 14
+            },
+            "tol_48h": {
+              "pot_total": 13,
+              "tc_total": 2,
+              "matched_overlap": 1,
+              "pot_only": 12,
+              "tc_only": 1,
+              "union": 14
+            },
+            "tol_72h": {
+              "pot_total": 13,
+              "tc_total": 2,
+              "matched_overlap": 1,
+              "pot_only": 12,
+              "tc_only": 1,
+              "union": 14
+            }
+          }
+        },
+        "southeast_australia": {
+          "primary_strict": {
+            "pot_total": 6,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 6,
+            "tc_only": 0,
+            "union": 6
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 6,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 6,
+              "tc_only": 0,
+              "union": 6
+            },
+            "tol_24h": {
+              "pot_total": 6,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 6,
+              "tc_only": 0,
+              "union": 6
+            },
+            "tol_48h": {
+              "pot_total": 6,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 6,
+              "tc_only": 0,
+              "union": 6
+            },
+            "tol_72h": {
+              "pot_total": 6,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 6,
+              "tc_only": 0,
+              "union": 6
+            }
+          }
+        },
+        "thames_north_sea": {
+          "primary_strict": {
+            "pot_total": 10,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 10,
+            "tc_only": 0,
+            "union": 10
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 10,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 10,
+              "tc_only": 0,
+              "union": 10
+            },
+            "tol_24h": {
+              "pot_total": 10,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 10,
+              "tc_only": 0,
+              "union": 10
+            },
+            "tol_48h": {
+              "pot_total": 10,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 10,
+              "tc_only": 0,
+              "union": 10
+            },
+            "tol_72h": {
+              "pot_total": 10,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 10,
+              "tc_only": 0,
+              "union": 10
+            }
+          }
+        }
+      },
+      "grand": {
+        "pot_total": 55,
+        "tc_total": 8,
+        "matched_overlap": 3,
+        "pot_only": 52,
+        "tc_only": 5,
+        "union": 60
+      }
+    },
+    "2023-2024": {
+      "regions": {
+        "ny_bight": {
+          "primary_strict": {
+            "pot_total": 33,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 33,
+            "tc_only": 0,
+            "union": 33
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 33,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 33,
+              "tc_only": 0,
+              "union": 33
+            },
+            "tol_24h": {
+              "pot_total": 33,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 33,
+              "tc_only": 0,
+              "union": 33
+            },
+            "tol_48h": {
+              "pot_total": 33,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 33,
+              "tc_only": 0,
+              "union": 33
+            },
+            "tol_72h": {
+              "pot_total": 33,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 33,
+              "tc_only": 0,
+              "union": 33
+            }
+          }
+        },
+        "us_gulf_coast": {
+          "primary_strict": {
+            "pot_total": 26,
+            "tc_total": 9,
+            "matched_overlap": 2,
+            "pot_only": 24,
+            "tc_only": 7,
+            "union": 33
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 26,
+              "tc_total": 9,
+              "matched_overlap": 2,
+              "pot_only": 24,
+              "tc_only": 7,
+              "union": 33
+            },
+            "tol_24h": {
+              "pot_total": 26,
+              "tc_total": 9,
+              "matched_overlap": 3,
+              "pot_only": 23,
+              "tc_only": 6,
+              "union": 32
+            },
+            "tol_48h": {
+              "pot_total": 26,
+              "tc_total": 9,
+              "matched_overlap": 4,
+              "pot_only": 22,
+              "tc_only": 5,
+              "union": 31
+            },
+            "tol_72h": {
+              "pot_total": 26,
+              "tc_total": 9,
+              "matched_overlap": 4,
+              "pot_only": 22,
+              "tc_only": 5,
+              "union": 31
+            }
+          }
+        },
+        "south_atlantic_charleston": {
+          "primary_strict": {
+            "pot_total": 27,
+            "tc_total": 3,
+            "matched_overlap": 2,
+            "pot_only": 25,
+            "tc_only": 1,
+            "union": 28
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 27,
+              "tc_total": 3,
+              "matched_overlap": 2,
+              "pot_only": 25,
+              "tc_only": 1,
+              "union": 28
+            },
+            "tol_24h": {
+              "pot_total": 27,
+              "tc_total": 3,
+              "matched_overlap": 2,
+              "pot_only": 25,
+              "tc_only": 1,
+              "union": 28
+            },
+            "tol_48h": {
+              "pot_total": 27,
+              "tc_total": 3,
+              "matched_overlap": 2,
+              "pot_only": 25,
+              "tc_only": 1,
+              "union": 28
+            },
+            "tol_72h": {
+              "pot_total": 27,
+              "tc_total": 3,
+              "matched_overlap": 2,
+              "pot_only": 25,
+              "tc_only": 1,
+              "union": 28
+            }
+          }
+        },
+        "southeast_australia": {
+          "primary_strict": {
+            "pot_total": 15,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 15,
+            "tc_only": 0,
+            "union": 15
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 15,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 15,
+              "tc_only": 0,
+              "union": 15
+            },
+            "tol_24h": {
+              "pot_total": 15,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 15,
+              "tc_only": 0,
+              "union": 15
+            },
+            "tol_48h": {
+              "pot_total": 15,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 15,
+              "tc_only": 0,
+              "union": 15
+            },
+            "tol_72h": {
+              "pot_total": 15,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 15,
+              "tc_only": 0,
+              "union": 15
+            }
+          }
+        },
+        "thames_north_sea": {
+          "primary_strict": {
+            "pot_total": 18,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 18,
+            "tc_only": 0,
+            "union": 18
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 18,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 18,
+              "tc_only": 0,
+              "union": 18
+            },
+            "tol_24h": {
+              "pot_total": 18,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 18,
+              "tc_only": 0,
+              "union": 18
+            },
+            "tol_48h": {
+              "pot_total": 18,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 18,
+              "tc_only": 0,
+              "union": 18
+            },
+            "tol_72h": {
+              "pot_total": 18,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 18,
+              "tc_only": 0,
+              "union": 18
+            }
+          }
+        }
+      },
+      "grand": {
+        "pot_total": 119,
+        "tc_total": 12,
+        "matched_overlap": 4,
+        "pot_only": 115,
+        "tc_only": 8,
+        "union": 127
+      }
+    },
+    "2022-2024": {
+      "regions": {
+        "ny_bight": {
+          "primary_strict": {
+            "pot_total": 51,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 51,
+            "tc_only": 0,
+            "union": 51
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 51,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 51,
+              "tc_only": 0,
+              "union": 51
+            },
+            "tol_24h": {
+              "pot_total": 51,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 51,
+              "tc_only": 0,
+              "union": 51
+            },
+            "tol_48h": {
+              "pot_total": 51,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 51,
+              "tc_only": 0,
+              "union": 51
+            },
+            "tol_72h": {
+              "pot_total": 51,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 51,
+              "tc_only": 0,
+              "union": 51
+            }
+          }
+        },
+        "us_gulf_coast": {
+          "primary_strict": {
+            "pot_total": 37,
+            "tc_total": 10,
+            "matched_overlap": 3,
+            "pot_only": 34,
+            "tc_only": 7,
+            "union": 44
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 37,
+              "tc_total": 10,
+              "matched_overlap": 3,
+              "pot_only": 34,
+              "tc_only": 7,
+              "union": 44
+            },
+            "tol_24h": {
+              "pot_total": 37,
+              "tc_total": 10,
+              "matched_overlap": 4,
+              "pot_only": 33,
+              "tc_only": 6,
+              "union": 43
+            },
+            "tol_48h": {
+              "pot_total": 37,
+              "tc_total": 10,
+              "matched_overlap": 5,
+              "pot_only": 32,
+              "tc_only": 5,
+              "union": 42
+            },
+            "tol_72h": {
+              "pot_total": 37,
+              "tc_total": 10,
+              "matched_overlap": 5,
+              "pot_only": 32,
+              "tc_only": 5,
+              "union": 42
+            }
+          }
+        },
+        "south_atlantic_charleston": {
+          "primary_strict": {
+            "pot_total": 40,
+            "tc_total": 5,
+            "matched_overlap": 4,
+            "pot_only": 36,
+            "tc_only": 1,
+            "union": 41
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 40,
+              "tc_total": 5,
+              "matched_overlap": 4,
+              "pot_only": 36,
+              "tc_only": 1,
+              "union": 41
+            },
+            "tol_24h": {
+              "pot_total": 40,
+              "tc_total": 5,
+              "matched_overlap": 4,
+              "pot_only": 36,
+              "tc_only": 1,
+              "union": 41
+            },
+            "tol_48h": {
+              "pot_total": 40,
+              "tc_total": 5,
+              "matched_overlap": 4,
+              "pot_only": 36,
+              "tc_only": 1,
+              "union": 41
+            },
+            "tol_72h": {
+              "pot_total": 40,
+              "tc_total": 5,
+              "matched_overlap": 4,
+              "pot_only": 36,
+              "tc_only": 1,
+              "union": 41
+            }
+          }
+        },
+        "southeast_australia": {
+          "primary_strict": {
+            "pot_total": 20,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 20,
+            "tc_only": 0,
+            "union": 20
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 20,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 20,
+              "tc_only": 0,
+              "union": 20
+            },
+            "tol_24h": {
+              "pot_total": 20,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 20,
+              "tc_only": 0,
+              "union": 20
+            },
+            "tol_48h": {
+              "pot_total": 20,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 20,
+              "tc_only": 0,
+              "union": 20
+            },
+            "tol_72h": {
+              "pot_total": 20,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 20,
+              "tc_only": 0,
+              "union": 20
+            }
+          }
+        },
+        "thames_north_sea": {
+          "primary_strict": {
+            "pot_total": 34,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 34,
+            "tc_only": 0,
+            "union": 34
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 34,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 34,
+              "tc_only": 0,
+              "union": 34
+            },
+            "tol_24h": {
+              "pot_total": 34,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 34,
+              "tc_only": 0,
+              "union": 34
+            },
+            "tol_48h": {
+              "pot_total": 34,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 34,
+              "tc_only": 0,
+              "union": 34
+            },
+            "tol_72h": {
+              "pot_total": 34,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 34,
+              "tc_only": 0,
+              "union": 34
+            }
+          }
+        }
+      },
+      "grand": {
+        "pot_total": 182,
+        "tc_total": 15,
+        "matched_overlap": 7,
+        "pot_only": 175,
+        "tc_only": 8,
+        "union": 190
+      }
+    },
+    "2015-2024": {
+      "regions": {
+        "ny_bight": {
+          "primary_strict": {
+            "pot_total": 171,
+            "tc_total": 10,
+            "matched_overlap": 3,
+            "pot_only": 168,
+            "tc_only": 7,
+            "union": 178
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 171,
+              "tc_total": 10,
+              "matched_overlap": 3,
+              "pot_only": 168,
+              "tc_only": 7,
+              "union": 178
+            },
+            "tol_24h": {
+              "pot_total": 171,
+              "tc_total": 10,
+              "matched_overlap": 4,
+              "pot_only": 167,
+              "tc_only": 6,
+              "union": 177
+            },
+            "tol_48h": {
+              "pot_total": 171,
+              "tc_total": 10,
+              "matched_overlap": 5,
+              "pot_only": 166,
+              "tc_only": 5,
+              "union": 176
+            },
+            "tol_72h": {
+              "pot_total": 171,
+              "tc_total": 10,
+              "matched_overlap": 5,
+              "pot_only": 166,
+              "tc_only": 5,
+              "union": 176
+            }
+          }
+        },
+        "us_gulf_coast": {
+          "primary_strict": {
+            "pot_total": 110,
+            "tc_total": 38,
+            "matched_overlap": 10,
+            "pot_only": 100,
+            "tc_only": 28,
+            "union": 138
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 110,
+              "tc_total": 38,
+              "matched_overlap": 10,
+              "pot_only": 100,
+              "tc_only": 28,
+              "union": 138
+            },
+            "tol_24h": {
+              "pot_total": 110,
+              "tc_total": 38,
+              "matched_overlap": 11,
+              "pot_only": 99,
+              "tc_only": 27,
+              "union": 137
+            },
+            "tol_48h": {
+              "pot_total": 110,
+              "tc_total": 38,
+              "matched_overlap": 17,
+              "pot_only": 93,
+              "tc_only": 21,
+              "union": 131
+            },
+            "tol_72h": {
+              "pot_total": 110,
+              "tc_total": 38,
+              "matched_overlap": 18,
+              "pot_only": 92,
+              "tc_only": 20,
+              "union": 130
+            }
+          }
+        },
+        "south_atlantic_charleston": {
+          "primary_strict": {
+            "pot_total": 133,
+            "tc_total": 24,
+            "matched_overlap": 14,
+            "pot_only": 119,
+            "tc_only": 10,
+            "union": 143
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 133,
+              "tc_total": 24,
+              "matched_overlap": 14,
+              "pot_only": 119,
+              "tc_only": 10,
+              "union": 143
+            },
+            "tol_24h": {
+              "pot_total": 133,
+              "tc_total": 24,
+              "matched_overlap": 15,
+              "pot_only": 118,
+              "tc_only": 9,
+              "union": 142
+            },
+            "tol_48h": {
+              "pot_total": 133,
+              "tc_total": 24,
+              "matched_overlap": 17,
+              "pot_only": 116,
+              "tc_only": 7,
+              "union": 140
+            },
+            "tol_72h": {
+              "pot_total": 133,
+              "tc_total": 24,
+              "matched_overlap": 18,
+              "pot_only": 115,
+              "tc_only": 6,
+              "union": 139
+            }
+          }
+        },
+        "southeast_australia": {
+          "primary_strict": {
+            "pot_total": 101,
+            "tc_total": 0,
+            "matched_overlap": 0,
+            "pot_only": 101,
+            "tc_only": 0,
+            "union": 101
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 101,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 101,
+              "tc_only": 0,
+              "union": 101
+            },
+            "tol_24h": {
+              "pot_total": 101,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 101,
+              "tc_only": 0,
+              "union": 101
+            },
+            "tol_48h": {
+              "pot_total": 101,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 101,
+              "tc_only": 0,
+              "union": 101
+            },
+            "tol_72h": {
+              "pot_total": 101,
+              "tc_total": 0,
+              "matched_overlap": 0,
+              "pot_only": 101,
+              "tc_only": 0,
+              "union": 101
+            }
+          }
+        },
+        "thames_north_sea": {
+          "primary_strict": {
+            "pot_total": 119,
+            "tc_total": 1,
+            "matched_overlap": 1,
+            "pot_only": 118,
+            "tc_only": 0,
+            "union": 119
+          },
+          "tolerance_sensitivity": {
+            "tol_0h": {
+              "pot_total": 119,
+              "tc_total": 1,
+              "matched_overlap": 1,
+              "pot_only": 118,
+              "tc_only": 0,
+              "union": 119
+            },
+            "tol_24h": {
+              "pot_total": 119,
+              "tc_total": 1,
+              "matched_overlap": 1,
+              "pot_only": 118,
+              "tc_only": 0,
+              "union": 119
+            },
+            "tol_48h": {
+              "pot_total": 119,
+              "tc_total": 1,
+              "matched_overlap": 1,
+              "pot_only": 118,
+              "tc_only": 0,
+              "union": 119
+            },
+            "tol_72h": {
+              "pot_total": 119,
+              "tc_total": 1,
+              "matched_overlap": 1,
+              "pot_only": 118,
+              "tc_only": 0,
+              "union": 119
+            }
+          }
+        }
+      },
+      "grand": {
+        "pot_total": 634,
+        "tc_total": 73,
+        "matched_overlap": 28,
+        "pot_only": 606,
+        "tc_only": 45,
+        "union": 679
+      }
+    }
+  },
+  "bootstrap_2024": {
+    "ny_bight": {
+      "total_units": 16,
+      "tc_units": 0,
+      "pot_units": 15,
+      "background_units": 1,
+      "extreme_units": 15,
+      "total_windows": 8601,
+      "background_windows": 6310,
+      "unit_ids": [
+        -999,
+        -16,
+        -15,
+        -14,
+        -13,
+        -12,
+        -11,
+        -10,
+        -9,
+        -8,
+        -7,
+        -6,
+        -5,
+        -4,
+        -3,
+        -2
+      ]
+    },
+    "us_gulf_coast": {
+      "total_units": 16,
+      "tc_units": 6,
+      "pot_units": 9,
+      "background_units": 1,
+      "extreme_units": 15,
+      "total_windows": 8601,
+      "background_windows": 5906,
+      "unit_ids": [
+        -999,
+        -12,
+        -11,
+        -9,
+        -7,
+        -6,
+        -5,
+        -4,
+        -3,
+        -2,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "south_atlantic_charleston": {
+      "total_units": 15,
+      "tc_units": 2,
+      "pot_units": 12,
+      "background_units": 1,
+      "extreme_units": 14,
+      "total_windows": 8601,
+      "background_windows": 6073,
+      "unit_ids": [
+        -999,
+        -14,
+        -13,
+        -12,
+        -11,
+        -9,
+        -8,
+        -7,
+        -6,
+        -5,
+        -4,
+        -3,
+        -2,
+        0,
+        1
+      ]
+    },
+    "southeast_australia": {
+      "total_units": 7,
+      "tc_units": 0,
+      "pot_units": 6,
+      "background_units": 1,
+      "extreme_units": 6,
+      "total_windows": 8601,
+      "background_windows": 7899,
+      "unit_ids": [
+        -999,
+        -7,
+        -6,
+        -5,
+        -4,
+        -3,
+        -2
+      ]
+    },
+    "thames_north_sea": {
+      "total_units": 10,
+      "tc_units": 0,
+      "pot_units": 9,
+      "background_units": 1,
+      "extreme_units": 9,
+      "total_windows": 6968,
+      "background_windows": 2401,
+      "unit_ids": [
+        -999,
+        -11,
+        -10,
+        -9,
+        -8,
+        -7,
+        -6,
+        -4,
+        -3,
+        -2
+      ]
+    },
+    "grand": {
+      "extreme_units": 59,
+      "tc_units": 8,
+      "pot_units": 51,
+      "total_windows": 41372
+    }
+  },
+  "window_integrity": {
+    "ny_bight": {
+      "n_windows": 8601,
+      "duplicate_timestamps": 0,
+      "unit_count": 16,
+      "event_ids_len_matches_windows": true
+    },
+    "us_gulf_coast": {
+      "n_windows": 8601,
+      "duplicate_timestamps": 0,
+      "unit_count": 16,
+      "event_ids_len_matches_windows": true
+    },
+    "south_atlantic_charleston": {
+      "n_windows": 8601,
+      "duplicate_timestamps": 0,
+      "unit_count": 15,
+      "event_ids_len_matches_windows": true
+    },
+    "southeast_australia": {
+      "n_windows": 8601,
+      "duplicate_timestamps": 0,
+      "unit_count": 7,
+      "event_ids_len_matches_windows": true
+    },
+    "thames_north_sea": {
+      "n_windows": 6968,
+      "duplicate_timestamps": 0,
+      "unit_count": 10,
+      "event_ids_len_matches_windows": true
+    }
+  },
+  "cross_check_2024": {
+    "ny_bight": {
+      "manifest_union": 15,
+      "bootstrap_extreme_units": 15,
+      "delta": 0
+    },
+    "us_gulf_coast": {
+      "manifest_union": 15,
+      "bootstrap_extreme_units": 15,
+      "delta": 0
+    },
+    "south_atlantic_charleston": {
+      "manifest_union": 14,
+      "bootstrap_extreme_units": 14,
+      "delta": 0
+    },
+    "southeast_australia": {
+      "manifest_union": 6,
+      "bootstrap_extreme_units": 6,
+      "delta": 0
+    },
+    "thames_north_sea": {
+      "manifest_union": 10,
+      "bootstrap_extreme_units": 9,
+      "delta": -1
+    }
+  },
+  "corrections": {
+    "wave25_claim": "POT=634, TC=73, overlap=73, total=707",
+    "wave25_verdict": "INVALID \u2014 634+73-73=634, not 707; overlap was never computed",
+    "wave27_2015_2024": {
+      "pot_total": 634,
+      "tc_total": 73,
+      "matched_overlap": 28,
+      "pot_only": 606,
+      "tc_only": 45,
+      "union": 679
+    },
+    "wave27_2024_bootstrap_extremes": 59
+  }
+}

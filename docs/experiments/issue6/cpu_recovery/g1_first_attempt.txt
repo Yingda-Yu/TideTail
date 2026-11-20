@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/data/yingda/spartina-agent/worktrees/spartina/440c95e0/scripts/audit_recovery_g1.py", line 86, in <module>
+    main()
+  File "/data/yingda/spartina-agent/worktrees/spartina/440c95e0/scripts/audit_recovery_g1.py", line 68, in main
+    values = np.array([float(r[column]) for r in source])
+  File "/data/yingda/spartina-agent/worktrees/spartina/440c95e0/scripts/audit_recovery_g1.py", line 68, in <listcomp>
+    values = np.array([float(r[column]) for r in source])
+ValueError: could not convert string to float: ''

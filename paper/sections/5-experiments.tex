@@ -1,0 +1,115 @@
+\section{Experimental Setup}
+\label{sec:exp}
+
+\subsection{Frozen forecast contract}
+The main task is \textbf{96 hours of hourly history $\rightarrow$ 72 hours of future forecast}.
+The target is \texttt{water\_level\_m}, which is \emph{already} the non-tidal
+residual: the database satisfies the exact identity
+\texttt{water\_level\_m} $+$ \texttt{tide\_level\_m} $=$
+\texttt{observed\_total\_water\_level\_m} to machine precision
+(MAE $=0.00000000$~m, $r=1.000000$, verified by
+\texttt{tests/test\_target\_semantics\_contract.py}). The residual must therefore
+never be de-tided a second time; an earlier pipeline that computed
+\texttt{water\_level\_m} $-$ \texttt{tide\_level\_m} injected a spurious
+oscillatory component and its checkpoints are discarded.
+The historical pilot (Issue~\#6) used 72h$\rightarrow$24h on de-tided residuals only;
+that model is classified as exploratory and \emph{must not} be compared directly
+against main-task metrics.
+
+Five regions are admitted: \texttt{ny\_bight}, \texttt{thames\_north\_sea},
+\texttt{southeast\_australia}, \texttt{us\_gulf\_coast}, \texttt{south\_atlantic\_charleston}.
+Hong Kong (\texttt{pearl\_river\_hong\_kong}) is excluded pending license/datum/signoff.
+
+\subsection{Split protocol}
+\begin{itemize}
+    \item \textbf{Event-grouped chronological 8:1:1 split}. Each partition contains
+    independent storm events in chronological order, with no event appearing in
+    two partitions.
+    \item \textbf{Full-support embargo}: a forecast origin $o$ is safe only if
+    $o \geq a + 96$ and $o \leq b - 72$, where $[a, b)$ is the partition's row block.
+    This ensures no window's support $[o-L, o+H)$ crosses a partition boundary.
+    \item \textbf{Train-only scalers}: mean/SD fit on train rows only, applied
+    without re-fit to all partitions.
+    \item \textbf{Train-only thresholds}: q95/q99 from train rows only, used for
+    tail metrics and oversampling weights.
+    \item \textbf{Missing masks}: all models consume a boolean mask per hour,
+    fixed and common across all A0--A4 methods.
+\end{itemize}
+
+\subsection{Evaluation metrics}
+All metrics are organized by their statistical unit (hourly cell, threshold event,
+or independent storm event), as defined in the companion document
+\texttt{docs/evaluation/METRIC\_DEFINITIONS.md}:
+
+\begin{table}[htbp]
+\centering
+\caption{Evaluation metrics by statistical unit}
+\small
+\begin{tabular}{lll}
+\toprule
+Unit & Metric & Definition \\
+\midrule
+\multirow{5}{*}{Hourly cell}
+    & MAE / RMSE & Absolute error over finite cells \\
+    & Tail MAE / RMSE (q95) & Cells where $y \geq q95_{\text{train}}$ only \\
+    & Tail MAE / RMSE (q99) & Cells where $y \geq q99_{\text{train}}$ only \\
+    & Lead-time MAE / RMSE & Per horizon hour (1--72) \\
+    & Station-wise MAE / RMSE & Per gauge station \\
+\midrule
+\multirow{4}{*}{Threshold event}
+    & Precision & TP / (TP + FP) \\
+    & Recall & TP / (TP + FN) \\
+    & FPR & FP / (FP + TN)  \\
+    & FAR & FP / (TP + FP) \\
+\midrule
+\multirow{3}{*}{Independent storm}
+    & Peak magnitude error & $|\max(y) - \max(\hat{y})|$ per event \\
+    & Peak timing error & $|\arg\max(y) - \arg\max(\hat{y})|$ per event \\
+    & Paired bootstrap CI & 95\% CI on per-storm mean differences \\
+\bottomrule
+\end{tabular}
+\label{tab:metrics}
+\end{table}
+
+All threshold denominators are explicit (zero-denominator returns NaN, never an
+implicit zero). The FPR definition follows standard clinical-statistics usage:
+FP / (FP + TN), not FP / (TP + FP) (the latter is FAR).
+
+\subsection{Comparison groups}
+The five A0--A4 groups share identical downstream predictor architecture,
+optimizer budget, training sample budget, and random seeds. Augmentation fraction
+is matched across A3/A4.
+
+\begin{itemize}
+    \item \textbf{A0}: Real-only training, no augmentation.
+    \item \textbf{A1}: Balanced extreme-event oversampling via WeightedRandomSampler.
+    \item \textbf{A2}: Residual-noise + tidal-phase-shift augmentation on training set only.
+    \item \textbf{A3}: Standard conditional generator (Flow Matching in the
+    current benchmark; earlier waves used a DDPM, whose failure is documented in
+    Section~\ref{sec:results-pilot}).
+    \item \textbf{A4}: Tail-aware conditional generator (primary H1 hypothesis).
+    Physics-conditioned variants (pressure-, wind- and combined-prior Flow
+    Matching) are evaluated as A4 sub-arms under the same budget.
+\end{itemize}
+
+\subsection{Reproducibility metadata}
+Every run records exact git commit SHA, data file hashes, split manifest hash,
+random seed list, optimizer parameters, checkpoint SHA, and wall-clock time.
+The realised seed list is $\{42, 99\}$: all A0 baselines, generators and
+augmentation arms recorded in the experiment registry use these two seeds, and
+the corrected event-level analysis tests each candidate against \emph{both}
+A0 seeds. An earlier five-seed list was declared but never realised in the
+augmentation grid; that discrepancy is one of the defects corrected in
+Section~\ref{sec:results-augmentation}.
+
+\subsection{Hardware and run environment}
+GPU0 is prohibited and every other GPU was occupied by other users at the time
+of these experiments, so all Wave 2.7 recovery, physics and expanded-evaluation
+pilots ran on CPU with explicit thread caps
+(\texttt{torch.set\_num\_threads($\le 8$)}) and \texttt{CUDA\_VISIBLE\_DEVICES=""}.
+One historical DDPM pilot, retained only for the diagnosis in
+Section~\ref{sec:results-pilot}, executed on RTX3090 index 4 (UUID
+\texttt{GPU-6be030f8-625e-c4e7-a2fb-1309a673664b}) with
+\texttt{CUDA\_VISIBLE\_DEVICES=4}; its CPU reproduction confirmed the magnitude
+failure using the same checkpoint loaded with \texttt{map\_location="cpu"}.
+Checkpoints are preserved locally and never committed to Git.
