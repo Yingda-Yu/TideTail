@@ -26,8 +26,10 @@ Output:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -143,7 +145,14 @@ def build_strata(region: str, test_starts: np.ndarray,
 
 def eval_stratum(report, real: np.ndarray, gen: np.ndarray,
                  idx: list[int]) -> dict:
-    """quality.evaluate on a window subset; gen is (draws, N, H)."""
+    """Full metric set on a window subset; gen is (draws, N, H).
+
+    Wave 3.0 P2 acceptance requires per-stratum: scale ratio, Wasserstein-1,
+    mean bias, q95/q99 exceedance, autocorr RMSE, PSD discrepancy, peak KS,
+    peak timing, peak duration, sample diversity, duplicate/mode-collapse
+    diagnostics. All come from the shared quality.evaluate report plus two
+    local additions (mean_bias, peak duration ratio).
+    """
     if len(idx) < 2:
         # wasserstein needs >=2 samples; record honest empty/thin stratum
         return {"status": "NOT_EVALUATED", "n_windows": len(idx),
@@ -152,12 +161,61 @@ def eval_stratum(report, real: np.ndarray, gen: np.ndarray,
     sub_gen = gen[:, idx, :].reshape(-1, real.shape[1])
     rep = bench.evaluate(sub_real, sub_gen,
                          train_ref=report["train_res_t"])
+    # mean bias: mean(gen) - mean(real) on matched horizon positions
+    mean_bias = float(sub_gen.mean(axis=0).mean() - sub_real.mean())
+    # peak duration ratio: mean contiguous q95-threshold excursion length
+    # of the mean generated trace vs real trace (per window, hours)
+    thr_r = np.quantile(sub_real, 0.95)
+
+    def _dur(arr: np.ndarray) -> float:
+        m = arr > thr_r
+        lens, run = [], 0
+        for v in m.ravel():
+            if v:
+                run += 1
+            elif run:
+                lens.append(run); run = 0
+        if run:
+            lens.append(run)
+        return float(np.mean(lens)) if lens else 0.0
+
+    gen_mean_trace = gen[:, idx, :].mean(axis=0)
+    dur_r = _dur(sub_real)
+    dur_g = _dur(gen_mean_trace)
+    dur_ratio = (dur_g / dur_r) if dur_r > 0 else float("nan")
     return {"status": rep.status,
             "scale_ratio": float(rep.scale_ratio),
+            "range_ratio": float(rep.range_ratio),
             "wasserstein1": float(rep.wasserstein1),
+            "mean_bias": mean_bias,
             "q95_exceedance_ratio": float(rep.q95_exceedance_ratio),
             "q99_exceedance_ratio": float(rep.q99_exceedance_ratio),
+            "autocorr_rmse": float(rep.autocorr_rmse),
+            "psd_deviation": float(rep.psd_deviation),
+            "peak_ks_stat": float(rep.peak_ks_stat),
+            "peak_ks_pvalue": float(rep.peak_ks_pvalue),
+            "peak_timing_mae_h": float(rep.peak_timing_mae),
+            "peak_duration_ratio": dur_ratio,
+            "peak_duration_gen_h": dur_g,
+            "peak_duration_real_h": dur_r,
+            "sample_diversity_1mnn": float(1.0 - rep.near_dup_ratio_0995),
+            "exact_dup_ratio": float(rep.exact_dup_ratio),
+            "near_dup_ratio_0995": float(rep.near_dup_ratio_0995),
+            "nn_distance_to_train": float(rep.nn_distance_to_train),
+            "failures": list(rep.failures), "warnings": list(rep.warnings),
             "n_windows": len(idx)}
+
+
+FULL_METRIC_KEYS = ("mean_bias", "autocorr_rmse", "psd_deviation",
+                    "peak_ks_stat", "peak_timing_mae_h",
+                    "peak_duration_ratio", "exact_dup_ratio")
+
+
+def _has_full_metrics(cell: dict) -> bool:
+    """True when every evaluated stratum carries the full metric set."""
+    strata = cell.get("strata", {})
+    return all(FULL_METRIC_KEYS[0] in st for st in strata.values()
+               if st.get("status") != "NOT_EVALUATED")
 
 
 def train_family(fam: str, data: dict, epochs: int, batch_size: int,
@@ -196,11 +254,25 @@ def main() -> None:
     ap.add_argument("--draws", type=int, default=3)
     ap.add_argument("--out", default=str(
         RESULTS / "wave28_gen_benchmark_revised.json"))
+    ap.add_argument("--resume", action="store_true",
+                    help="load the existing output JSON and skip completed "
+                         "region/family/gen-seed cells (safe recovery for "
+                         "interrupted runs; completed cells are preserved "
+                         "verbatim, never recomputed)")
+    ap.add_argument("--refresh", action="store_true",
+                    help="with --resume: recompute cells whose strata lack "
+                         "the full Wave 3.0 metric set (mean bias, "
+                         "autocorr, PSD, peak KS/timing/duration, "
+                         "diversity/duplicate diagnostics)")
     args = ap.parse_args()
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
+    if args.resume and out_path.exists():
+        payload = json.loads(out_path.read_text())
+        print(f"[RESUME] loaded {out_path}")
+    else:
+        payload = {
         "evaluation": "REVISED season-stratified fidelity (pilot sample-bias "
                       "correction; pilot artifact preserved unchanged)",
         "differs_from_pilot": "pilot scored test_res_t[:200] (first 200 "
@@ -248,22 +320,58 @@ def main() -> None:
               {k: len(v) for k, v in strata.items()})
         reg_out: dict = {"strata_sizes": {k: len(v) for k, v in strata.items()},
                          "families": {}}
+        if args.resume:
+            existing_reg = payload["regions"].get(region, {})
+            if existing_reg.get("strata_sizes"):
+                reg_out["strata_sizes"] = existing_reg["strata_sizes"]
+            reg_out["families"] = existing_reg.get("families", {})
         payload["regions"][region] = reg_out
         _atomic_write(out_path, payload)
 
         for fam in args.families:
             per_seed = {}
+            if args.resume:
+                per_seed = dict(
+                    reg_out["families"].get(fam, {}).get("per_gen_seed", {}))
             for seed in args.gen_seeds:
+                if args.resume and str(seed) in per_seed \
+                        and per_seed[str(seed)].get("strata"):
+                    if args.refresh and not _has_full_metrics(per_seed[str(seed)]):
+                        print(f"  [REFRESH] {region}/{fam} seed {seed} "
+                              "lacks full metrics — recomputing")
+                    else:
+                        print(f"  [RESUME] {region}/{fam} seed {seed} "
+                              "complete — skipping")
+                        continue
                 t0 = time.time()
                 model = train_family(fam, data, args.epochs, 256, seed)
+                train_s = round(time.time() - t0, 1)
+                # persist checkpoint for auditability (fairness disclosure)
+                ckpt_dir = RESULTS / "fidelity_checkpoints"
+                ckpt_dir.mkdir(parents=True, exist_ok=True)
+                ckpt_path = ckpt_dir / f"{region}_{fam}_seed{seed}.pt"
+                torch.save(model["net"].state_dict(), ckpt_path)
+                ckpt_sha = hashlib.sha256(ckpt_path.read_bytes()).hexdigest()
+                t_sample = time.time()
                 if fam == "diffusion_ts":
                     gen = model["gen"](data["test_tot_h"], sel,
                                        args.draws, data["test_tide_t"])
                 else:
                     gen = model["gen"](data["test_res_h"], sel,
                                        args.draws)
+                sample_s = round(time.time() - t_sample, 1)
                 per_seed[str(seed)] = {
-                    "train_s": round(model["train_s"], 1),
+                    "train_s": train_s,
+                    "sample_s": sample_s,
+                    "param_count": int(model.get("params", -1)),
+                    "optimizer_steps": int(model.get("opt_steps", -1)),
+                    "epochs": args.epochs,
+                    "device": "cpu",
+                    "cpu_threads": int(os.environ.get("OMP_NUM_THREADS", "0")),
+                    "gen_seed": int(seed),
+                    "checkpoint_path": str(ckpt_path.relative_to(ROOT)),
+                    "checkpoint_sha256": ckpt_sha,
+                    "draws": args.draws,
                     "strata": {name: eval_stratum(data, real_sel,
                                                   gen, idx)
                                for name, idx in strata_pos.items()}}
