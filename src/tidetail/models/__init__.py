@@ -39,6 +39,10 @@ from .vae import (
 )
 
 __all__ = [
+    # M7 — Conditional VAE
+    "ConditionalVAE",
+    "ConditionalVAEDecoder",
+    "ConditionalVAEEncoder",
     # M2 — Diffusion-TS decomposition
     "DiffusionTS",
     # M4 — Flow Matching (CNF)
@@ -51,11 +55,6 @@ __all__ = [
     # M3 — TimeGrad autoregressive
     "TimeGrad",
     "TimeGradDenoiser",
-    # M7 — Conditional VAE
-    "ConditionalVAE",
-    "ConditionalVAEEncoder",
-    "ConditionalVAEDecoder",
-    "vae_count_params",
     "VelocityTCN",
     "compute_tail_mask",
     "decompose",
@@ -66,4 +65,5 @@ __all__ = [
     "ot_train_loss",
     "physics_loss",
     "tail_aware_loss",
+    "vae_count_params",
 ]

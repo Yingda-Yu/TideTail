@@ -413,17 +413,22 @@ def sample_windows(model: dict, hist: np.ndarray, phys: np.ndarray,
                    ) -> np.ndarray:
     """Per-sample-normalised sampling path (Wave 2.7 E26 fix)."""
     net, fm = model["net"], model["fm"]
+    dev = next(net.parameters()).device if net is not None else None
     h = torch.from_numpy(np.ascontiguousarray(hist[idx]))
+    if dev is not None:
+        h = h.to(dev)
     mean = h.mean(dim=1, keepdim=True)
     std = h.std(dim=1, keepdim=True).clamp(min=1e-4)
     hn = (h - mean) / std
     p = None
     if model["physics_dim"]:
         p = torch.from_numpy(np.ascontiguousarray(phys[idx]))
+        if dev is not None:
+            p = p.to(dev)
     out = []
     for k in range(draws):
         g = fm.sample(hn, net, seed=seed_base + k, physics=p)
-        out.append((g * std + mean).numpy())
+        out.append((g * std + mean).cpu().numpy())
     return np.stack(out, axis=0)  # (draws, len(idx), horizon)
 
 
@@ -514,25 +519,60 @@ def paired_event_stats(delta: np.ndarray, n_boot: int = 10000,
     enumeration when n <= max_exact, else Monte Carlo), plus a paired
     bootstrap CI for the mean effect. A bootstrap distribution is NOT
     used as the null — the sign-flip null is.
+
+    Exchangeability assumption: under H0 (zero mean effect) the paired
+    differences are symmetric about zero, so flipping the sign of any
+    subset of units is an exchangeable transformation of the data.
+    This holds when the *distribution* of each unit's delta is symmetric;
+    it does NOT require the observed deltas to be independent across
+    units, but clustered units (same storm) reduce the effective sample
+    size and are handled separately at the analysis level.
+
+    Monte-Carlo p-value floor: with n_boot random sign patterns the
+    minimum reportable two-sided p-value is 1/(n_boot+1) — the observed
+    statistic itself counts as one hit and is added explicitly, so a
+    zero p-value can never be emitted. Non-finite input or an empty
+    event set returns an explicitly invalid result (no significance).
     """
     d = np.asarray(delta, dtype=np.float64)
-    n = len(d)
+    n = int(d.size)
+    if n == 0:
+        return {"valid": False, "reason": "empty_input",
+                "mean_delta": None, "ci95": None, "signflip_p": None,
+                "n_pairs": 0}
+    if not np.all(np.isfinite(d)):
+        return {"valid": False, "reason": "non_finite_input",
+                "mean_delta": None, "ci95": None, "signflip_p": None,
+                "n_pairs": n}
     obs = float(d.mean())
     rng = np.random.default_rng(seed)
+    mc_se = None
     if n <= max_exact:
         flips = np.array(list(itertools.product([-1.0, 1.0], repeat=n)))
         stat = np.abs(flips @ d) / n
-        p = float(np.mean(stat >= abs(obs) - 1e-12))
+        # exact enumeration includes the identity flip, so b >= 1 and
+        # p >= 1/2^n — no zero p-value possible
+        b = int(np.count_nonzero(stat >= abs(obs) - 1e-12))
+        p = float(b / len(stat))
+        method = "exact"
     else:
         s = rng.choice([-1.0, 1.0], size=(n_boot, n))
         stat = np.abs(s @ d) / n
-        p = float(np.mean(stat >= abs(obs) - 1e-12))
+        b = int(np.count_nonzero(stat >= abs(obs) - 1e-12))
+        # finite-sample correction: +1 for the observed statistic itself,
+        # denominator n_boot+1 -> min p = 1/(n_boot+1)
+        p = (b + 1) / (n_boot + 1)
+        mc_se = float(np.sqrt(p * (1.0 - p) / (n_boot + 1)))
+        method = "monte_carlo"
     idx = rng.integers(0, n, size=(n_boot, n))
     means = d[idx].mean(axis=1)
     lo, hi = np.percentile(means, [2.5, 97.5])
-    return {"mean_delta": obs,
+    return {"valid": True,
+            "mean_delta": obs,
             "ci95": [float(lo), float(hi)],
-            "signflip_p": p,
+            "signflip_p": float(p),
+            "p_method": method,
+            "mc_se": mc_se,
             "n_pairs": int(n)}
 
 
@@ -576,12 +616,32 @@ def main() -> None:
     ap.add_argument("--downstream-seeds", type=int, nargs="+",
                     default=[42, 99, 7])
     ap.add_argument("--device", default="cpu")
+    ap.add_argument("--resume", action="store_true",
+                    help="load existing wave28_physics_fm.json and skip "
+                         "already-complete (region, arm) pairs")
     args = ap.parse_args()
 
     torch.set_num_threads(min(8, torch.get_num_threads()))
     CKPT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = RESULTS / "wave28_physics_fm.json"
-    payload = {
+
+    def _arm_complete(region_data: dict, arm: str) -> bool:
+        """An arm is complete when all fm_seeds have downstream results."""
+        arms = region_data.get("arms", {})
+        arm_d = arms.get(arm, {})
+        per_seed = arm_d.get("per_fm_seed", {})
+        dagg = arm_d.get("downstream_agg", {})
+        fm_seeds = region_data.get("fm_seeds", [42, 99])
+        return (len(per_seed) >= len(fm_seeds)
+                and all("downstream" in sd for sd in per_seed.values())
+                and bool(dagg.get("gru", {}))
+                and bool(dagg.get("tcn", {})))
+
+    if args.resume and out_path.exists():
+        payload = json.loads(out_path.read_text())
+        print(f"[RESUME] Loaded {out_path}")
+    else:
+        payload = {
         "audit_version": "wave28_physics_v1",
         "causal_contract": "ERA5 covariates from 96h history only; "
                            "no future reanalysis in conditioning or penalty",
@@ -603,6 +663,14 @@ def main() -> None:
     }
 
     for region in args.regions:
+        existing_rd = payload["regions"].get(region, {}) if args.resume else {}
+        missing_arms = [a for a in ARMS if not _arm_complete(existing_rd, a)] \
+            if args.resume else ARMS
+        if args.resume and not missing_arms and existing_rd:
+            print(f"[RESUME] {region}: all {ARMS} complete — skipping")
+            continue
+        if args.resume and missing_arms and existing_rd:
+            print(f"[RESUME] {region}: missing arms {missing_arms}")
         print(f"\n{'='*70}\nREGION {region}")
         data = load_region(region)
         if args.n_train_fm and len(data["train_h"]) > args.n_train_fm:
@@ -662,26 +730,34 @@ def main() -> None:
             phys_diag.pop("corr_delta_gen_vs_phys", None)
             phys_diag.pop("corr_deficit", None)
 
-        base_pred = {k: train_downstream(k, down_data, None,
-                                         tuple(args.downstream_seeds),
-                                         args.downstream_steps,
-                                         args.batch_size)
-                     for k in ("gru", "tcn")}
-        base = {k: (event_level_mae(base_pred[k], truth, ids)
-                    if ids is not None else
-                    {"all_window_mae": float(np.abs(base_pred[k].mean(0)
-                                                    - truth).mean())})
-                for k in ("gru", "tcn")}
-        for k in ("gru", "tcn"):
-            m = base[k].get("extreme_unit_mae", base[k]["all_window_mae"])
-            print(f"  A0 {k.upper()} MAE={m:.4f}")
+        if args.resume and existing_rd.get("baseline_A0"):
+            base = existing_rd["baseline_A0"]
+            print(f"  [RESUME] Skipping A0 baseline — loading existing")
+        else:
+            base_pred = {k: train_downstream(k, down_data, None,
+                                             tuple(args.downstream_seeds),
+                                             args.downstream_steps,
+                                             args.batch_size)
+                         for k in ("gru", "tcn")}
+            base = {k: (event_level_mae(base_pred[k], truth, ids)
+                        if ids is not None else
+                        {"all_window_mae": float(np.abs(base_pred[k].mean(0)
+                                                        - truth).mean())})
+                    for k in ("gru", "tcn")}
+            for k in ("gru", "tcn"):
+                m = base[k].get("extreme_unit_mae", base[k]["all_window_mae"])
+                print(f"  A0 {k.upper()} MAE={m:.4f}")
 
         n_test = min(args.n_test, len(data["test_h"]))
         real = data["test_t"][:n_test]
         arms_out = {}
         samples_store = {}
 
-        for arm in ARMS:
+        for arm in (missing_arms if args.resume else ARMS):
+            if args.resume and existing_rd and _arm_complete(existing_rd, arm):
+                print(f"  [RESUME] arm {arm} complete — loading existing")
+                arms_out[arm] = existing_rd["arms"][arm]
+                continue
             print(f"\n  ARM {arm}")
             arm_feats = feats_none if arm == "standard" else feats
             per_seed = {}
@@ -707,7 +783,10 @@ def main() -> None:
                                      seed_base=1000 * seed)
                 infer_s = time.time() - t0
                 g_flat = gen.reshape(-1, HORIZON)
-                report = evaluate(real, g_flat, train_ref=data["train_t"])
+                # truncate train_ref for NN distance — full 69970 × 72 is
+                # O(N·M·D) and takes minutes on CPU
+                eval_train_ref = data["train_t"][:min(2000, len(data["train_t"]))]
+                report = evaluate(real, g_flat, train_ref=eval_train_ref)
                 # physics consistency on generated samples
                 d_gen = gen.mean(axis=0)[:, :24].mean(axis=1) \
                     - data["test_h"][:n_test][:, 72:96].mean(axis=1)
@@ -813,6 +892,11 @@ def main() -> None:
                 "baseline_A0": base,
                 "arms": arms_out,
             }
+            if args.resume and existing_rd:
+                # preserve any region-level fields not recomputed
+                for k, v in existing_rd.items():
+                    if k not in payload["regions"][region]:
+                        payload["regions"][region][k] = v
             out_path.write_text(json.dumps(payload, indent=2))
             print(f"  [incremental save] {out_path}")
 

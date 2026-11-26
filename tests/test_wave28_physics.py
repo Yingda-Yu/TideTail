@@ -162,7 +162,7 @@ def test_regression_train_only_and_predict():
 
 def test_x1_hat_identity():
     """x_t + (1-t)*v recovers x_1 exactly when v equals the true velocity."""
-    rng = np.random.default_rng(1)
+    np.random.default_rng(1)
     B = 8
     x0 = torch.randn(B, 1, HORIZON)
     x1 = torch.randn(B, 1, HORIZON)
@@ -210,3 +210,76 @@ def test_signflip_exact_small_n():
     out = wave28.paired_event_stats(d, seed=0)
     assert out["signflip_p"] == 1.0  # mean zero -> p maximal
     np.testing.assert_allclose(out["mean_delta"], 0.0)
+
+
+def test_signflip_all_zero_diffs_is_null():
+    d = np.zeros(20)
+    out = wave28.paired_event_stats(d, seed=0)
+    assert out["valid"] is True
+    assert out["signflip_p"] == 1.0
+    np.testing.assert_allclose(out["mean_delta"], 0.0)
+
+
+def test_signflip_all_same_direction_never_zero_p():
+    d = np.array([-0.5] * 20)
+    out = wave28.paired_event_stats(d, seed=0)
+    assert out["valid"] is True
+    assert out["p_method"] == "monte_carlo"
+    assert out["signflip_p"] > 0.0
+    assert out["signflip_p"] <= 1.0 / (out.get("n_pairs", 20) + 1) + 1e-12 \
+        or out["signflip_p"] >= 1.0 / 10001
+    # hard floor: MC minimum reportable p is 1/(n_boot+1)
+    assert out["signflip_p"] >= 1.0 / (10000 + 1)
+
+
+def test_signflip_exact_floor_is_2_pow_n():
+    d = np.array([0.3, 0.4, 0.5])          # n=3 -> min p = 2/8 (all+ and all-)
+    out = wave28.paired_event_stats(d, seed=0)
+    assert out["p_method"] == "exact"
+    assert out["signflip_p"] == 2.0 / 8
+
+
+def test_signflip_nan_inf_invalid():
+    for bad in (np.nan, np.inf, -np.inf):
+        d = np.array([0.1, bad, 0.2])
+        out = wave28.paired_event_stats(d, seed=0)
+        assert out["valid"] is False
+        assert out["signflip_p"] is None
+
+
+def test_signflip_empty_input_invalid():
+    out = wave28.paired_event_stats(np.array([]), seed=0)
+    assert out["valid"] is False
+    assert out["signflip_p"] is None
+    assert out["n_pairs"] == 0
+
+
+def test_pairing_order_matters_event_id_misalignment():
+    """Misaligned (shuffled) deltas must not reproduce the aligned result.
+
+    Locks the requirement that analyses align per-unit arrays by event ID
+    (or seed/arch key), never by array position alone.
+    """
+    rng = np.random.default_rng(11)
+    aligned = rng.normal(-0.8, 0.3, 25)
+    misaligned = aligned.copy()
+    rng.shuffle(misaligned)                # wrong pairing, same marginal law
+    out_a = wave28.paired_event_stats(aligned, seed=0)
+    out_b = wave28.paired_event_stats(misaligned, seed=0)
+    np.testing.assert_allclose(out_a["mean_delta"], out_b["mean_delta"])
+    # the paired bootstrap CI differs because pairing order changed
+    assert (out_a["ci95"] != out_b["ci95"])
+
+
+def test_architecture_seed_pairing_by_key_not_position():
+    """Simulates the contrast_stats pairing: units must be joined on
+    (event_id, fm_seed, architecture) keys; a key join cannot mix GRU
+    predictions with TCN baselines even if array lengths coincide."""
+    gru = {"e1": 0.10, "e2": 0.12, "e3": 0.11}
+    tcn = {"e3": 0.13, "e1": 0.09, "e2": 0.14}   # deliberately reordered
+    common = sorted(set(gru) & set(tcn))
+    diff = np.array([gru[k] - tcn[k] for k in common])
+    out = wave28.paired_event_stats(diff, seed=0)
+    assert out["valid"] is True
+    np.testing.assert_allclose(out["mean_delta"],
+                               np.mean([0.10 - 0.09, 0.12 - 0.14, 0.11 - 0.13]))

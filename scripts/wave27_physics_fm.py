@@ -263,14 +263,18 @@ def sample_windows(model: dict, hist: np.ndarray, phys: np.ndarray,
     already standardised with train-only statistics by ``build_features``.
     """
     net, fm = model["net"], model["fm"]
-    dev = next(net.parameters()).device
-    h = torch.from_numpy(np.ascontiguousarray(hist[idx])).to(dev)
+    dev = next(net.parameters()).device if net is not None else None
+    h = torch.from_numpy(np.ascontiguousarray(hist[idx]))
+    if dev is not None:
+        h = h.to(dev)
     mean = h.mean(dim=1, keepdim=True)
     std = h.std(dim=1, keepdim=True).clamp(min=1e-4)
     hn = (h - mean) / std
     p = None
     if model["physics_dim"]:
-        p = torch.from_numpy(np.ascontiguousarray(phys[idx])).to(dev)
+        p = torch.from_numpy(np.ascontiguousarray(phys[idx]))
+        if dev is not None:
+            p = p.to(dev)
     out = []
     for k in range(draws):
         g = fm.sample(hn, net, seed=42 + k, physics=p)

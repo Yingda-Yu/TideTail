@@ -528,7 +528,14 @@ def main() -> None:
                         np.array(ev["per_unit_mae"]) -
                         np.array(base[k]["per_unit_mae"]))
                 agg[k] = {"delta_pct_vs_A0": float(delta_pct),
-                          "extreme_unit_mae": vm, "paired_event_stats": stats_ev}
+                          "extreme_unit_mae": vm, "paired_event_stats": stats_ev,
+                          # persist per-unit arrays so paired inference can be
+                          # recomputed/audited later (Wave 2.9 P0-04 lesson:
+                          # benchmark-only means were unrecoverable)
+                          "per_unit_mae": (ev["per_unit_mae"]
+                                           if "per_unit_mae" in ev else None),
+                          "event_ids": (sorted(set(ids[ids != -999].tolist()))
+                                        if ids is not None else None)}
                 print(f"    {k} delta = {delta_pct:+.2f}%  "
                       f"fidelity={report.status} "
                       f"scale={report.scale_ratio:.3f}")

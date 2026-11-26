@@ -14,7 +14,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from paired_significance_test import paired_bootstrap, paired_randomization  # noqa: E402
+from paired_significance_test import paired_bootstrap, paired_randomization
 
 
 def test_bootstrap_p_consistent_with_ci():

@@ -129,6 +129,42 @@ def train_fm_val_selected(data: dict, tail: bool, epochs: int,
             "selected_epoch": int(np.argmin([h["val_loss"] for h in hist]) + 1)}
 
 
+def _atomic_write(path: Path, obj) -> None:
+    """Atomic JSON replace: never leave a truncated results file."""
+    tmp = path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(obj, indent=2))
+    tmp.replace(path)
+
+
+def _cell_complete(region_data: dict, variant: str, fm_seeds) -> bool:
+    """A variant cell is complete when every requested fm_seed has both
+    gru and tcn downstream results (Wave 2.9 P0-05 resume contract)."""
+    var = region_data.get("variants", {}).get(variant, {})
+    per_seed = var.get("per_fm_seed", {})
+    for s in fm_seeds:
+        sd = per_seed.get(str(s))
+        if not sd:
+            return False
+        cells = sd.get("downstream", {})
+        for k in ("gru", "tcn"):
+            c = cells.get(k)
+            if not c or c.get("extreme_unit_mae") is None:
+                return False
+            if not np.all(np.isfinite(
+                    np.asarray(c.get("per_unit_mae", [0.0]), dtype=float))):
+                return False
+    return True
+
+
+def _a0_protocol_matches(region_data: dict, args) -> bool:
+    """Reuse A0 only when protocol fields are identical."""
+    rd = region_data
+    return (rd.get("fm_seeds") == list(args.fm_seeds)
+            and rd.get("downstream_seeds") == list(args.downstream_seeds)
+            and bool(rd.get("A0", {}).get("gru", {}).get("extreme_unit_mae"))
+            and bool(rd.get("A0", {}).get("tcn", {}).get("extreme_unit_mae")))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--regions", nargs="+",
@@ -144,12 +180,19 @@ def main() -> None:
     ap.add_argument("--n-aug", type=int, default=2000)
     ap.add_argument("--n-test", type=int, default=600)
     ap.add_argument("--device", default="cpu")
+    ap.add_argument("--resume", action="store_true",
+                    help="load existing wave28_expanded_eval.json and skip "
+                         "already-complete region/variant cells")
     args = ap.parse_args()
 
     torch.set_num_threads(min(8, torch.get_num_threads()))
     t0 = time.time()
     out_path = RESULTS / "wave28_expanded_eval.json"
-    payload = {
+    if args.resume and out_path.exists():
+        payload = json.loads(out_path.read_text())
+        print(f"[RESUME] Loaded {out_path}")
+    else:
+        payload = {
         "audit_version": "wave28_expanded_v1",
         "protocol": "2015-2020 train / 2021 validation / 2022-2024 test",
         "selection": "validation-only (unweighted 2021 FM loss, identical "
@@ -163,6 +206,20 @@ def main() -> None:
     }
 
     for region in args.regions:
+        existing_rd = payload["regions"].get(region, {}) if args.resume else {}
+        if args.resume and existing_rd:
+            variants_todo = [v for v in VARIANTS
+                             if not _cell_complete(existing_rd, v,
+                                                   args.fm_seeds)]
+            reuse_a0 = _a0_protocol_matches(existing_rd, args)
+            if not variants_todo and reuse_a0:
+                print(f"\n[RESUME] {region}: all cells complete — skipping")
+                continue
+            print(f"\n[RESUME] {region}: pending variants {variants_todo}, "
+                  f"A0 reuse={reuse_a0}")
+        else:
+            variants_todo = list(VARIANTS)
+            reuse_a0 = False
         print(f"\n{'='*70}\nREGION {region}")
         raw = base.load_region(region)
         ts, series = raw["ts"], raw["series"]
@@ -183,15 +240,20 @@ def main() -> None:
         units = w27e.pot_units(region, origins)
 
         # ---- A0 cells (both forecasters, multi-seed) ----
-        a0 = {}
-        for k in ("gru", "tcn"):
-            pred = w28.train_downstream(k, down, None,
-                                        tuple(args.downstream_seeds),
-                                        args.downstream_steps, args.batch_size)
-            a0[k] = w28.event_level_mae(pred, truth, units)
-            print(f"  A0 {k.upper()} extreme MAE="
-                  f"{a0[k]['extreme_unit_mae']:.4f} "
-                  f"({a0[k]['n_extreme_units']} units)")
+        if reuse_a0:
+            a0 = existing_rd["A0"]
+            print("  [RESUME] A0 reused (protocol fields match)")
+        else:
+            a0 = {}
+            for k in ("gru", "tcn"):
+                pred = w28.train_downstream(k, down, None,
+                                            tuple(args.downstream_seeds),
+                                            args.downstream_steps,
+                                            args.batch_size)
+                a0[k] = w28.event_level_mae(pred, truth, units)
+                print(f"  A0 {k.upper()} extreme MAE="
+                      f"{a0[k]['extreme_unit_mae']:.4f} "
+                      f"({a0[k]['n_extreme_units']} units)")
 
         # ---- generator cells ----
         n_test = min(args.n_test, len(spl["test_h"]))
@@ -201,6 +263,9 @@ def main() -> None:
                                                replace=False)
         variants_out = {}
         for variant in VARIANTS:
+            if variant not in variants_todo and args.resume and existing_rd:
+                variants_out[variant] = existing_rd["variants"][variant]
+                continue
             per_seed = {}
             for seed in args.fm_seeds:
                 print(f"  {variant} fm seed {seed}")
@@ -232,7 +297,11 @@ def main() -> None:
                         - np.array(a0[k]["per_unit_mae"]))
                     cells[k] = {"extreme_unit_mae": ev["extreme_unit_mae"],
                                 "delta_pct_vs_A0": float(delta_pct),
-                                "paired_event_stats": stats_ev}
+                                "paired_event_stats": stats_ev,
+                                # persist per-unit arrays for auditability
+                                "per_unit_mae": ev["per_unit_mae"],
+                                "event_ids": sorted(
+                                    set(units[units != -999].tolist()))}
                     print(f"    {k} delta {delta_pct:+.2f}% "
                           f"p_signflip={stats_ev['signflip_p']:.4f} "
                           f"fid={rep.status} scale={rep.scale_ratio:.3f}")
@@ -273,11 +342,11 @@ def main() -> None:
                     "raw p-values. All comparisons are exploratory/retro-"
                     "spective (see retest_disclosure).",
             }
-            out_path.write_text(json.dumps(payload, indent=2))
+            _atomic_write(out_path, payload)
             print(f"  [incremental save] {out_path}")
 
     payload["elapsed_s"] = round(time.time() - t0, 1)
-    out_path.write_text(json.dumps(payload, indent=2))
+    _atomic_write(out_path, payload)
     print(f"\nSaved -> {out_path} ({payload['elapsed_s']}s)")
 
 
