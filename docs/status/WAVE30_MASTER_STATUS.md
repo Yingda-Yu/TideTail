@@ -1,7 +1,7 @@
-# Wave 3.0 Master Status — 2026-11-26
+# Wave 3.0 Master Status — 2026-11-26 (updated 18:55 CST)
 
 **Branch**: `trae/global-data-generative-research-20261031` · **PR**: #23 (Draft)
-**Base head at wave start**: `0bb3663` (verified 2026-11-26 16:43 CST)
+**Verified HEAD**: `f839384c78a7019f1e0dd1e68f4b8efa4ed62f02` (pushed)
 
 ## 1. Server / process reconciliation (P0-01)
 
@@ -39,7 +39,19 @@
 
 ## 4. Active work
 
-- **W30-P1 COMPLETE (2026-11-26 17:55 CST)**: five-region expanded eval done.
+- **W30-P2 RUNNING (verified 2026-11-26 18:51 CST)**: PID 3543561,
+  `wave28_gen_bench_revised_eval.py`, 5 regions × 7 families × 2 gen seeds.
+  CPU-only **by design** (CUDA_VISIBLE_DEVICES="", OMP_NUM_THREADS=8; pilot
+  fairness contract — NOT a CUDA fallback; no GPU process in nvidia-smi).
+  Elapsed 1h00m at check, ~1015 s per family-seed, ETA ~20 h. Incremental
+  atomic JSON writes verified (`wave30_generator_fidelity.json`).
+  Sampling frame disclosure: strata select ~174 unique windows from the
+  FULL 8,601-window test frame per region (NOT all 8,601 sampled).
+  Charleston strata: 160 background (40/season) + 4 independent q95
+  extremes + 10 q90 moderate-tail. Script has NO resume — process left
+  untouched; safe-recovery implementation queued for post-run.
+- **P1 COMPLETE**: five-region expanded eval + deterministic legacy
+- **P1 COMPLETE**: five-region expanded eval done.
   - New regions: southeast_australia (all 8 augmented cells improve,
     −1.29…−3.02%, p ≤ 0.0005), thames_north_sea (all 8 harm, +3.44…+4.31%,
     p = 0.0001). NaN-window fix applied first (frozen window_index protocol).
@@ -47,8 +59,11 @@
     vs backup `wave28_expanded_eval_pre_recompute_20261126.json`); per-unit
     arrays + event IDs now persisted for ALL five regions.
   - Aggregate: 20/20 primary comparisons; 12 survive Bonferroni α=0.0025
-    (6 beneficial / 6 harmful); TCN responds more strongly than GRU in
-    every region. Artifacts: `wave30_expanded_five_region.json`,
+    (6 beneficial / 6 harmful). Architecture pattern is DESCRIPTIVE, not
+    universal: TCN responds more strongly than GRU in 4 of 5 regions, but
+    Thames is an exception (GRU harm 4.30% > TCN 3.45%); a direct paired
+    architecture-interaction test is queued (see §4c).
+    Artifacts: `wave30_expanded_five_region.json`,
     `wave30_expanded_event_metrics.csv` (1,441 rows),
     `docs/experiments/WAVE30_FIVE_REGION_EVAL.md`,
     paper Table `tab:five-region` (26-page PDF compiles clean).
@@ -62,6 +77,14 @@ seed-robust HARM in Thames and Charleston TCN. Overall fidelity gate
 status (INCONCLUSIVE everywhere) does not predict downstream value.
 This reframes RQ1/RQ4: the question is no longer "does augmentation help"
 but "which regions/architectures benefit and why" (P3/P4).
+
+## 4c. Architecture interaction (pending, W30-P4)
+
+Descriptive pattern (TCN responds more than GRU in 4/5 regions; Thames:
+GRU +4.30% vs TCN +3.45% harm — GRU responds more) must NOT be stated as
+a proven universal architecture effect. A direct paired interaction test
+(TCN augmentation effect − GRU augmentation effect on matched event units,
+per region, with CI and multiplicity-adjusted p) is part of W30-P4.
 
 ## 5. Standing constraints (unchanged)
 

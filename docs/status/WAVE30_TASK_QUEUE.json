@@ -102,15 +102,15 @@
       "task_id": "W30-P2-01",
       "priority": "P2",
       "dependencies": ["W30-P1-02"],
-      "status": "PENDING",
-      "command": "python3 -u scripts/wave28_gen_bench_revised_eval.py (season/strata/5-region/7-family)",
-      "artifact": "data/results/wave30_generator_fidelity.json; wave30_generator_fidelity_stratified.csv; docs/experiments/WAVE30_GENERATOR_BENCHMARK.md; docs/audits/WAVE30_GENERATOR_FAILURE_ANALYSIS.md",
-      "run_id": "wave30_p2_fidelity",
-      "commit": "post-run commit",
-      "acceptance": "stratified by season (correct hemisphere), background/medium/high extremes; unified fidelity metric set; failure analysis with <=2 fix rounds per failed model",
-      "result": null,
+      "status": "RUNNING",
+      "command": "CUDA_VISIBLE_DEVICES=\"\" OMP_NUM_THREADS=8 python3 -u scripts/wave28_gen_bench_revised_eval.py --regions south_atlantic_charleston ny_bight us_gulf_coast southeast_australia thames_north_sea --out data/results/wave30_generator_fidelity.json",
+      "artifact": "data/results/wave30_generator_fidelity.json (incremental atomic writes) + wave30_generator_fidelity_stratified.csv (post-run)",
+      "run_id": "wave30_p2_fidelity_20261126 PID 3543561",
+      "commit": "f839384",
+      "acceptance": "5 regions x 7 families x 2 gen seeds accounted; stratified windows from FULL test frame; strata sizes persisted; fairness fields persisted",
+      "result": "ALIVE 2026-11-26 18:51 CST: elapsed 1h00m, 149% CPU, CPU-only BY DESIGN (CUDA_VISIBLE_DEVICES='' — fairness contract matches pilot protocol; no CUDA fallback), OMP threads 8, no GPU process in nvidia-smi. Log advancing: charleston flow_matching s42 (1016s, pooled_extreme_scale=1.017) / s99 (1013s, 0.985) / tail_aware_fm s42 (1033s, 1.017) complete; JSON last write 18:41:49 advancing. Charleston strata: 174 unique windows from 8,601-frame (NOT all 8,601 sampled): 4 seasons x 40 background = 160, all_extreme = 4 independent q95 events (winter 1, autumn 3), all_moderate_tail = 10 (q90). ETA ~20h total (~4h/region). Resume: script has NO resume; do not kill healthy process; recovery implementation queued post-run",
       "failure_reason": null,
-      "next_action": "P3 tail calibration"
+      "next_action": "monitor to completion; then stratified CSV + benchmark/failure-analysis docs"
     },
     {
       "task_id": "W30-P3-01",

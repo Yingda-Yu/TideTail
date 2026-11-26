@@ -1,0 +1,243 @@
+{
+  "audit_version": "wave30_arch_interaction_v1",
+  "estimand": "TCN augmentation effect minus GRU augmentation effect, per event unit (seed-averaged), paired on event ID; positive = TCN more positive (more harm/less benefit) than GRU",
+  "n_tests": 10,
+  "bonferroni_alpha": 0.005,
+  "n_boot": 10000,
+  "comparisons": [
+    {
+      "region": "south_atlantic_charleston",
+      "variant": "standard",
+      "n_units": 40,
+      "mean_interaction": 0.0007639321964234113,
+      "grueffect_mean": 0.0010423890314996242,
+      "tcn_effect_mean": 0.0018063212279230355,
+      "tcn_minus_gru": 0.0007639321964234113,
+      "valid": true,
+      "mean_delta": 0.0007639321964234113,
+      "ci95": [
+        0.00019119520438835025,
+        0.0013299267867114394
+      ],
+      "signflip_p": 0.014098590140985901,
+      "p_method": "monte_carlo",
+      "mc_se": 0.001178916029834907,
+      "n_pairs": 40,
+      "bonferroni_p": 0.140985901409859,
+      "survives_bonferroni": false
+    },
+    {
+      "region": "south_atlantic_charleston",
+      "variant": "tail_aware",
+      "n_units": 40,
+      "mean_interaction": 0.0008192203473299742,
+      "grueffect_mean": 0.001000651251524687,
+      "tcn_effect_mean": 0.001819871598854661,
+      "tcn_minus_gru": 0.0008192203473299742,
+      "valid": true,
+      "mean_delta": 0.0008192203473299742,
+      "ci95": [
+        0.000233187407720834,
+        0.0013957740552723408
+      ],
+      "signflip_p": 0.009599040095990401,
+      "p_method": "monte_carlo",
+      "mc_se": 0.0009749845091299106,
+      "n_pairs": 40,
+      "bonferroni_p": 0.09599040095990401,
+      "survives_bonferroni": false
+    },
+    {
+      "region": "ny_bight",
+      "variant": "standard",
+      "n_units": 51,
+      "mean_interaction": -0.0007601529725042044,
+      "grueffect_mean": -0.0002485561531548407,
+      "tcn_effect_mean": -0.001008709125659045,
+      "tcn_minus_gru": -0.0007601529725042044,
+      "valid": true,
+      "mean_delta": -0.0007601529725042044,
+      "ci95": [
+        -0.0016550435894625442,
+        6.143425171281774e-05
+      ],
+      "signflip_p": 0.09469053094690531,
+      "p_method": "monte_carlo",
+      "mc_se": 0.002927723735765134,
+      "n_pairs": 51,
+      "bonferroni_p": 0.9469053094690532,
+      "survives_bonferroni": false
+    },
+    {
+      "region": "ny_bight",
+      "variant": "tail_aware",
+      "n_units": 51,
+      "mean_interaction": -0.0007656463147962795,
+      "grueffect_mean": -0.00023600061004068338,
+      "tcn_effect_mean": -0.0010016469248369628,
+      "tcn_minus_gru": -0.0007656463147962795,
+      "valid": true,
+      "mean_delta": -0.0007656463147962795,
+      "ci95": [
+        -0.001663578658675154,
+        4.7866396569445934e-05
+      ],
+      "signflip_p": 0.08919108089191082,
+      "p_method": "monte_carlo",
+      "mc_se": 0.0028500510379697486,
+      "n_pairs": 51,
+      "bonferroni_p": 0.8919108089191081,
+      "survives_bonferroni": false
+    },
+    {
+      "region": "us_gulf_coast",
+      "variant": "standard",
+      "n_units": 37,
+      "mean_interaction": -0.002091403798879804,
+      "grueffect_mean": 0.00017672293894999735,
+      "tcn_effect_mean": -0.0019146808599298064,
+      "tcn_minus_gru": -0.002091403798879804,
+      "valid": true,
+      "mean_delta": -0.002091403798879804,
+      "ci95": [
+        -0.0029800141192469244,
+        -0.0012746491117050522
+      ],
+      "signflip_p": 9.999000099990002e-05,
+      "p_method": "monte_carlo",
+      "mc_se": 9.998500187478128e-05,
+      "n_pairs": 37,
+      "bonferroni_p": 0.000999900009999,
+      "survives_bonferroni": true
+    },
+    {
+      "region": "us_gulf_coast",
+      "variant": "tail_aware",
+      "n_units": 37,
+      "mean_interaction": -0.0020566218205400415,
+      "grueffect_mean": 0.00040109128364034603,
+      "tcn_effect_mean": -0.0016555305368996956,
+      "tcn_minus_gru": -0.0020566218205400415,
+      "valid": true,
+      "mean_delta": -0.0020566218205400415,
+      "ci95": [
+        -0.00288359226306548,
+        -0.0012892104131547184
+      ],
+      "signflip_p": 9.999000099990002e-05,
+      "p_method": "monte_carlo",
+      "mc_se": 9.998500187478128e-05,
+      "n_pairs": 37,
+      "bonferroni_p": 0.000999900009999,
+      "survives_bonferroni": true
+    },
+    {
+      "region": "southeast_australia",
+      "variant": "standard",
+      "n_units": 20,
+      "mean_interaction": -0.0012862826697528362,
+      "grueffect_mean": -0.0010052013210952282,
+      "tcn_effect_mean": -0.0022914839908480646,
+      "tcn_minus_gru": -0.0012862826697528362,
+      "valid": true,
+      "mean_delta": -0.0012862826697528362,
+      "ci95": [
+        -0.0019891476281918585,
+        -0.0006634195055812597
+      ],
+      "signflip_p": 0.00039996000399960006,
+      "p_method": "monte_carlo",
+      "mc_se": 0.00019994000599900008,
+      "n_pairs": 20,
+      "bonferroni_p": 0.003999600039996,
+      "survives_bonferroni": true
+    },
+    {
+      "region": "southeast_australia",
+      "variant": "tail_aware",
+      "n_units": 20,
+      "mean_interaction": -0.0012223156169056892,
+      "grueffect_mean": -0.0009592058137059212,
+      "tcn_effect_mean": -0.0021815214306116102,
+      "tcn_minus_gru": -0.0012223156169056892,
+      "valid": true,
+      "mean_delta": -0.0012223156169056892,
+      "ci95": [
+        -0.0019163088127970697,
+        -0.000605192289222032
+      ],
+      "signflip_p": 0.0007999200079992001,
+      "p_method": "monte_carlo",
+      "mc_se": 0.00028270129394086736,
+      "n_pairs": 20,
+      "bonferroni_p": 0.007999200079992,
+      "survives_bonferroni": true
+    },
+    {
+      "region": "thames_north_sea",
+      "variant": "standard",
+      "n_units": 32,
+      "mean_interaction": -0.002408469095826149,
+      "grueffect_mean": 0.010284476215019822,
+      "tcn_effect_mean": 0.007876007119193673,
+      "tcn_minus_gru": -0.002408469095826149,
+      "valid": true,
+      "mean_delta": -0.002408469095826149,
+      "ci95": [
+        -0.00592026204103604,
+        0.0008305023831780999
+      ],
+      "signflip_p": 0.17938206179382063,
+      "p_method": "monte_carlo",
+      "mc_se": 0.003836527319836817,
+      "n_pairs": 32,
+      "bonferroni_p": 1.0,
+      "survives_bonferroni": false
+    },
+    {
+      "region": "thames_north_sea",
+      "variant": "tail_aware",
+      "n_units": 32,
+      "mean_interaction": -0.002346919965930283,
+      "grueffect_mean": 0.010273337829858065,
+      "tcn_effect_mean": 0.007926417863927782,
+      "tcn_minus_gru": -0.002346919965930283,
+      "valid": true,
+      "mean_delta": -0.002346919965930283,
+      "ci95": [
+        -0.005817429887247272,
+        0.00085499909473583
+      ],
+      "signflip_p": 0.1845815418458154,
+      "p_method": "monte_carlo",
+      "mc_se": 0.0038793832839895156,
+      "n_pairs": 32,
+      "bonferroni_p": 1.0,
+      "survives_bonferroni": false
+    }
+  ],
+  "summary": {
+    "n_comparisons": 10,
+    "n_valid": 10,
+    "n_survive_bonferroni": 4,
+    "survivors": [
+      "us_gulf_coast/standard",
+      "us_gulf_coast/tail_aware",
+      "southeast_australia/standard",
+      "southeast_australia/tail_aware"
+    ],
+    "sign_consistency": {
+      "south_atlantic_charleston/standard": "tcn_more_positive",
+      "south_atlantic_charleston/tail_aware": "tcn_more_positive",
+      "ny_bight/standard": "tcn_more_negative",
+      "ny_bight/tail_aware": "tcn_more_negative",
+      "us_gulf_coast/standard": "tcn_more_negative",
+      "us_gulf_coast/tail_aware": "tcn_more_negative",
+      "southeast_australia/standard": "tcn_more_negative",
+      "southeast_australia/tail_aware": "tcn_more_negative",
+      "thames_north_sea/standard": "tcn_more_negative",
+      "thames_north_sea/tail_aware": "tcn_more_negative"
+    },
+    "note": "A non-significant interaction means the 4-of-5 regional 'TCN responds more' pattern is DESCRIPTIVE, not a proven universal architecture effect."
+  }
+}
