@@ -61,8 +61,8 @@
   - Aggregate: 20/20 primary comparisons; 12 survive Bonferroni α=0.0025
     (6 beneficial / 6 harmful). Architecture pattern is DESCRIPTIVE, not
     universal: TCN responds more strongly than GRU in 4 of 5 regions, but
-    Thames is an exception (GRU harm 4.30% > TCN 3.45%); a direct paired
-    architecture-interaction test is queued (see §4c).
+    Thames is an exception (GRU harm 4.30% > TCN 3.45%); direct paired
+    interaction test DONE — see §4c.
     Artifacts: `wave30_expanded_five_region.json`,
     `wave30_expanded_event_metrics.csv` (1,441 rows),
     `docs/experiments/WAVE30_FIVE_REGION_EVAL.md`,
@@ -78,13 +78,21 @@ status (INCONCLUSIVE everywhere) does not predict downstream value.
 This reframes RQ1/RQ4: the question is no longer "does augmentation help"
 but "which regions/architectures benefit and why" (P3/P4).
 
-## 4c. Architecture interaction (pending, W30-P4)
+## 4c. Architecture interaction (DONE 2026-11-26)
 
 Descriptive pattern (TCN responds more than GRU in 4/5 regions; Thames:
 GRU +4.30% vs TCN +3.45% harm — GRU responds more) must NOT be stated as
-a proven universal architecture effect. A direct paired interaction test
-(TCN augmentation effect − GRU augmentation effect on matched event units,
-per region, with CI and multiplicity-adjusted p) is part of W30-P4.
+a proven universal architecture effect.
+
+Direct paired TCN−GRU interaction test on matched event units
+(`scripts/wave30_arch_interaction.py` → `wave30_architecture_interaction.json`):
+10 paired tests (5 regions × std/tail arms), Bonferroni α=0.005.
+**4/10 survive, beneficial regions only**: US Gulf Coast −2.09 mm
+(p_bonf=0.001), SE Australia −1.29 mm (p_bonf=0.004; tail arm
+−1.29 mm p_bonf=0.008 also survives). Charleston REVERSES (+0.76 mm,
+ns after correction); Thames ns (−2.41 mm, huge event variance);
+NY Bight ns. Conclusion: architecture interaction is region-dependent,
+not universal — the paper states the 4/5 pattern as descriptive.
 
 ## 5. Standing constraints (unchanged)
 

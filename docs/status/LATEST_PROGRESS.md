@@ -1,7 +1,7 @@
 # LATEST PROGRESS — TideTail Wave 3.0 (Five-Region + Corrected Inference)
 
-**Last updated**: 2026-11-26 19:00 CST
-**HEAD SHA**: `d0b577a` (pushed); CI at this HEAD: 320 passed (see `docs/status/SELF_HOSTED_CI_AUDIT.md`)
+**Last updated**: 2026-11-26 19:10 CST
+**HEAD SHA**: `1c149b1` (pushed); CI at d0b577a: 320 passed (see `docs/status/SELF_HOSTED_CI_AUDIT.md`)
 **Branch**: `trae/global-data-generative-research-20261031`
 **PR**: #23 (Draft — DO NOT MERGE main)
 
@@ -16,7 +16,7 @@
 | P1 five-region expanded | DONE | 20/20 primaries with per-unit persistence; **12/20 Bonferroni survivors, 6 beneficial / 6 harmful**: SE-Aus all improve (−1.29…−3.02%), Gulf TCN improves, Thames all harm (+3.44…+4.31%), Charleston TCN harms, NY-Bight null-to-mixed. `wave30_expanded_five_region.json`, `wave30_expanded_event_metrics.csv`, `docs/experiments/WAVE30_FIVE_REGION_EVAL.md` |
 | P1 legacy recompute | DONE | 3 legacy regions deterministically recomputed on GPU5 (drift ≤0.1pp vs backup); per-unit arrays now persisted for all regions |
 | Architecture interaction | DONE | 10 paired TCN−GRU tests: **4/10 survive Bonferroni, beneficial regions only** (Gulf −2.09mm p_bonf=0.001; SE-Aus −1.29mm p_bonf=0.004); Charleston reverses (+0.76mm, ns corrected); Thames ns (GRU harm > TCN). `wave30_architecture_interaction.json` — "TCN responds more" is descriptive, NOT universal |
-| P2 stratified fidelity | **RUNNING** | PID 3543561 verified alive 18:51 CST (1h00m, 149% CPU, CPU-only by design CUDA_VISIBLE_DEVICES=""), incremental atomic JSON writes advancing; ~1015s/family-seed, ETA ~20h; NO resume — process untouched, recovery queued post-run |
+| P2 stratified fidelity | **RUNNING** | PID 3543561 verified alive 19:04 CST (1h13m, 180% CPU, CPU-only by design CUDA_VISIBLE_DEVICES=""), incremental atomic JSON writes advancing (last write 19:04:19); **Charleston complete 6/6 cells** (FM s42/s99, tailFM s42/s99, cvae s42/s99; ~1015s/family-seed); ~70 cells total, ETA ~14-16h; running process writes legacy 6-field strata cells — post-run `--resume --refresh` pass (commit 1c149b1 script) recomputes all cells with full metrics + fairness fields; recovery/resume support queued post-run, healthy process untouched |
 | Manuscript | UPDATED | `tab:physics-ablation` + `tab:five-region` real numbers; 9/26 corrected pilot claim; 320-test marked historical; Thames arch exception; interaction paragraph; PDF 26pp, 0 undefined refs |
 | CI (P5) | DONE | 320/320 at HEAD `d0b577a`, exit 0, ruff clean; `data/logs/ci_run_20261126_p5.log` |
 

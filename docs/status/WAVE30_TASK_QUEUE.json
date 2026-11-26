@@ -1,9 +1,9 @@
 {
   "queue_version": "3.0-wave30",
   "created": "2026-11-26",
-  "last_updated": "2026-11-26T17:30:00+08:00",
+  "last_updated": "2026-11-26T19:10:00+08:00",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "0bb3663 + wave30 P0 commits",
+  "head_sha": "1c149b1",
   "pr": 23,
   "pr_state": "DRAFT — do not merge main",
   "gpu_policy": "GPU0 PROHIBITED. 2026-11-26 16:43 nvidia-smi: GPU5 (286MiB) and GPU8 (286MiB) effectively free; GPU4/6/9 lightly used by others; GPU1/2/3/7 heavily used. Use CUDA_VISIBLE_DEVICES=5 (or 8) with --device cuda:0 mapping. Heavy jobs serial.",
@@ -45,7 +45,9 @@
     {
       "task_id": "W30-P0-04",
       "priority": "P0",
-      "dependencies": ["W30-P0-03"],
+      "dependencies": [
+        "W30-P0-03"
+      ],
       "status": "COMPLETE",
       "command": "python3 recompute from wave28_gen_benchmark.json",
       "artifact": "docs/audits/WAVE30_STATISTICAL_CORRECTNESS.md; data/results/wave30_corrected_inference.json",
@@ -73,7 +75,10 @@
     {
       "task_id": "W30-P1-01",
       "priority": "P1",
-      "dependencies": ["W30-P0-03", "W30-P0-05"],
+      "dependencies": [
+        "W30-P0-03",
+        "W30-P0-05"
+      ],
       "status": "COMPLETE",
       "command": "CUDA_VISIBLE_DEVICES=5 python3 -u scripts/wave28_expanded_eval.py --regions southeast_australia thames_north_sea --device cuda:0 --resume",
       "artifact": "data/results/wave28_expanded_eval.json (regions appended, per-unit arrays persisted)",
@@ -87,7 +92,9 @@
     {
       "task_id": "W30-P1-02",
       "priority": "P1",
-      "dependencies": ["W30-P1-01"],
+      "dependencies": [
+        "W30-P1-01"
+      ],
       "status": "COMPLETE",
       "command": "wave28_expanded_eval.py --recompute (legacy regions, deterministic) + wave30_five_region_aggregate.py",
       "artifact": "data/results/wave30_expanded_five_region.json; data/results/wave30_expanded_event_metrics.csv (1441 rows); docs/experiments/WAVE30_FIVE_REGION_EVAL.md; paper Table tab:five-region",
@@ -101,21 +108,25 @@
     {
       "task_id": "W30-P2-01",
       "priority": "P2",
-      "dependencies": ["W30-P1-02"],
+      "dependencies": [
+        "W30-P1-02"
+      ],
       "status": "RUNNING",
       "command": "CUDA_VISIBLE_DEVICES=\"\" OMP_NUM_THREADS=8 python3 -u scripts/wave28_gen_bench_revised_eval.py --regions south_atlantic_charleston ny_bight us_gulf_coast southeast_australia thames_north_sea --out data/results/wave30_generator_fidelity.json",
       "artifact": "data/results/wave30_generator_fidelity.json (incremental atomic writes) + wave30_generator_fidelity_stratified.csv (post-run)",
       "run_id": "wave30_p2_fidelity_20261126 PID 3543561",
       "commit": "f839384",
       "acceptance": "5 regions x 7 families x 2 gen seeds accounted; stratified windows from FULL test frame; strata sizes persisted; fairness fields persisted",
-      "result": "ALIVE 2026-11-26 18:51 CST: elapsed 1h00m, 149% CPU, CPU-only BY DESIGN (CUDA_VISIBLE_DEVICES='' — fairness contract matches pilot protocol; no CUDA fallback), OMP threads 8, no GPU process in nvidia-smi. Log advancing: charleston flow_matching s42 (1016s, pooled_extreme_scale=1.017) / s99 (1013s, 0.985) / tail_aware_fm s42 (1033s, 1.017) complete; JSON last write 18:41:49 advancing. Charleston strata: 174 unique windows from 8,601-frame (NOT all 8,601 sampled): 4 seasons x 40 background = 160, all_extreme = 4 independent q95 events (winter 1, autumn 3), all_moderate_tail = 10 (q90). ETA ~20h total (~4h/region). Resume: script has NO resume; do not kill healthy process; recovery implementation queued post-run",
+      "result": "ALIVE 2026-11-26 19:04 CST: elapsed 1h13m, 180% CPU, CPU-only BY DESIGN (CUDA_VISIBLE_DEVICES='' — pilot fairness contract; no CUDA fallback), OMP threads 8, no GPU process. Log+JSON last write 19:04:19 advancing. Charleston COMPLETE 6/6 cells: flow_matching s42 (1016s, pooled_extreme_scale=1.017) / s99 (1013s, 0.985), tail_aware_fm s42 (1033s, 1.017) / s99 (1059s, 0.978), cvae s42 (148s, 1.992) / s99 (143s, 2.196). Strata: 174 unique windows from 8,601-frame (160 background + 4 independent q95 extremes + 10 q90 moderate-tail). ~70 cells total (5 regions x 7 families x 2 seeds), ETA ~14-16h. NOTE: running process (launched at f839384) writes legacy 6-field strata cells; post-run --resume --refresh pass with script@1c149b1 recomputes ALL cells with full metrics (mean_bias, autocorr_rmse, psd, peak diagnostics, diversity/dup diagnostics) + fairness fields + checkpoints. Do not kill healthy process.",
       "failure_reason": null,
-      "next_action": "monitor to completion; then stratified CSV + benchmark/failure-analysis docs"
+      "next_action": "monitor to completion; then --resume --refresh full-metric pass -> wave30_generator_fidelity_stratified.csv -> WAVE30_GENERATOR_BENCHMARK.md + WAVE30_GENERATOR_FAILURE_ANALYSIS.md"
     },
     {
       "task_id": "W30-P3-01",
       "priority": "P3",
-      "dependencies": ["W30-P2-01"],
+      "dependencies": [
+        "W30-P2-01"
+      ],
       "status": "PENDING",
       "command": "tail calibration diagnostics + controlled T2/T4-style candidates vs oversampling/jitter baselines",
       "artifact": "docs/experiments/WAVE31_TAIL_CALIBRATION.md; wave31_tail_calibration.json; wave31_augmentation_controls.json",
@@ -129,7 +140,9 @@
     {
       "task_id": "W30-P4-01",
       "priority": "P4",
-      "dependencies": ["W30-P1-02"],
+      "dependencies": [
+        "W30-P1-02"
+      ],
       "status": "PENDING",
       "command": "architecture/regional/physics mechanism analysis",
       "artifact": "WAVE31_ARCHITECTURE_DEPENDENCE.md; WAVE31_REGIONAL_HETEROGENEITY.md; WAVE31_PHYSICS_MECHANISMS.md; wave31_mechanism_analysis.json",
@@ -143,7 +156,10 @@
     {
       "task_id": "W30-P5-01",
       "priority": "P5",
-      "dependencies": ["W30-P3-01", "W30-P4-01"],
+      "dependencies": [
+        "W30-P3-01",
+        "W30-P4-01"
+      ],
       "status": "PENDING",
       "command": "final inference, RQ matrix",
       "artifact": "docs/audits/WAVE32_FINAL_SCIENTIFIC_INFERENCE.md; docs/status/FINAL_RESEARCH_QUESTIONS_MATRIX.md; wave32_final_statistics.csv",
@@ -157,7 +173,9 @@
     {
       "task_id": "W30-P6-01",
       "priority": "P6",
-      "dependencies": ["W30-P5-01"],
+      "dependencies": [
+        "W30-P5-01"
+      ],
       "status": "PENDING",
       "command": "manuscript sync + figure registry + regenerate figures",
       "artifact": "paper/main.tex; paper/main.pdf; paper/FIGURE_REGISTRY.md",
@@ -171,7 +189,9 @@
     {
       "task_id": "W30-P7-01",
       "priority": "P7",
-      "dependencies": ["W30-P6-01"],
+      "dependencies": [
+        "W30-P6-01"
+      ],
       "status": "PENDING",
       "command": "5-reviewer simulated review; revision; latexmk; pytest+ruff; reproduction guide; acceptance matrix",
       "artifact": "docs/reviews/WAVE32_FIVE_REVIEWER_REPORT.md; WAVE32_REVISION_RESPONSE_MATRIX.md; docs/reproducibility/FINAL_REPRODUCTION_GUIDE.md; docs/status/WAVE32_FINAL_ACCEPTANCE_MATRIX.md",
