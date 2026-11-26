@@ -1,0 +1,23 @@
+=== TideTail CI run 2026-11-26T18:55:09+08:00 ===
+HEAD: d0b577ac4196392b7754d46ef8dd6e2ab427b8b0
+cmd: PYTHONPATH=src python3 -m pytest -q
+........................................................................ [ 22%]
+........................................................................ [ 45%]
+........................................................................ [ 67%]
+........................................................................ [ 90%]
+................................                                         [100%]
+=============================== warnings summary ===============================
+tests/test_baselines.py::test_gru_training_decreases_loss
+  /data/yingda/TideTail/tests/test_baselines.py:99: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:822.)
+    initial_loss = float(model.forward_loss(history, target))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+320 passed, 1 warning in 67.73s (0:01:07)
+exit_code=0 start=2026-11-26T18:55:09+08:00 end=2026-11-26T18:56:18+08:00
+ruff:
+All checks passed!
+ruff_exit=0
+paper/main.log:619: trailing whitespace.
++ [][] 
+git_diff_check_exit=2

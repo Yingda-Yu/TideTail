@@ -1,6 +1,37 @@
-# Self-Hosted CI Audit — Wave 2.9
+# Self-Hosted CI Audit — Wave 3.0
 
-## Date: 2026-11-20
+## Latest verified run — 2026-11-26 18:55–18:56 CST
+
+| Field | Value |
+|---|---|
+| Command | `PYTHONPATH=src python3 -m pytest -q` |
+| Commit SHA | `d0b577ac4196392b7754d46ef8dd6e2ab427b8b0` (pushed) |
+| Start / finish | 2026-11-26T18:55:09+08:00 / 18:56:18+08:00 (67.73 s) |
+| Exit code | 0 |
+| Result | **320 passed, 0 failed, 0 skipped, 1 warning** |
+| ruff | `ruff check src tests` — All checks passed (exit 0) |
+| `git diff --check` | exit 2 — trailing whitespace in `paper/main.log` only (LaTeX build artifact, regenerated per compile; no source-file issues) |
+| Warning | torch requires_grad→scalar conversion (test_baselines.py), benign |
+| Full log | `data/logs/ci_run_20261126_p5.log` |
+
+### Count reconciliation (P5 requirement)
+
+| Historical record | Count | Status |
+|---|---|---|
+| Self-hosted CI audit (Wave 2.9, 2026-11-20) | 311 passed | valid for commit `373a5bc`-era tree only — superseded |
+| Wave 3.0 interim queue notes | 318 passed | valid at the P0-fix tree (2026-11-26 ~17:00) — superseded |
+| **This run (HEAD `d0b577a`)** | **320 passed** | **current evidence** |
+
+Delta 311→318: +8 `paired_event_stats` regression tests, −1 obsolete
+sample_windows stub incompatibility fixed. Delta 318→320: +2
+`build_expanded_splits` NaN-exclusion tests (`tests/test_expanded_splits_nan.py`).
+
+**Rule reaffirmed**: test counts are only valid for the exact commit they
+were run against; older counts must not be cited as current CI evidence.
+
+---
+
+## Historical: Wave 2.9 audit (2026-11-20) — preserved below
 
 ## Runner
 - **Host**: self-hosted Wave 2.9 CI server (not GitHub Actions)

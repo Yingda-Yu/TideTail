@@ -1,13 +1,30 @@
-# LATEST PROGRESS — TideTail Wave 2.8 (Three Publication-Critical Experiments)
+# LATEST PROGRESS — TideTail Wave 3.0 (Five-Region + Corrected Inference)
 
-**Last updated**: 2026-11-08 22:05 CST
-**Head SHA**: `3e42ad2` (pushed) + uncommitted docs/paper edits (this wave)
+**Last updated**: 2026-11-26 19:00 CST
+**HEAD SHA**: `d0b577a` (pushed); CI at this HEAD: 320 passed (see `docs/status/SELF_HOSTED_CI_AUDIT.md`)
 **Branch**: `trae/global-data-generative-research-20261031`
 **PR**: #23 (Draft — DO NOT MERGE main)
 
 ---
 
-## Wave 2.8 current state (updated 2026-11-08 21:50)
+## Wave 3.0 state (updated 2026-11-26 19:00)
+
+| Priority | Status | Evidence |
+|---|---|---|
+| P0 correctness fixes | DONE | zero-p MC fix (`(b+1)/(n_boot+1)`, NaN→invalid) + 8 regression tests; NaN-window exclusion in expanded splits + 2 tests; `docs/audits/WAVE30_STATISTICAL_CORRECTNESS.md` |
+| P0-04 corrected inference | DONE | benchmark harm count corrected **11/28 → 9/26** (2 Diffusion-TS NY-Bight cells = generation failures): `data/results/wave30_corrected_inference.json` |
+| P1 five-region expanded | DONE | 20/20 primaries with per-unit persistence; **12/20 Bonferroni survivors, 6 beneficial / 6 harmful**: SE-Aus all improve (−1.29…−3.02%), Gulf TCN improves, Thames all harm (+3.44…+4.31%), Charleston TCN harms, NY-Bight null-to-mixed. `wave30_expanded_five_region.json`, `wave30_expanded_event_metrics.csv`, `docs/experiments/WAVE30_FIVE_REGION_EVAL.md` |
+| P1 legacy recompute | DONE | 3 legacy regions deterministically recomputed on GPU5 (drift ≤0.1pp vs backup); per-unit arrays now persisted for all regions |
+| Architecture interaction | DONE | 10 paired TCN−GRU tests: **4/10 survive Bonferroni, beneficial regions only** (Gulf −2.09mm p_bonf=0.001; SE-Aus −1.29mm p_bonf=0.004); Charleston reverses (+0.76mm, ns corrected); Thames ns (GRU harm > TCN). `wave30_architecture_interaction.json` — "TCN responds more" is descriptive, NOT universal |
+| P2 stratified fidelity | **RUNNING** | PID 3543561 verified alive 18:51 CST (1h00m, 149% CPU, CPU-only by design CUDA_VISIBLE_DEVICES=""), incremental atomic JSON writes advancing; ~1015s/family-seed, ETA ~20h; NO resume — process untouched, recovery queued post-run |
+| Manuscript | UPDATED | `tab:physics-ablation` + `tab:five-region` real numbers; 9/26 corrected pilot claim; 320-test marked historical; Thames arch exception; interaction paragraph; PDF 26pp, 0 undefined refs |
+| CI (P5) | DONE | 320/320 at HEAD `d0b577a`, exit 0, ruff clean; `data/logs/ci_run_20261126_p5.log` |
+
+**Environment**: P2 runs CPU-only per pilot fairness contract (no CUDA fallback — it was never requested). GPU0 prohibited; P1 GPU work used GPU5 only.
+
+---
+
+## Historical: Wave 2.8 (2026-11-08) — preserved below
 
 | Priority | Status | Evidence |
 |---|---|---|
