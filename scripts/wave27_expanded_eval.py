@@ -52,14 +52,28 @@ BOUNDS = ("2015-01-01", "2021-01-01", "2022-01-01", "2025-01-01")
 
 
 def build_expanded_splits(ts: pd.Series, series: np.ndarray) -> dict:
-    """Strict-containment window starts for 2015-2020 / 2021 / 2022-2024."""
+    """Strict-containment window starts for 2015-2020 / 2021 / 2022-2024.
+
+    Wave 3.0 fix: windows containing NaN water-level samples are EXCLUDED,
+    matching the frozen primary window_index_v1 protocol (which already
+    drops NaN windows for thames_north_sea; southeast_australia has a
+    31 h outage in 2023). The three previously completed regions have no
+    missing samples, so their results are unchanged by this fix.
+    """
     marks = [int(ts.searchsorted(pd.Timestamp(b, tz="UTC"))) for b in BOUNDS]
     n = len(series)
     span = CONTEXT + HORIZON
+    nan_mask = np.isnan(series).astype(np.int64)
+    nan_csum = np.concatenate([[0], np.cumsum(nan_mask)])
 
     def starts(lo: int, hi: int) -> np.ndarray:
         last = hi - span
-        return np.arange(lo, last + 1, dtype=np.int64) if last >= lo else np.empty(0, np.int64)
+        if last < lo:
+            return np.empty(0, np.int64)
+        s = np.arange(lo, last + 1, dtype=np.int64)
+        # strict containment of a NaN-free window [i, i+span)
+        clean = (nan_csum[s + span] - nan_csum[s]) == 0
+        return s[clean]
 
     def windows(s: np.ndarray):
         h = np.stack([series[i:i + CONTEXT] for i in s]) if len(s) else np.empty((0, CONTEXT), np.float32)
@@ -72,9 +86,12 @@ def build_expanded_splits(ts: pd.Series, series: np.ndarray) -> dict:
         "val": (marks[1], marks[2]),
         "test": (marks[2], min(marks[3], n)),
     }.items():
+        last = hi - span
+        raw_count = max(0, last - lo + 1)
         s = starts(lo, hi)
         h, t = windows(s)
         out[f"{name}_h"], out[f"{name}_t"], out[f"{name}_starts"] = h, t, s
+        out[f"{name}_nan_windows_excluded"] = int(raw_count - len(s))
     # Explicit boundary hygiene report
     out["boundary"] = {
         "train_last_target_end": int(out["train_starts"].max()) + span - 1,

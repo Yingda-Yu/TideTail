@@ -53,6 +53,21 @@ EXTREME_SEP_H, BACKGROUND_SEP_H = 168, 72
 N_PER_SEASON = 40          # background windows per season
 MAX_EXTREME_PER_SEASON = 30
 
+# Regions south of the equator: calendar DJF is the austral SUMMER, so
+# strata are labelled with the LOCAL meteorological season to keep
+# cross-region comparisons meaningful (Wave 3.0 P2-01 requirement:
+# "南北半球季节定义必须正确").
+SOUTHERN_HEMISPHERE = {"southeast_australia"}
+CAL_TO_LOCAL_SH = {"DJF": "summer", "MAM": "autumn",
+                   "JJA": "winter", "SON": "spring"}
+
+
+def local_season_label(region: str, cal_label: str) -> str:
+    if region in SOUTHERN_HEMISPHERE:
+        return CAL_TO_LOCAL_SH[cal_label]
+    return {"DJF": "winter", "MAM": "spring",
+            "JJA": "summer", "SON": "autumn"}[cal_label]
+
 
 def load_test_timestamps(region: str, test_starts: np.ndarray) -> pd.DatetimeIndex:
     base = bench.DATA_ROOT / region
@@ -98,22 +113,24 @@ def build_strata(region: str, test_starts: np.ndarray,
         in_s = np.where(np.isin(months, months_))[0]
         if len(in_s) == 0:
             continue
+        lname = local_season_label(region, sname)
         # background: below-median peak, spread across season
         bg_pool = in_s[peaks[in_s] < med]
         if len(bg_pool) > N_PER_SEASON:
             sel = np.linspace(0, len(bg_pool) - 1, N_PER_SEASON).astype(int)
             bg_pool = bg_pool[sel]
-        strata[f"{sname}_background"] = [int(i) for i in bg_pool]
+        strata[f"{lname}_background"] = [int(i) for i in bg_pool]
         # extreme: q95 peak, >=168h independent (POT declustering scale)
         ex_pool = in_s[peaks[in_s] >= q95]
         order = ex_pool[np.argsort(-peaks[ex_pool])]
         chosen = _enforce_separation(order, start_h, EXTREME_SEP_H)
-        strata[f"{sname}_extreme"] = chosen[:MAX_EXTREME_PER_SEASON]
+        strata[f"{lname}_extreme"] = chosen[:MAX_EXTREME_PER_SEASON]
     # pooled extreme + pooled background for aggregate gates
+    season_names = sorted({local_season_label(region, s) for s in SEASONS})
     strata["all_extreme"] = sorted(
-        sum((strata.get(f"{s}_extreme", []) for s in SEASONS), []))
+        sum((strata.get(f"{s}_extreme", []) for s in season_names), []))
     strata["all_background"] = sorted(
-        sum((strata.get(f"{s}_background", []) for s in SEASONS), []))
+        sum((strata.get(f"{s}_background", []) for s in season_names), []))
     # moderate tail: q90 peak, >=120h separation — statistical power
     # supplement for regions where independent q95 events are very few
     q90 = float(np.percentile(peaks, 90))
@@ -198,13 +215,18 @@ def main() -> None:
         "extreme_separation_h": EXTREME_SEP_H,
         "background_separation_h": BACKGROUND_SEP_H,
         "strata_definition": {
-            "seasonal": "DJF/MAM/JJA/SON; background = below-median "
-                        "target peak (40/season, spread); extreme = q95 "
-                        "target peak with >=168h declustering (POT scale)",
+            "seasonal": "local meteorological seasons labelled per "
+                        "hemisphere (northern: winter/spring/summer/autumn "
+                        "= DJF/MAM/JJA/SON; southern regions e.g. "
+                        "southeast_australia: DJF=summer etc.); background "
+                        "= below-median target peak (40/season, spread); "
+                        "extreme = q95 target peak with >=168h "
+                        "declustering (POT scale)",
             "all_moderate_tail": "q90 target peak with >=120h "
                                  "declustering (power supplement; "
                                  "independent-q95 events are few per year)",
         },
+        "southern_hemisphere_regions": sorted(SOUTHERN_HEMISPHERE),
         "regions": {},
     }
     _atomic_write(out_path, payload)

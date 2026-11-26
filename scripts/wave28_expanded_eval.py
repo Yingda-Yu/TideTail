@@ -225,6 +225,12 @@ def main() -> None:
         ts, series = raw["ts"], raw["series"]
         spl = w27e.build_expanded_splits(ts, series)
         print("  windows:", {k: len(spl[f"{k}_h"]) for k in ("train", "val", "test")})
+        print("  nan_windows_excluded:",
+              {k: spl[f"{k}_nan_windows_excluded"] for k in ("train", "val", "test")})
+        for k in ("train", "val", "test"):
+            if not (np.isfinite(spl[f"{k}_h"]).all()
+                    and np.isfinite(spl[f"{k}_t"]).all()):
+                raise RuntimeError(f"{k} split contains non-finite samples")
         if not (spl["boundary"]["train_val_gap_ok"]
                 and spl["boundary"]["val_test_gap_ok"]):
             raise RuntimeError("split boundary overlap")
@@ -302,8 +308,10 @@ def main() -> None:
                                 "per_unit_mae": ev["per_unit_mae"],
                                 "event_ids": sorted(
                                     set(units[units != -999].tolist()))}
+                    p_txt = (f"{stats_ev['signflip_p']:.4f}"
+                             if stats_ev.get("valid") else "INVALID")
                     print(f"    {k} delta {delta_pct:+.2f}% "
-                          f"p_signflip={stats_ev['signflip_p']:.4f} "
+                          f"p_signflip={p_txt} "
                           f"fid={rep.status} scale={rep.scale_ratio:.3f}")
                 per_seed[str(seed)] = {
                     "selected_epoch": model["selected_epoch"],
@@ -331,6 +339,9 @@ def main() -> None:
             payload["regions"][region] = {
                 "window_counts": {k: int(len(spl[f"{k}_h"]))
                                   for k in ("train", "val", "test")},
+                "nan_windows_excluded":
+                    {k: int(spl[f"{k}_nan_windows_excluded"])
+                     for k in ("train", "val", "test")},
                 "split_boundary": spl["boundary"],
                 "fm_seeds": args.fm_seeds,
                 "downstream_seeds": args.downstream_seeds,
