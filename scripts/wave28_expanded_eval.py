@@ -183,12 +183,17 @@ def main() -> None:
     ap.add_argument("--resume", action="store_true",
                     help="load existing wave28_expanded_eval.json and skip "
                          "already-complete region/variant cells")
+    ap.add_argument("--recompute", action="store_true",
+                    help="recompute the requested regions from scratch "
+                         "(deterministic seeds reproduce identical results "
+                         "while persisting per-unit arrays); takes "
+                         "precedence over --resume for these regions")
     args = ap.parse_args()
 
     torch.set_num_threads(min(8, torch.get_num_threads()))
     t0 = time.time()
     out_path = RESULTS / "wave28_expanded_eval.json"
-    if args.resume and out_path.exists():
+    if (args.resume or args.recompute) and out_path.exists():
         payload = json.loads(out_path.read_text())
         print(f"[RESUME] Loaded {out_path}")
     else:
@@ -206,7 +211,8 @@ def main() -> None:
     }
 
     for region in args.regions:
-        existing_rd = payload["regions"].get(region, {}) if args.resume else {}
+        existing_rd = payload["regions"].get(region, {}) \
+            if args.resume and not args.recompute else {}
         if args.resume and existing_rd:
             variants_todo = [v for v in VARIANTS
                              if not _cell_complete(existing_rd, v,

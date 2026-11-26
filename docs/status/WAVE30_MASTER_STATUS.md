@@ -39,10 +39,29 @@
 
 ## 4. Active work
 
-- **W30-P1-01 (RUNNING next)**: southeast_australia + thames_north_sea
-  expanded eval, protocol frozen identical to the 3 completed regions
-  (`--epochs 15 --fm-seeds 42 99 --downstream-seeds 42 99 7 --n-aug 2000
-  --n-test 600 --downstream-steps 200`), GPU5, resume-capable.
+- **W30-P1 COMPLETE (2026-11-26 17:55 CST)**: five-region expanded eval done.
+  - New regions: southeast_australia (all 8 augmented cells improve,
+    −1.29…−3.02%, p ≤ 0.0005), thames_north_sea (all 8 harm, +3.44…+4.31%,
+    p = 0.0001). NaN-window fix applied first (frozen window_index protocol).
+  - Legacy 3 regions deterministically recomputed on GPU5 (drift ≤ 0.1 pp
+    vs backup `wave28_expanded_eval_pre_recompute_20261126.json`); per-unit
+    arrays + event IDs now persisted for ALL five regions.
+  - Aggregate: 20/20 primary comparisons; 12 survive Bonferroni α=0.0025
+    (6 beneficial / 6 harmful); TCN responds more strongly than GRU in
+    every region. Artifacts: `wave30_expanded_five_region.json`,
+    `wave30_expanded_event_metrics.csv` (1,441 rows),
+    `docs/experiments/WAVE30_FIVE_REGION_EVAL.md`,
+    paper Table `tab:five-region` (26-page PDF compiles clean).
+
+## 4b. Headline scientific change vs Wave 2.9
+
+The Wave 2.8 "no cell shows a seed-robust improvement" conclusion is now
+SUPERSEDED by region-dependent results: generative augmentation produces
+seed-robust BENEFIT in Southeast Australia and Gulf-Coast TCN, and
+seed-robust HARM in Thames and Charleston TCN. Overall fidelity gate
+status (INCONCLUSIVE everywhere) does not predict downstream value.
+This reframes RQ1/RQ4: the question is no longer "does augmentation help"
+but "which regions/architectures benefit and why" (P3/P4).
 
 ## 5. Standing constraints (unchanged)
 

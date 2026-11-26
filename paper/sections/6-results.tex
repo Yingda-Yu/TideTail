@@ -444,24 +444,69 @@ What the corrected pilot establishes, beyond that readiness, is a directional
 finding under a controlled protocol: partially fidelious standard-FM
 augmentation does not help extreme-event forecasting in these two regions.
 
-\paragraph{Six-cell comparison.} The Wave 2.8 follow-up completes the design:
-$\{$A0, standard-FM, tail-aware-FM$\} \times \{$GRU, TCN$\}$ per region, with
-two generator seeds (42, 99), three downstream seeds, validation-only epoch
-selection and a frozen augmentation ratio. \textbf{No cell shows a seed-robust
-improvement.} Charleston is harmed consistently across all four augmented
-cells and both generator seeds ($+0.67\%$ to $+1.19\%$, all sign-flip
-$p<0.04$ over 40 units), with TCN hurt more than GRU. NY Bight \emph{flips
-sign with the generator seed}: seed 42 harms ($+0.45\%$ to $+1.42\%$) while
-seed 99 improves both forecasters ($-0.48\%$ to $-0.85\%$, GRU $p=3\times
-10^{-4}$) — despite \emph{worse} fidelity (scale ratio 1.250 vs 1.097).
-Tail-awareness leaves every cell essentially unchanged (differences
-$\le 0.1$ percentage points; q95 over-exceedance $1.60$–$1.73$ in all
-generators). Two conclusions follow. First, the answer to the title question
-is, for the current generator quality: \emph{generative augmentation does not
-reliably help, and can significantly harm, extreme-event forecasting under a
-leakage-controlled multi-year protocol}. Second, a methodological hazard:
-generator-seed variance alone can flip the sign of the augmentation effect,
-so single-seed augmentation studies in this domain are uninterpretable.
+\paragraph{Five-region comparison.} The Wave 3.0 follow-up completes the
+design across all five regions: $\{$A0, standard-FM, tail-aware-FM$\} \times
+\{$GRU, TCN$\}$, two generator seeds (42, 99), three downstream seeds,
+validation-only epoch selection and a frozen augmentation ratio
+(Table~\ref{tab:five-region}). The pre-specified primary family is
+$5 \times 2 \times 2 = 20$ seed-averaged event-unit paired comparisons
+(Bonferroni $\alpha = 0.0025$); \textbf{12 comparisons survive correction,
+and their signs split evenly: six harmful, six beneficial}.
+Region heterogeneity dominates (Table~\ref{tab:five-region}): augmentation
+\emph{helps} in Southeast Australia (all four cells improve,
+$-1.3\%$ to $-3.0\%$, $p \le 0.0005$, seed-robust) and for the Gulf Coast
+TCN ($-1.1\%$ to $-1.3\%$, $p = 0.0001$), is seed-robustly \emph{harmful}
+in Thames/North Sea (all four cells $+3.4\%$ to $+4.3\%$, $p=0.0001$) and
+in Charleston TCN ($+1.6\%$, $p=0.0001$), and is null-to-mixed in NY Bight
+(GRU null; TCN $-0.7\%$ at $p=0.0095$, below the correction threshold).
+Architecture dependence is equally systematic: \emph{every} surviving TCN
+comparison responds more strongly than its GRU counterpart in the same
+region, in both directions (harm in Charleston/Thames, benefit in
+Gulf/SE-Australia), while GRU responses are compressed toward zero ---
+consistent with the mechanism analysis of
+Section~\ref{sec:results-augmentation}. Tail-awareness never changes the
+qualitative conclusion (paired cells differ by $\le 0.3$ percentage
+points). Two conclusions follow. First, the answer to the title question
+is region- and architecture-dependent: \emph{generative augmentation can
+produce genuine, seed-robust improvements under a leakage-controlled
+multi-year protocol, but it can equally produce equally robust harm ---
+and overall fidelity gate status (INCONCLUSIVE everywhere) does not
+predict which}. Second, a methodological hazard: generator-seed variance
+can flip the sign of the augmentation effect (NY Bight), so single-seed
+augmentation studies in this domain are uninterpretable. All conclusions
+are retrospective (Section~\ref{sec:results-expanded}); the generator
+over-generates tails in SE-Australia (q95 exceedance $2.6\times$,
+$q99$ $6.0\times$) yet still improves forecasts there, while the
+under-dispersed Thames generator ($0.82$--$0.86$) harms --- overall
+dispersion fidelity alone is a poor predictor of downstream value, which
+motivates the tail-calibration analysis of
+Section~\ref{sec:results-augmentation}.
+
+\begin{table}[t]
+\centering
+\caption{Five-region expanded evaluation (Wave 3.0). Extreme-event MAE
+delta vs.\ real-only A0 (\%), seed-averaged over generator seeds $\{42,
+99\}$, with sign-flip permutation $p$ on seed-averaged per-event-unit
+paired deltas. Units = independent POT event units in 2022--2024. All
+generators are fidelity-INCONCLUSIVE. Positive $\Delta$ = harm;
+Bonferroni $\alpha = 0.0025$ over 20 comparisons.}
+\label{tab:five-region}
+\small
+\begin{tabular}{lrrrrrrr}
+\toprule
+Region & Units & $A0_G$ & $A0_T$ & std GRU & std TCN & tail GRU & tail TCN \\
+\midrule
+Charleston & 40 & 0.117 & 0.117 & $+0.89$ & $+1.55^{*}$ & $+0.85$ & $+1.56^{*}$ \\
+NY Bight   & 51 & 0.139 & 0.143 & $-0.18$ & $-0.71$    & $-0.17$ & $-0.70$    \\
+US Gulf    & 37 & 0.150 & 0.149 & $+0.12$ & $-1.29^{*}$ & $+0.27$ & $-1.11^{*}$ \\
+SE Australia & 20 & 0.074 & 0.076 & $-1.36^{*}$ & $-3.02^{*}$ & $-1.29^{*}$ & $-2.88^{*}$ \\
+Thames/N.\ Sea & 32 & 0.239 & 0.229 & $+4.31^{*}$ & $+3.44^{*}$ & $+4.30^{*}$ & $+3.46^{*}$ \\
+\bottomrule
+\multicolumn{8}{l}{\footnotesize $^{*}$ survives Bonferroni $\alpha=0.0025$ (12 of 20 comparisons; six beneficial, six harmful).}\\
+\multicolumn{8}{l}{\footnotesize Full per-seed detail, CIs and per-unit metrics:
+\texttt{wave30\_expanded\_five\_region.json} / \texttt{\_event\_metrics.csv}.}\\
+\end{tabular}
+\end{table}
 
 \subsection{Six-arm physics ablation}
 \label{sec:results-physics-ablation}
