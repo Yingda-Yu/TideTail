@@ -488,5 +488,56 @@ comparisons, Bonferroni $\alpha = 0.0025$, with arm-vs-A0 deltas reported
 separately as exploratory. As everywhere in this paper, the
 priors are regularizers, \emph{not} governing-equation PDE constraints, and no
 bathymetry is used (regional wind coefficients absorb fetch effects; GEBCO was
-deferred); results appear in
-Table~\ref{tab:physics-ablation} once the run completes.
+deferred). The completed run is summarised in
+Table~\ref{tab:physics-ablation}.
+
+\begin{table}[t]
+\centering
+\caption{Six-arm physics ablation (both regions complete; two generator
+seeds per arm, mean over seeds). Top: extreme-event MAE delta vs.\ the
+real-only A0 baseline per architecture. Bottom: the five pre-specified
+mechanism contrasts (C1--C5) with sign-flip permutation $p$; Bonferroni
+$\alpha=0.0025$ over 20 comparisons. All generator arms are fidelity-INCONCLUSIVE
+(scale ratios $0.83$--$1.08$). Positive $\Delta$ = harm.}
+\label{tab:physics-ablation}
+\small
+\begin{tabular}{llrrrrrr}
+\toprule
+& & \multicolumn{6}{c}{Arm $\Delta$MAE vs.\ A0 (\%)} \\
+Region & Arch & std & era5 & press & wind & comb & comb+tail \\
+\midrule
+Charleston & GRU & $+0.70$ & $+0.26$ & $+0.79$ & $+0.80$ & $+0.78$ & $+0.87$ \\
+Charleston & TCN & $-0.32$ & $-0.72$ & $-0.73$ & $-0.64$ & $-0.70$ & $-0.54$ \\
+NY Bight   & GRU & $-1.35$ & $-1.02$ & $-1.12$ & $-1.21$ & $-1.14$ & $-1.11$ \\
+NY Bight   & TCN & $+0.07$ & $+0.96$ & $+0.15$ & $+0.00$ & $+0.05$ & $+0.17$ \\
+\midrule
+\multicolumn{8}{l}{Primary mechanism contrasts (mean paired $\Delta$ MAE; $p$):}\\
+\multicolumn{8}{l}{C1 era5$-$std: CH GRU $-0.47$~mm ($p{=}0.008$); CH TCN $-0.42$~mm ($p{=}0.092$); NY GRU $+0.39$~mm ($p{=}0.42$); NY TCN $+1.02$~mm ($p{=}0.029$)}\\
+\multicolumn{8}{l}{C2 press$-$era5: CH GRU $+0.57$~mm ($p{=}0.0012^{\dagger}$); CH TCN $-0.00$~mm ($p{=}0.98$); NY GRU $-0.11$~mm ($p{=}0.33$); NY TCN $-0.93$~mm ($p{=}0.050$)}\\
+\multicolumn{8}{l}{C3 wind$-$era5: CH GRU $+0.57$~mm ($p{=}0.00049^{\dagger}$); CH TCN $+0.09$~mm ($p{=}0.62$); NY GRU $-0.22$~mm ($p{=}0.14$); NY TCN $-1.10$~mm ($p{=}0.056$)}\\
+\multicolumn{8}{l}{C4 comb$-$era5: CH GRU $+0.55$~mm ($p{=}0.00049^{\dagger}$); CH TCN $+0.03$~mm ($p{=}0.85$); NY GRU $-0.13$~mm ($p{=}0.24$); NY TCN $-1.04$~mm ($p{=}0.037$)}\\
+\multicolumn{8}{l}{C5 comb+tail$-$comb: CH GRU $+0.09$~mm ($p{=}0.010$); CH TCN $+0.16$~mm ($p{=}0.050$); NY GRU $+0.03$~mm ($p{=}0.32$); NY TCN $+0.14$~mm ($p{=}0.021$)}\\
+\bottomrule
+\multicolumn{8}{l}{\footnotesize $\dagger$ survives Bonferroni $\alpha=0.0025$; all three survivors are \emph{increases} in error (harm), seed-direction-consistent.}\\
+\end{tabular}
+\end{table}
+
+Three findings follow. First, \textbf{no arm beats standard consistently}:
+the arm-vs-A0 deltas flip sign across architectures and regions (e.g.\
+NY-Bight GRU improves $\approx 1.1$--$1.4\%$ under every arm while NY-Bight
+TCN degrades under every arm), and no secondary arm-vs-A0 comparison
+survives correction. Second, the only Bonferroni-surviving comparisons are
+\emph{harmful}: on Charleston GRU, all three physics regularizers
+(pressure, wind, combined) \emph{increase} extreme-event MAE by
+$0.55$--$0.57$~mm relative to ERA5 conditioning alone, seed-direction
+consistent (C2--C4, $p \le 0.0012$). Sub-millimetre absolute magnitude
+bounds any practical significance, but the direction is unambiguous: the
+train-only inverse-barometer and coast-normal-stress penalties, as
+implemented here, do not transfer into a downstream benefit even in the
+region where the statistical relations were fitted. Third, \textbf{ERA5
+conditioning alone is not reliably beneficial either} (C1: Charleston GRU
+shows a $-0.47$~mm improvement at $p=0.0077$ uncorrected, but NY-Bight
+C1 effects flip sign across generator seeds), so the paper does not claim
+meteorological-conditioning value from this design; a direct
+ERA5-as-input forecasting control is analysed in
+Section~\ref{sec:results-physics}.
