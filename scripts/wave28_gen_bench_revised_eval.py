@@ -346,11 +346,26 @@ def main() -> None:
                 t0 = time.time()
                 model = train_family(fam, data, args.epochs, 256, seed)
                 train_s = round(time.time() - t0, 1)
-                # persist checkpoint for auditability (fairness disclosure)
+                # persist checkpoint for auditability (fairness disclosure).
+                # Trainers return {"gen": closure, ...}; recover the torch
+                # modules captured in the generating closure when present.
+                def _extract_modules(obj):
+                    mods = {}
+                    if hasattr(obj, "state_dict"):
+                        mods[type(obj).__name__] = obj
+                    elif getattr(obj, "__closure__", None):
+                        for c in obj.__closure__:
+                            v = c.cell_contents
+                            if hasattr(v, "state_dict"):
+                                mods.setdefault(type(v).__name__, v)
+                    return mods
+
                 ckpt_dir = RESULTS / "fidelity_checkpoints"
                 ckpt_dir.mkdir(parents=True, exist_ok=True)
                 ckpt_path = ckpt_dir / f"{region}_{fam}_seed{seed}.pt"
-                torch.save(model["net"].state_dict(), ckpt_path)
+                mods = _extract_modules(model["gen"])
+                torch.save({k: m.state_dict() for k, m in mods.items()},
+                           ckpt_path)
                 ckpt_sha = hashlib.sha256(ckpt_path.read_bytes()).hexdigest()
                 t_sample = time.time()
                 if fam == "diffusion_ts":

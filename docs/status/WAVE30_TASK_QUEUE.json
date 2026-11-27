@@ -1,9 +1,9 @@
 {
   "queue_version": "3.0-wave30",
   "created": "2026-11-26",
-  "last_updated": "2026-11-27T14:12:00+08:00",
+  "last_updated": "2026-11-27T15:10:00+08:00",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "5024e4e",
+  "head_sha": "REPLACED_ON_COMMIT",
   "pr": 23,
   "pr_state": "DRAFT — do not merge main",
   "gpu_policy": "GPU0 PROHIBITED. 2026-11-26 16:43 nvidia-smi: GPU5 (286MiB) and GPU8 (286MiB) effectively free; GPU4/6/9 lightly used by others; GPU1/2/3/7 heavily used. Use CUDA_VISIBLE_DEVICES=5 (or 8) with --device cuda:0 mapping. Heavy jobs serial.",
@@ -117,9 +117,9 @@
       "run_id": "wave30_p2_fidelity_20261126 PID 3543561",
       "commit": "f839384",
       "acceptance": "5 regions x 7 families x 2 gen seeds accounted; stratified windows from FULL test frame; strata sizes persisted; fairness fields persisted",
-      "result": "RUN 1 COMPLETE 2026-11-27 02:24 CST: PID 3543561 exited normally ('[WROTE]' final line, no errors/tracebacks in log). ALL 70/70 cells accounted (Charleston 14, NY-Bight 14 [8818s], Gulf 14 [2847s], SE-Aus 14 [8301s], Thames 14 [1116s]; 6968-8601 test windows per region, 171-174 stratified unique windows selected). Run-1 JSON preserved: data/results/backups/wave30_generator_fidelity_run1_20261127_140753.json. Run-1 early signals (legacy 6-field metrics): diffusion_ts s42 scale=NaN in NY+Gulf (generation failure pattern), timegrad scale collapse 14927-715847, FM/tailFM 0.70-1.46. REFRESH PASS LAUNCHED 14:08 CST: PID 1269171, script@1c149b1 with --resume --refresh (CPU-only CUDA_VISIBLE_DEVICES='', OMP 8), log data/logs/wave30_p2_fidelity_refresh.log, resumed from run-1 JSON and recompute-confirmed '[REFRESH] ... lacks full metrics'. Adds full metric set (mean_bias, autocorr_rmse, psd, peak KS/timing/duration, diversity, dup diagnostics) + fairness fields + checkpoints. ETA ~10-14h. Tail stratum disclosure: all_extreme n=4-5 per region -> INCONCLUSIVE classification where support insufficient; no robust q99 claim from 4-5 events.",
+      "result": "REFRESH RUNNING (attempt 2) — real PID 1425288, launched 15:02 CST 2026-11-27 (setsid-detached, CPU-only CUDA_VISIBLE_DEVICES='', OMP_NUM_THREADS=8). Attempt 1 (PID 1269182, 14:08) CRASHED at ~50s: KeyError 'net' at checkpoint save (trainers return {'gen': closure, 'params': ...}, no 'net' key); crash recorded honestly; Run-1 JSON untouched (backup data/results/backups/wave30_generator_fidelity_run1_20261127_140753.json). FIX: checkpoint save now extracts torch modules from the gen closure (_extract_modules); verified via synthetic smoke test for ALL 7 families (VelocityTCN/ConditionalVAE/TimeGradDenoiser/TemporalDenoiser/ConditionalWGANGP/ResidualDenoiser all extractable; diffusion_ts requires train_tot_h — present in real loader). Attempt-2 verified: first checkpoint written 15:03 (charleston_flow_matching_seed42.pt, 132KB) — past the previous crash point; JSON atomic writes resuming. PID mapping note: 1269171 was the transient setsid wrapper, 1269182 was the attempt-1 python. pgrep self-matches of the bash wrapper shell are NOT refresh processes. ETA ~10-14h for 70 cells (training ~40s-17min/cell family-dependent; full-metric evaluation dominates).",
       "failure_reason": null,
-      "next_action": "monitor refresh PID 1269171; on completion verify full metrics + fairness fields -> wave30_generator_fidelity_stratified.csv -> WAVE30_GENERATOR_BENCHMARK.md + WAVE30_GENERATOR_FAILURE_ANALYSIS.md -> P3"
+      "next_action": "monitor PID 1425288; on completion verify 5x7x2 full metrics + fairness fields -> stratified CSV -> WAVE30_GENERATOR_BENCHMARK.md + WAVE30_GENERATOR_FAILURE_ANALYSIS.md -> P3"
     },
     {
       "task_id": "W30-P3-01",
