@@ -3,7 +3,7 @@
   "created": "2026-11-26",
   "last_updated": "2026-11-27T15:10:00+08:00",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "REPLACED_ON_COMMIT",
+  "head_sha": "e64fde6",
   "pr": 23,
   "pr_state": "DRAFT — do not merge main",
   "gpu_policy": "GPU0 PROHIBITED. 2026-11-26 16:43 nvidia-smi: GPU5 (286MiB) and GPU8 (286MiB) effectively free; GPU4/6/9 lightly used by others; GPU1/2/3/7 heavily used. Use CUDA_VISIBLE_DEVICES=5 (or 8) with --device cuda:0 mapping. Heavy jobs serial.",
