@@ -1,5 +1,6 @@
 {
-  "audit_version": "wave30_arch_interaction_v1",
+  "audit_version": "wave30_arch_interaction_v2",
+  "correction_note": "v1 compared raw signflip_p against BONF_ALPHA (bug); v2 compares the Bonferroni-adjusted p. Corrected count 3/10 survivors (SE-Aus tail_aware p_bonf=0.008 does not pass).",
   "estimand": "TCN augmentation effect minus GRU augmentation effect, per event unit (seed-averaged), paired on event ID; positive = TCN more positive (more harm/less benefit) than GRU",
   "n_tests": 10,
   "bonferroni_alpha": 0.005,
@@ -171,7 +172,7 @@
       "mc_se": 0.00028270129394086736,
       "n_pairs": 20,
       "bonferroni_p": 0.007999200079992,
-      "survives_bonferroni": true
+      "survives_bonferroni": false
     },
     {
       "region": "thames_north_sea",
@@ -219,12 +220,11 @@
   "summary": {
     "n_comparisons": 10,
     "n_valid": 10,
-    "n_survive_bonferroni": 4,
+    "n_survive_bonferroni": 3,
     "survivors": [
       "us_gulf_coast/standard",
       "us_gulf_coast/tail_aware",
-      "southeast_australia/standard",
-      "southeast_australia/tail_aware"
+      "southeast_australia/standard"
     ],
     "sign_consistency": {
       "south_atlantic_charleston/standard": "tcn_more_positive",

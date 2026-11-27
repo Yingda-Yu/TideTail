@@ -78,13 +78,18 @@ def paired_stats(delta: np.ndarray, seed: int = 0) -> dict:
     st["bonferroni_p"] = (min(1.0, st["signflip_p"] * N_TESTS)
                           if st["signflip_p"] is not None else None)
     st["survives_bonferroni"] = bool(
-        st["signflip_p"] is not None and st["signflip_p"] < BONF_ALPHA)
+        st["bonferroni_p"] is not None and st["bonferroni_p"] < BONF_ALPHA)
     return st
 
 
 def main() -> None:
     src = json.loads(SRC.read_text())
-    out = {"audit_version": "wave30_arch_interaction_v1",
+    out = {"audit_version": "wave30_arch_interaction_v2",
+           "correction_note": "v1 compared raw signflip_p against "
+                              "BONF_ALPHA (bug); v2 compares the "
+                              "Bonferroni-adjusted p. Corrected count "
+                              "3/10 survivors (SE-Aus tail_aware "
+                              "p_bonf=0.008 does not pass).",
            "estimand": "TCN augmentation effect minus GRU augmentation "
                        "effect, per event unit (seed-averaged), paired on "
                        "event ID; positive = TCN more positive (more harm/"

@@ -85,13 +85,17 @@ GRU +4.30% vs TCN +3.45% harm — GRU responds more) must NOT be stated as
 a proven universal architecture effect.
 
 Direct paired TCN−GRU interaction test on matched event units
-(`scripts/wave30_arch_interaction.py` → `wave30_architecture_interaction.json`):
+(`scripts/wave30_arch_interaction.py` → `wave30_architecture_interaction.json`,
+v2 corrected 2026-11-27):
 10 paired tests (5 regions × std/tail arms), Bonferroni α=0.005.
-**4/10 survive, beneficial regions only**: US Gulf Coast −2.09 mm
-(p_bonf=0.001), SE Australia −1.29 mm (p_bonf=0.004; tail arm
-−1.29 mm p_bonf=0.008 also survives). Charleston REVERSES (+0.76 mm,
-ns after correction); Thames ns (−2.41 mm, huge event variance);
-NY Bight ns. Conclusion: architecture interaction is region-dependent,
+**CORRECTION (Wave 3.2, verified independently): 3/10 survive, not 4/10.**
+v1 compared the RAW signflip_p against α=0.005 (bug); the corrected v2
+compares the Bonferroni-adjusted p. Survivors: US Gulf Coast −2.09 mm
+(p_bonf=0.001), US Gulf tail −2.06 mm (p_bonf=0.001), SE Australia std
+−1.29 mm (p_bonf=0.004). SE Australia tail −1.22 mm (p_bonf=0.008) does
+NOT pass. Charleston REVERSES (+0.76 mm, ns after correction); Thames ns
+(−2.41 mm, huge event variance); NY Bight ns. 8/10 interactions negative.
+Conclusion unchanged: architecture interaction is region-dependent,
 not universal — the paper states the 4/5 pattern as descriptive.
 
 ## 5. Standing constraints (unchanged)
