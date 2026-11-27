@@ -78,89 +78,162 @@ observed at a small budget can reverse once the model actually fits the data.
 \subsection{Why GRU and TCN respond differently}
 \label{subsec:why-arch}
 
-Under corrected within-architecture pairing, the TCN improves in 110 of 160
-comparisons (mean $-7.08\%$) while the GRU improves in 86 of 160 (mean
-$-0.17\%$; Figure~\ref{fig:arch}). This is a large relative difference and it
-reverses the earlier, incorrectly paired conclusion that architecture effects
-dwarf augmentation effects.
+The paired interaction test (Section~\ref{sec:results-expanded}) bounds what
+may be claimed: of ten TCN-minus-GRU contrasts, only three survive Bonferroni
+correction --- US Gulf (standard and tail-aware arms, $-2.09$/$-2.06$~mm,
+$p_{\text{bonf}} = 0.001$) and Southeast Australia (standard arm, $-1.29$~mm,
+$p_{\text{bonf}} = 0.004$) --- and the Southeast Australia tail-aware arm
+falls just short ($-1.22$~mm, $p_{\text{bonf}} = 0.008$). Eight of ten
+interactions are negative (TCN benefits more or suffers less), but in the two
+harm-dominated regions the direction either reverses (Charleston: TCN harmed
+more, $+0.76$~mm, ns after correction) or is drowned by event variance
+(Thames: $-2.41$~mm, CI $[-5.92,+0.83]$~mm).
 
-We can state the comparison and bound the explanation, but we cannot yet prove
+We can state the comparison and bound the explanation, but we cannot prove
 the mechanism. The most plausible account is capacity allocation: the TCN's
 dilated receptive field integrates the full 96\,h history through stacked
-convolutions, and synthetic windows add high-frequency, storm-like variability
-that the convolutional filters can exploit as data-driven regularisation. The
-GRU's gating saturates on the same inputs, so extra samples shift the operating
-point rather than the effective receptive field. An alternative account is that
-the GRU is already closer to its achievable error floor on these splits, leaving
-less head for augmentation to recover. Both accounts predict the observed
-direction; discriminating between them requires a receptive-field ablation and a
+convolutions, and synthetic windows add high-frequency, storm-like
+variability that the convolutional filters can exploit as data-driven
+regularisation. The GRU's gating saturates on the same inputs, so extra
+samples shift the operating point rather than the effective receptive field.
+An alternative account is that the GRU is already closer to its achievable
+error floor on these splits, leaving less headroom for augmentation to
+recover. Both accounts predict the observed direction in beneficial regions;
+discriminating between them requires a receptive-field ablation and a
 learning-curve study that we did not run, and we therefore present them as
 hypotheses rather than findings.
 
 \subsection{Why some regions benefit and others do not}
 \label{subsec:why-region}
 
-Thames is the only region where augmentation harms both architectures
-(+9.78\% GRU, +4.88\% TCN; Figure~\ref{fig:arch}). The physical reading is
-straightforward but \emph{not} established: Thames has the largest tidal range
-in the set ($\pm3.3$~m from FES2022, i.e. a 6.6~m range), and surge is
-estimated to account for only 20--30\% of total water-level variance. A
-generator fitted to that residual therefore produces samples dominated by noise,
-and appending them adds variance without adding storm information. Thames also
-has 24.7\% NaN gaps in its source series, which further weakens the fit.
+The five-region result is not a scatter around zero; it is structured, and
+the structure is statistically confirmed. A Cochran--Q test rejects effect
+homogeneity across regions for every augmentation arm
+($p \le 1.4\times10^{-10}$; Holm-corrected pairwise contrasts localise the
+differences), so region identity is a tested moderator of the augmentation
+effect, not a descriptive pattern
+(Section~\ref{sec:results-heterogeneity}).
 
-This is a hypothesis, not a causal finding: across the five regions the
-correlation between tidal range and augmentation effect is $r=0.66$ with
-$N=5$, which is not statistically significant and cannot separate tidal range
-from storm climatology, series length or data quality.
+The physical reading of the extremes is straightforward but not
+established. Thames/North Sea, where all four augmentation cells harm
+($+3.44$ to $+4.31\%$), has the largest tidal range in the set ($\pm3.3$~m
+from FES2022, i.e.\ a 6.6~m range), and surge is estimated to account for
+only 20--30\% of total water-level variance. A generator fitted to that
+residual therefore produces samples dominated by noise, and appending them
+adds variance without adding storm information. Thames also has 24.7\% NaN
+gaps in its source series, which further weakens the fit. Southeast
+Australia, where all four cells improve ($-1.29$ to $-3.02\%$), is
+microtidal with a short, clean residual record. A single cross-region
+correlation (tidal range versus effect, $N=5$) cannot separate tidal regime
+from storm climatology, series length or data quality, and we do not make
+that claim.
 
-Southeast Australia shows the largest TCN gain ($-21.69\%$) yet essentially no
-GRU gain ($-0.59\%$), with the GRU baseline already at 0.043~m. A large
-\emph{relative} change on a small absolute error is easy to obtain and should not
-be read as a large operational benefit. NY Bight and the Gulf show moderate
-gains for both architectures; Charleston, the region where the withdrawn
-``significant'' claim originated, shows $-4.30\%$ for the GRU and $-0.09\%$ for
-the TCN under correction.
+\subsection{Severity dependence: the effect attenuates where it matters most}
+\label{subsec:why-severity}
 
-A single cross-region correlation (tidal range versus gain, $N=5$) cannot
-support a causal claim, and we do not make one.
+Per-event severity analysis sharpens the regional picture
+(Section~\ref{sec:results-heterogeneity}): in every region where a severity
+gradient exists, augmentation effects --- beneficial and harmful alike ---
+are concentrated in low-to-moderate severity events and attenuate at high
+severity. Southeast Australia's benefit shrinks as event severity rises
+(Spearman $\rho = +0.60$ to $+0.74$ across arms; low-severity median split
+$-2.14\%$ versus $-0.42\%$ high-severity), and Thames' and Charleston's
+harm shrinks correspondingly ($\rho = -0.34$ to $-0.68$; Thames median split
+$+10.09\%$ versus $+1.81\%$). Gulf Coast and NY Bight show no severity
+gradient, and no seasonal moderation survives correction (Holm-adjusted
+$p > 0.15$ everywhere; a null we report rather than bury).
+
+This is the single most operationally relevant finding of the programme:
+generative augmentation, as implemented here, mostly informs the forecaster
+about the \emph{frequent} regime's structure rather than the \emph{rare}
+regime's dynamics. It directly motivates the bounded tail-calibration study
+(Section~\ref{sec:results-tail-calibration}) --- and its negative prospect:
+if the effect attenuates exactly where augmentation was supposed to help,
+the burden of proof for tail-targeted generator variants is high.
 
 \subsection{What independent-event evaluation changes}
 \label{subsec:why-events}
 
-Three things change, and all three move in the conservative direction.
+Three things change relative to window-level evaluation, and all three move
+in the conservative direction.
 
-First, \textbf{the effective sample size collapses}. A 2024 test split supplies
-6--15 extreme units per region, not thousands of windows, so the standard error
-of an extreme-window MAE is an order of magnitude larger than a window-level
-analysis implies. Second, \textbf{multiplicity becomes binding}. A 320-test
-family at $\alpha=1.563\times10^{-4}$ is not satisfied by any of the 320
-comparisons once pairing is fixed. Third, \textbf{baseline variability becomes
-comparable to the effect}. Identical A0 recipes differ by up to 25\% across seeds
-(Figure~\ref{fig:seedvar}), which is the same order as the mean augmentation
-effect in most regions. Any claim resting on a single baseline seed is therefore
-unsupported, whether or not it clears a nominal p-value.
+First, \textbf{the effective sample size collapses}. The five regional test
+sets supply 20--51 event units each, not thousands of windows, so the
+standard error of an extreme-event MAE is an order of magnitude larger than
+a window-level analysis implies; the exact-enumeration physics contrasts
+(n = 14--15) have a resolution floor of $1/16{,}384$ and the Monte-Carlo
+floor of the larger contrasts is $9.999\times10^{-5}$ --- adequate for our
+thresholds ($\ge 0.0018$), but any design promising finer resolution needs
+more events, not more windows. Second, \textbf{multiplicity becomes
+binding}: each pre-specified family carries its own correction
+(Section~\ref{subsec:families}), and no result is reported from an
+undeclared family. Third, \textbf{units are not storms}: the 180 regional
+event units are not 180 independent storms --- declustering is
+within-region, and synoptic drivers can couple nearby regions --- so every
+p-value is a within-region paired statement, and regional heterogeneity is
+tested on region-level estimates, never on pooled units.
 
-One honest limitation remains: the 320-test family does not cover the full search
-space, because tail-aware predictions and discarded hyper-parameters were never
-materialised. The correction is anti-conservative, which strengthens rather than
-weakens the conclusion that nothing survives.
+\subsection{Global fidelity does not predict forecasting utility}
+\label{subsec:why-fidelity-utility}
+
+The programme's cleanest lesson is a disconnection between the two
+qualities the augmentation literature usually optimises. The stratified
+fidelity benchmark (Section~\ref{sec:results-generators}) scores every
+generator on dispersion, Wasserstein distance, spectral and autocorrelation
+structure, peak statistics and sample diversity across season and severity
+strata. Yet the downstream five-region result was produced by Flow Matching
+arms whose own fidelity status is \textsc{inconclusive} (peak-tail
+agreement not established at the benchmark's sample sizes), while the
+pilot's fidelity-\textsc{rejected} generators produced the only surviving
+downstream effects --- all of them harms. Generation quality is neither
+necessary nor sufficient for forecasting utility: a generator can be
+distributionally excellent and operationally useless (Thames), and
+distributionally mediocre and regionally useful (Southeast Australia). What
+matters downstream is what the synthetic windows teach the forecaster about
+the regimes it errs on --- which our severity analysis locates in the
+low-to-moderate range, not the tail.
 
 \subsection{Do physical priors help?}
 \label{subsec:why-physics}
 
-\emph{Pending: the first full-data physics run is withdrawn for the sampling-path
-defect (Section~\ref{sec:results-expanded}), so no statement about whether
-physical priors help can be made until the corrected run completes. What is
-already established is the constraint: the ERA5 anchors lie 4.5--11.7~km from
-the tide gauges while the reanalysis cell is about 28~km across, so a
-reanalysis-conditioned experiment tests only whether a coarse regional
-pressure/wind summary carries usable information, not whether local winds do.}
+The completed six-arm ablation (Section~\ref{sec:results-physics-ablation})
+replaces the earlier ``pending'' statement with a bounded answer. No arm
+beats standard FM consistently: arm-versus-baseline deltas flip sign across
+architectures and regions, and none survives correction. The only
+Bonferroni-surviving contrasts are three Charleston GRU regulariser
+contrasts (C2--C4), each indicating \emph{increased} error of
+$0.55$--$0.57$~mm --- sub-millimetre in absolute terms, but unambiguous in
+direction and seed-consistent. ERA5 conditioning alone is not reliably
+beneficial either (C1 flips sign across seeds in NY Bight). The priors,
+as implemented, are physics-inspired statistical regularisations fitted
+train-only; they do not encode governing equations, and the reanalysis cell
+($\approx$28\,km) versus gauge anchor ($4.5$--$11.7$~km) mismatch bounds
+what any such regulariser can express. The honest conclusion is that, in
+this design, adding physical structure to the generator neither produced a
+benefit nor a mechanism-level signature beyond its own regularisation
+penalty.
 
 \subsection{Limitations}
 \label{subsec:limitations}
 
 \begin{itemize}
+    \item \textbf{Retrospective test.} The 2022--2024 test years partially
+    informed earlier exploratory waves (split design, threshold conventions);
+    the primary result is a retrospective test, not an untouched confirmatory
+    holdout. A genuinely confirmatory evaluation would require data beyond
+    2024.
+    \item \textbf{Generator-seed coverage.} Two generator seeds
+    ($\{42, 99\}$) support a per-seed direction-consistency check, not a
+    variance estimate; seed spread is reported per comparison but cannot be
+    pooled into a confidence interval.
+    \item \textbf{Baseline seed variance.} Identical A0 recipes differ by up
+    to 25\% across downstream seeds (Figure~\ref{fig:seedvar}); per-unit
+    seed-averaging controls the paired test, but absolute effect magnitudes
+    inherit this spread.
+    \item \textbf{Extreme-stratum power.} The fidelity benchmark's extreme
+    stratum contains 4--5 units per region: all extreme-stratum fidelity
+    results are \textsc{inconclusive} by design and never pooled into a tail
+    claim.
     \item \textbf{Resolution.} ERA5 is 0.25$^\circ$; the Charleston anchor is
     11.7~km from its cell centre, so near-coastal pressure and wind are cell
     averages. No downscaling was attempted.
@@ -171,8 +244,10 @@ pressure/wind summary carries usable information, not whether local winds do.}
     the canonical-TC overlay is absent from the existing prediction archives.
     \item \textbf{Checkpoint reuse.} No existing checkpoint can be evaluated on
     2022--2024; the expanded protocol required retraining from scratch.
-    \item \textbf{Compute.} All recovery pilots are single-region CPU runs;
-    GPU0 is prohibited and every other GPU was occupied. Conclusions are
+    \item \textbf{Compute.} Most recovery and benchmark work is CPU-only
+    (GPU0 prohibited; heavy jobs strictly serial after a recorded
+    systemd-oomd kill during a three-way concurrency incident); the
+    five-region recompute used a single shared GPU. Conclusions are
     correspondingly scoped.
     \item \textbf{Thames data quality.} 24.7\% of the source timeline is NaN,
     which both reduces its unit count and weakens any generator fitted to it.
@@ -181,12 +256,12 @@ pressure/wind summary carries usable information, not whether local winds do.}
     epochs are neither equal compute nor evidence of convergence, so its
     rejections are implementation-at-budget statements, not family verdicts.
     Its fidelity statistics are additionally computed on the first 200
-    consecutive test windows (a single early-winter slice); a
-    season-stratified revised evaluation is reported separately and the pilot
-    artifact is preserved unchanged.
-    \item \textbf{Downstream seed coverage.} The physics and benchmark
-    studies draw one generator sample set per seed; generator-seed variance
-    alone can flip augmentation signs (Section~\ref{sec:results-expanded}),
-    so per-seed direction consistency, not a single p-value, is the
-    robustness criterion.
+    consecutive test windows (a single early-winter slice); the
+    season-stratified revised evaluation
+    (Section~\ref{sec:results-generators}) supersedes it for fidelity
+    statements and the pilot artifact is preserved unchanged.
+    \item \textbf{Tail calibration is exploratory.} The bounded
+    tail-calibration study (Section~\ref{sec:results-tail-calibration}) uses
+    the same retrospective test years; it is classified as an exploratory
+    extension and does not carry confirmatory weight.
 \end{itemize}

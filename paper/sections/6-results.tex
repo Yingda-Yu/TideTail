@@ -508,8 +508,8 @@ over-generates tails in SE-Australia (q95 exceedance $2.6\times$,
 $q99$ $6.0\times$) yet still improves forecasts there, while the
 under-dispersed Thames generator ($0.82$--$0.86$) harms --- overall
 dispersion fidelity alone is a poor predictor of downstream value, which
-motivates the tail-calibration analysis of
-Section~\ref{sec:results-augmentation}.
+motivates the bounded tail-calibration analysis of
+Section~\ref{sec:results-tail-calibration}.
 
 \begin{table}[t]
 \centering
@@ -536,6 +536,44 @@ Thames/N.\ Sea & 32 & 0.239 & 0.229 & $+4.31^{*}$ & $+3.44^{*}$ & $+4.30^{*}$ & 
 \texttt{wave30\_expanded\_five\_region.json} / \texttt{\_event\_metrics.csv}.}\\
 \end{tabular}
 \end{table}
+
+\subsection{Regional heterogeneity, severity and season dependence}
+\label{sec:results-heterogeneity}
+
+Three pre-specified mechanism probes (cluster-bootstrap Cochran-style $Q$
+with $\text{df}=4$ per augmentation arm; per-event Spearman correlations
+with permutation $p$; across-season permutation tests; $B_{\text{boot}} =
+10{,}000$, $B_{\text{perm}} = 5{,}000$, seed 20261126) analyse the same
+1{,}440-row per-event metric table underlying
+Table~\ref{tab:five-region}. Nothing in these probes feeds model selection.
+
+\paragraph{Regional heterogeneity is a tested finding.} Effect homogeneity
+across regions is rejected for every augmentation arm: $Q = 51.9$
+($p = 1.4\times10^{-10}$, standard-GRU), $78.3$ ($4.0\times10^{-16}$,
+standard-TCN), $53.4$ ($7.2\times10^{-11}$, tail-GRU), $76.2$
+($1.1\times10^{-15}$, tail-TCN). Holm-corrected pairwise contrasts survive
+in 6--8 of 10 pairs per arm, localising the differences to the
+beneficial-region versus harmful-region contrast. The per-region mean
+per-unit effect (standard-GRU) spans $-1.28\%$ (Southeast Australia, CI
+$[-2.04,-0.68]$) to $+5.95\%$ (Thames, CI $[+3.74,+8.33]$), with NY Bight
+at $-0.05\%$ (CI spanning zero).
+
+\paragraph{Effects attenuate at high severity.} Spearman $\rho$ between
+per-event effect and event peak residual is positive in Southeast Australia
+($+0.60$ to $+0.74$ across arms, Holm-significant for three arms): the
+benefit shrinks as events grow more severe (median split: $-2.14\%$ for
+low-severity versus $-0.42\%$ for high-severity events). In Thames and
+Charleston the harmful effects shrink with severity ($\rho = -0.34$ to
+$-0.68$, Holm-significant for five region--arm cells; Thames median split
+$+10.09\%$ versus $+1.81\%$). Gulf Coast and NY Bight show no severity
+gradient ($|\rho| \le 0.11$). The mechanism statement is symmetric:
+augmentation acts mainly on low-to-moderate severity events, in beneficial
+and harmful regions alike.
+
+\paragraph{No seasonal moderation.} Across-season permutation tests within
+each region and arm survive Holm correction nowhere (adjusted $p > 0.15$;
+raw $p$ range 0.036--0.95). With 2--15 events per season cell the power is
+limited, and no seasonal claim is made --- a null reported as such.
 
 \subsection{Six-arm physics ablation}
 \label{sec:results-physics-ablation}
@@ -615,3 +653,24 @@ C1 effects flip sign across generator seeds), so the paper does not claim
 meteorological-conditioning value from this design; a direct
 ERA5-as-input forecasting control is analysed in
 Section~\ref{sec:results-physics}.
+
+\subsection{Bounded tail-calibration extension}
+\label{sec:results-tail-calibration}
+
+The severity analysis above motivates one bounded, pre-registered question:
+can a tail-targeted calibration improve validation fidelity without
+destabilising the overall distribution, and if so, does the improvement
+survive the frozen five-region downstream protocol? The study compares at
+most six arms --- standard FM, the existing tail-aware FM, one
+quantile-calibration candidate, one fidelity-aware sample-selection
+candidate, real-event oversampling, and a simple history-noise control ---
+with all thresholds and hyperparameters chosen on train/validation data
+only and the method frozen before any retrospective test evaluation. It
+prioritises the two regions with opposite augmentation outcomes (Southeast
+Australia and Thames/North Sea). \textbf{Status: this section is
+finalised after the bounded run completes; the study is classified as an
+exploratory extension, not a confirmatory test, because the 2022--2024
+test years are retrospective (Section~\ref{sec:results-expanded}).} A
+negative or null outcome is preserved and reported with the same detail as
+a positive one; no generator re-tuning beyond this bounded set is
+performed.

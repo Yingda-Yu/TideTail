@@ -56,8 +56,7 @@ Our protocol enforces three hard gates before any window creation or normalizati
     validates non-overlapping intervals and unique IDs before splitting.
 
     \item \textbf{Chronological ordering}: train row block must end before
-    validation row block, which must end before test row block. The split is
-    8:1:1 by chronological event-group order, subject to \texttt{min\_events\_per\_split}.
+    validation row block, which must end before test row block.
 
     \item \textbf{Full-support embargo}: for forecast origin time $o$, lookback $L$,
     and horizon $H$, the full temporal support of one forecast window is
@@ -75,12 +74,42 @@ performed on \emph{train rows only} and then applied to all partitions without
 re-fitting. Threshold-run events crossing the train boundary are removed in full
 before window creation, not partial-interval trimmed.
 
+\subsection{Primary evaluation protocol (frozen)}
+\label{subsec:primary-protocol}
+All primary augmentation and fidelity results in this paper use one frozen
+protocol, implemented from scratch because no earlier checkpoint could be
+evaluated on 2022--2024 data:
+
+\begin{itemize}
+    \item \textbf{Split}: 2015--2020 train / 2021 validation / 2022--2024 test,
+    chronological with event grouping and a 168\,h full-support embargo
+    between partitions (verified per region: \texttt{train\_val\_gap\_ok} and
+    \texttt{val\_test\_gap\_ok} both true; e.g.\ US Gulf Coast 52{,}441 train
+    / 8{,}593 validation / 26{,}137 test windows).
+    \item \textbf{Generator selection}: validation-only --- the unweighted
+    2021 Flow Matching loss, applying the identical rule to every variant, so
+    no selection signal can originate from the test period.
+    \item \textbf{Retest disclosure}: the 2022--2024 period partially informed
+    earlier exploratory waves (split design, threshold conventions). The test
+    split is therefore reported as a \emph{retrospective} test, not an
+    untouched confirmatory holdout (Sections~\ref{sec:exp}
+    and~\ref{sec:discussion}).
+\end{itemize}
+
+An earlier internal protocol used a chronological 8:1:1 event-grouped split
+with a 2022-only test year; it survives only as the historical candidate-zoo
+analysis of Section~\ref{sec:results-augmentation}, explicitly labelled as
+such and never merged with the primary result.
+
 \subsection{Formal release contract}
 The database manifest specifies:
 \begin{itemize}
     \item \textbf{Input}: 96 hours of historical observations.
     \item \textbf{Horizon}: 72 hours of forecast.
-    \item \textbf{Split}: chronological 8:1:1 with strict window containment.
+    \item \textbf{Split}: chronological with strict window containment and
+    event-group disjointness; the primary evaluation uses the frozen
+    2015--2020/2021/2022--2024 partition
+    (Section~\ref{subsec:primary-protocol}).
     \item \textbf{Tide}: existing local FES2022 deterministic archive.
     \item \textbf{Forcing}: ERA5 hindcast only. No operational 72-hour forecast
     claim without archived issue/valid/lead NWP forecast vintages.
@@ -88,5 +117,7 @@ The database manifest specifies:
 The ERA5 forcing data available in this release is historical hindcast data, not
 forecast data. Using future observed ERA5 values as conditioning information in
 a forecast experiment would constitute leakage unless explicitly labelled as an
-oracle experiment. Our gauge-only diffusion model does not consume atmospheric
-forcing; this limitation is discussed in Section~\ref{sec:discussion}.
+oracle experiment. The gauge-only augmentation arms consume no atmospheric
+forcing; the ERA5-conditioned physics arms (Section~\ref{sec:results-physics-ablation})
+consume only causal 96\,h reanalysis summaries, and this limitation is discussed
+in Section~\ref{sec:discussion}.
