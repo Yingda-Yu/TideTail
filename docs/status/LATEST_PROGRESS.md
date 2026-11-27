@@ -1,13 +1,13 @@
 # LATEST PROGRESS — TideTail Wave 3.0 (Five-Region + Corrected Inference)
 
-**Last updated**: 2026-11-27 15:10 CST
-**HEAD SHA**: `fc78e8f` (pushed); CI reference run at d0b577a: 320 passed (see `docs/status/SELF_HOSTED_CI_AUDIT.md`)
+**Last updated**: 2026-11-27 22:20 CST
+**HEAD SHA**: `c7a626d` (pushed); CI reference run at d0b577a: 320 passed (full-suite rerun deferred to post-P2 per owner)
 **Branch**: `trae/global-data-generative-research-20261031`
 **PR**: #23 (Draft — DO NOT MERGE main)
 
 ---
 
-## Wave 3.0 state (updated 2026-11-27 15:10)
+## Wave 3.0 state (updated 2026-11-27 22:20)
 
 | Priority | Status | Evidence |
 |---|---|---|
@@ -16,7 +16,7 @@
 | P1 five-region expanded | DONE | 20/20 primaries with per-unit persistence; **12/20 Bonferroni survivors, 6 beneficial / 6 harmful**: SE-Aus all improve (−1.29…−3.02%), Gulf TCN improves, Thames all harm (+3.44…+4.31%), Charleston TCN harms, NY-Bight null-to-mixed. `wave30_expanded_five_region.json`, `wave30_expanded_event_metrics.csv`, `docs/experiments/WAVE30_FIVE_REGION_EVAL.md` |
 | P1 legacy recompute | DONE | 3 legacy regions deterministically recomputed on GPU5 (drift ≤0.1pp vs backup); per-unit arrays now persisted for all regions |
 | Architecture interaction | DONE | 10 paired TCN−GRU tests: **4/10 survive Bonferroni, beneficial regions only** (Gulf −2.09mm p_bonf=0.001; SE-Aus −1.29mm p_bonf=0.004); Charleston reverses (+0.76mm, ns corrected); Thames ns (GRU harm > TCN). `wave30_architecture_interaction.json` — "TCN responds more" is descriptive, NOT universal |
-| P2 stratified fidelity | **REFRESH RUNNING (attempt 2)** | Run 1 (PID 3543561) exited normally 02:24 CST 11-27, **70/70 cells**, no log errors; run-1 JSON backed up (`backups/wave30_generator_fidelity_run1_20261127_140753.json`). Refresh attempt 1 (PID 1269182, 14:08) crashed ~50s: `KeyError: 'net'` at checkpoint save — fixed (extract torch modules from gen closure, smoke-tested all 7 families, commit `e64fde6`). **Attempt 2: PID 1425288, launched 15:02 CST** (CPU-only, OMP 8), first checkpoint written 15:03 (past the crash point); recomputes all 70 cells with full metric set + fairness fields + checkpoints, ETA ~10-14h. Run-1 signals: diffusion_ts s42 NaN (NY+Gulf), timegrad scale collapse, FM/tailFM 0.70-1.46. Extreme stratum n=4-5/region → tail conclusions will be INCONCLUSIVE where support insufficient |
+| P2 stratified fidelity | **REFRESH RUNNING (attempt 2) — 46/70 recomputed** | PID 1425288 alive 22:20 CST (7h09m, 212% CPU); Charleston + NY + Gulf fully recomputed, SE-Aus tail_aware_fm in progress, Thames pending; ETA ~2-3h. Launch manifest in `RUN_MANIFEST.jsonl` (script sha f4b75a03, e64fde6 pre-commit disclosure, full config). Strict validator upgraded (`scripts/wave30_validate_checkpoints.py`): 70-cell gate, SHA256, torch.load exception reporting, tensor/param counts, generator-vs-auxiliary param distinction; 8 regression tests pass (1.8s). Full CPU CI deferred to post-P2. Extreme stratum n=4-5/region → INCONCLUSIVE labels locked in acceptance checklist |
 | Manuscript | UPDATED | `tab:physics-ablation` + `tab:five-region` real numbers; 9/26 corrected pilot claim; 320-test marked historical; Thames arch exception; interaction paragraph; PDF 26pp, 0 undefined refs |
 | CI (P5) | DONE | 320/320 at HEAD `d0b577a`, exit 0, ruff clean; `data/logs/ci_run_20261126_p5.log` |
 

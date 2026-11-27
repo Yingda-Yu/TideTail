@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
-"""Validate real generator checkpoints against cell metadata.
+"""Strict validation of Wave 3.0 generator checkpoints against cell metadata.
 
-Checks per cell with a checkpoint_path:
-  - file exists, sha256 matches cell.checkpoint_sha256
-  - torch.load succeeds (CPU), state_dict non-empty
-  - tensor count and total element count recorded
-Exit code 1 on any failure. Read-only; never touches running processes.
+Acceptance requirements (owner-mandated 2026-11-27):
+  - exactly the 5 predefined regions, all 7 predefined families,
+    both seeds 42 and 99 -> exactly 70 expected cells
+  - fail on any missing cell or missing checkpoint
+  - verify checkpoint SHA256 against cell metadata
+  - verify torch.load succeeds and state_dict is non-empty
+  - record tensor count and total parameter elements
+  - compare against cell param_count where definitions match; distinguish
+    generator-only parameters from total trainable parameters when the
+    checkpoint contains auxiliary modules
+  - per-checkpoint loading exceptions are caught and reported explicitly
+
+Read-only; never touches running processes.
 """
 from __future__ import annotations
 
@@ -17,68 +25,165 @@ from pathlib import Path
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-JSON_IN = ROOT / "data/results/wave30_generator_fidelity.json"
-FAMILIES = ["flow_matching", "tail_aware_fm", "cvae", "timegrad",
-            "ddpm_cond", "wgan_gp", "diffusion_ts"]
+
+REQUIRED_REGIONS = ["south_atlantic_charleston", "ny_bight", "us_gulf_coast",
+                    "southeast_australia", "thames_north_sea"]
+REQUIRED_FAMILIES = ["flow_matching", "tail_aware_fm", "cvae", "timegrad",
+                     "ddpm_cond", "wgan_gp", "diffusion_ts"]
+REQUIRED_SEEDS = ["42", "99"]
+EXPECTED_CELLS = len(REQUIRED_REGIONS) * len(REQUIRED_FAMILIES) \
+    * len(REQUIRED_SEEDS)  # 70
+
+# family -> module name captured in the generating closure that IS the
+# generator (everything else in the checkpoint is auxiliary)
+GENERATOR_MODULE = {
+    "flow_matching": "VelocityTCN",
+    "tail_aware_fm": "VelocityTCN",
+    "cvae": "ConditionalVAE",
+    "timegrad": "TimeGradDenoiser",
+    "ddpm_cond": "TemporalDenoiser",
+    "wgan_gp": "ConditionalWGANGP",  # includes critic (G+C by design)
+    "diffusion_ts": "ResidualDenoiser",
+}
 
 
-def main() -> int:
-    d = json.loads(JSON_IN.read_text())
-    failures = []
-    rows = []
-    n_expected = 0
-    for region, reg in sorted(d["regions"].items()):
-        for fam in FAMILIES:
-            for seed in ("42", "99"):
-                n_expected += 1
-                cell = reg["families"][fam]["per_gen_seed"][seed]
-                cp = cell.get("checkpoint_path")
-                if not cp:
-                    failures.append(f"{region}/{fam}/s{seed}: no checkpoint_path")
-                    rows.append((region, fam, seed, "NO-PATH", None, None, None))
+def _count_state_dict(sd: dict) -> tuple[int, int]:
+    """(tensor_count, total_elements) for {ModuleName: state_dict} or flat."""
+    n_t = n_e = 0
+    for v in sd.values():
+        if torch.is_tensor(v):
+            n_t += 1
+            n_e += int(v.numel())
+        elif isinstance(v, dict):
+            for t in v.values():
+                if torch.is_tensor(t):
+                    n_t += 1
+                    n_e += int(t.numel())
+    return n_t, n_e
+
+
+def check_cell(cell: dict, ckpt_path: Path, fam: str) -> dict:
+    """Validate one cell. Returns a result dict; 'status' in {OK, FAIL}."""
+    res: dict = {"status": "FAIL", "failures": []}
+    cp_meta = cell.get("checkpoint_path")
+    if not cp_meta:
+        res["failures"].append("cell has no checkpoint_path metadata")
+        return res
+    if not ckpt_path.exists():
+        res["failures"].append(f"checkpoint file missing: {ckpt_path}")
+        return res
+    sha = hashlib.sha256(ckpt_path.read_bytes()).hexdigest()
+    if sha != cell.get("checkpoint_sha256"):
+        res["failures"].append(
+            f"sha256 mismatch: file {sha[:16]}... vs cell "
+            f"{str(cell.get('checkpoint_sha256'))[:16]}...")
+        return res
+    try:
+        try:
+            sd = torch.load(ckpt_path, map_location="cpu", weights_only=True)
+        except TypeError:  # older torch without weights_only
+            sd = torch.load(ckpt_path, map_location="cpu")
+    except Exception as exc:  # explicit per-checkpoint error reporting
+        res["failures"].append(f"torch.load failed: {type(exc).__name__}: {exc}")
+        return res
+    if not isinstance(sd, dict) or not sd:
+        res["failures"].append("checkpoint state_dict empty or not a dict")
+        return res
+    n_t, n_e = _count_state_dict(sd)
+    if n_t == 0 or n_e == 0:
+        res["failures"].append("checkpoint contains zero tensors/elements")
+        return res
+    res["tensors"] = n_t
+    res["total_elements"] = n_e
+
+    gen_mod = GENERATOR_MODULE.get(fam)
+    gen_elements = None
+    aux_elements = 0
+    if gen_mod is not None and gen_mod in sd and isinstance(sd[gen_mod], dict):
+        gen_elements = sum(int(t.numel()) for t in sd[gen_mod].values()
+                           if torch.is_tensor(t))
+        for name, sub in sd.items():
+            if name != gen_mod and isinstance(sub, dict):
+                aux_elements += sum(int(t.numel()) for t in sub.values()
+                                    if torch.is_tensor(t))
+    res["generator_module"] = gen_mod
+    res["generator_elements"] = gen_elements
+    res["auxiliary_elements"] = aux_elements
+
+    pc = cell.get("param_count")
+    if pc is not None and int(pc) > 0:
+        if gen_elements == int(pc):
+            res["param_comparison"] = "PARAMS_MATCH (generator == param_count)"
+        elif n_e == int(pc):
+            res["param_comparison"] = (
+                "MATCH_VIA_AUXILIARY (param_count includes auxiliary modules; "
+                f"generator {gen_elements} + auxiliary {aux_elements} = {n_e})")
+        else:
+            res["failures"].append(
+                f"param_count mismatch: cell param_count={pc}, "
+                f"generator_elements={gen_elements}, total={n_e}")
+            return res
+    res["status"] = "OK"
+    return res
+
+
+def run_validation(payload: dict, root: Path) -> tuple[list[dict], list[str]]:
+    """Validate the full payload. Returns (rows, failures)."""
+    rows: list[dict] = []
+    failures: list[str] = []
+    regions = payload.get("regions", {})
+    # structural completeness: exactly 5 x 7 x 2
+    for reg in REQUIRED_REGIONS:
+        if reg not in regions:
+            failures.append(f"MISSING REGION: {reg}")
+            continue
+        fams = regions[reg].get("families", {})
+        for fam in REQUIRED_FAMILIES:
+            if fam not in fams:
+                failures.append(f"MISSING FAMILY: {reg}/{fam}")
+                continue
+            seeds = fams[fam].get("per_gen_seed", {})
+            for seed in REQUIRED_SEEDS:
+                if seed not in seeds:
+                    failures.append(f"MISSING CELL: {reg}/{fam}/s{seed}")
                     continue
-                p = ROOT / cp
-                if not p.exists():
-                    failures.append(f"{region}/{fam}/s{seed}: file missing {cp}")
-                    rows.append((region, fam, seed, "MISSING", None, None, None))
-                    continue
-                sha = hashlib.sha256(p.read_bytes()).hexdigest()
-                sha_ok = sha == cell.get("checkpoint_sha256")
-                try:
-                    sd = torch.load(p, map_location="cpu", weights_only=True)
-                except TypeError:
-                    sd = torch.load(p, map_location="cpu")
-                # checkpoint layout: {ModuleName: OrderedDict(state_dict)}
-                n_tensors = 0
-                n_elems = 0
-                for v in sd.values():
-                    if torch.is_tensor(v):
-                        n_tensors += 1
-                        n_elems += int(v.numel())
-                    elif isinstance(v, dict):
-                        for t in v.values():
-                            if torch.is_tensor(t):
-                                n_tensors += 1
-                                n_elems += int(t.numel())
-                empty = n_tensors == 0 or n_elems == 0
-                status = "OK" if (sha_ok and not empty) else \
-                    ("EMPTY" if empty else "SHA-MISMATCH")
-                if status != "OK":
-                    failures.append(f"{region}/{fam}/s{seed}: {status}")
-                rows.append((region, fam, seed, status, n_tensors, n_elems,
-                             "sha_ok" if sha_ok else "sha_MISMATCH"))
-    print(f"{'region':26s} {'family':14s} {'seed':4s} {'status':12s} "
-          f"{'tensors':>7s} {'params':>9s} sha")
+                cell = seeds[seed]
+                ckpt = root / cell["checkpoint_path"] \
+                    if cell.get("checkpoint_path") else None
+                res = check_cell(cell, ckpt, fam) if ckpt else {
+                    "status": "FAIL",
+                    "failures": ["cell has no checkpoint_path metadata"]}
+                if res["status"] != "OK":
+                    for f in res["failures"]:
+                        failures.append(f"{reg}/{fam}/s{seed}: {f}")
+                rows.append({"region": reg, "family": fam, "seed": seed,
+                             **res})
+    if len(rows) != EXPECTED_CELLS:
+        failures.append(f"expected {EXPECTED_CELLS} cells, saw {len(rows)}")
+    return rows, failures
+
+
+def main(argv: list[str]) -> int:
+    json_path = Path(argv[1]) if len(argv) > 1 else \
+        ROOT / "data/results/wave30_generator_fidelity.json"
+    payload = json.loads(json_path.read_text())
+    rows, failures = run_validation(payload, ROOT)
+    print(f"{'region':26s} {'family':14s} {'seed':4s} {'status':5s} "
+          f"{'tensors':>7s} {'total':>9s} {'gen':>9s} {'aux':>7s} params")
     for r in rows:
-        print(f"{r[0]:26s} {r[1]:14s} {r[2]:4s} {str(r[3]):12s} "
-              f"{str(r[4]):>7s} {str(r[5]):>9s} {r[6] or ''}")
-    n_with_ckpt = sum(1 for r in rows if r[4] is not None)
-    print(f"\ncells expected: {n_expected}; checkpoints validated: "
-          f"{n_with_ckpt}; failures: {len(failures)}")
+        print(f"{r['region']:26s} {r['family']:14s} {r['seed']:4s} "
+              f"{r['status']:5s} {str(r.get('tensors', '-')):>7s} "
+              f"{str(r.get('total_elements', '-')):>9s} "
+              f"{str(r.get('generator_elements', '-')):>9s} "
+              f"{str(r.get('auxiliary_elements', '-')):>7s} "
+              f"{r.get('param_comparison', '')}")
+    n_ok = sum(1 for r in rows if r["status"] == "OK")
+    print(f"\ncells: {len(rows)}/{EXPECTED_CELLS} present, {n_ok} OK, "
+          f"{len(failures)} failures")
     for f in failures:
         print(" FAIL:", f)
-    return 1 if failures else 0
+    return 0 if not failures and len(rows) == EXPECTED_CELLS else 1
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv))
