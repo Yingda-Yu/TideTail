@@ -112,3 +112,22 @@ Absolute dataset paths (`3-protocol.tex:5`), issue numbers ("Issue #6", `4-metho
 | m8 (internal repo detail) | FIXED — absolute path, issue number, GPU UUID and branch/PR references removed/anonymised |
 
 Re-compile after fixes: 38 pages, 0 undefined citations/references (latexmk exit 0).
+
+---
+
+## Second-pass closure (2026-11-28)
+
+Deferred items delivered at P2/P3 acceptance:
+- **M2 CLOSED** — the promised season-stratified 5×7×2 benchmark is now
+  reported: §6.2 stratified paragraph + F11 + supplementary CSV (770 rows);
+  validator evidence row added to the appendix (m6 CLOSED).
+- **M1 CLOSED** — §6.11 finalised with the completed bounded P3 study
+  (validation-frozen stage A; Thames harm unrescued; oversampling harmful
+  where augmentation helps; classified exploratory) + F12.
+- Final CI at the manuscript HEAD: 334 tests passed, ruff gate clean,
+  40-page PDF with 0 undefined citations/references, placeholder scan CLEAN.
+- All 8 ground-truth compliance checks remain PASS.
+
+Review status: COMPLETE. Verdict for owner: READY FOR OWNER REVIEW (pending
+Owner-only items: author order/affiliations, journal choice, repository DOI,
+funding/COI).

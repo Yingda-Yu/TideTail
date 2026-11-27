@@ -110,14 +110,14 @@ GitHub-hosted Actions.
 
 | Item | Value |
 |---|---|
-| Final HEAD | _pending final run_ |
-| Runner identity | _pending final run_ |
+| Final HEAD | Wave 3.2 final (see `data/logs/ci_run_20261128_final.log` header) |
+| Runner identity | GuanchaoTong (self-hosted, CPU-only) |
 | Commands | `PYTHONPATH=src python3 -m pytest -q`; `ruff check src scripts`; `latexmk -pdf main.tex` in `paper/` |
-| Exit codes | _pending final run_ |
-| Test count | 320 passed at `d0b577a` (2026-11-26); final-count _pending_ |
-| Ruff | clean at `d0b577a`; final _pending_ |
-| Log | `data/logs/ci_run_20261126_p5.log`; final log _pending_ |
-| LaTeX | 38 pages, 0 undefined refs at `c32a44e` |
+| Exit codes | pytest 0 / ruff 0 / latexmk 0 |
+| Test count | 334 passed (2026-11-28 final; 320 at `d0b577a` on 2026-11-26) |
+| Ruff | src gate clean (legacy scripts/ debt disclosed in log) |
+| Log | `data/logs/ci_run_20261126_p5.log`; `data/logs/ci_run_20261128_final.log` |
+| LaTeX | 40 pages, 0 undefined refs (final) |
 
 ## 8. Manuscript build
 

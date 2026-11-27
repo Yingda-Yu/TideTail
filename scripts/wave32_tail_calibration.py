@@ -50,7 +50,7 @@ w27e = _load("wave27_expanded_eval", ROOT / "scripts" / "wave27_expanded_eval.py
 w28 = _load("wave28_physics_fm", ROOT / "scripts" / "wave28_physics_fm.py")
 we = _load("wave28_expanded_eval", ROOT / "scripts" / "wave28_expanded_eval.py")
 
-from tidetail.quality import evaluate  # noqa: E402
+from tidetail.quality import evaluate
 
 RESULTS = ROOT / "data" / "results"
 CONTEXT, HORIZON = 96, 72
@@ -254,8 +254,6 @@ def main() -> None:
 
         # ---------- stage B: frozen test evaluation (GRU only) ----------
         model_cache = {("standard", s): per_seed_gen[s] for s in per_seed_gen}
-        n_test = len(spl["test_h"])
-        real_test = spl["test_t"][:n_test]
         n_aug = min(args.n_aug, n_down)
         gidx = np.random.default_rng(7).choice(n_down, size=n_aug,
                                                replace=False)
@@ -275,8 +273,8 @@ def main() -> None:
                     aug = (oversample_aug(down, n_aug, rng) if arm ==
                            "oversampling" else
                            history_noise_aug(down, n_aug, rng))
-                    gen_test = None
                 else:
+                    gidx_arm = gidx
                     fam = "tail" if arm == "tail_aware_fm" else "standard"
                     model = model_cache.get((fam, seed))
                     if model is None:
@@ -285,23 +283,20 @@ def main() -> None:
                             epochs=args.epochs, batch_size=args.batch_size,
                             lr=args.lr, seed=seed, device=args.device)
                         model_cache[(fam, seed)] = model
-                    gidx_arm = gidx
                     if arm == "quantile_calibrated_fm":
                         gtr = base.sample_windows(
                             model, down["train_h"],
                             np.zeros((n_down, 0), np.float32), gidx_arm,
                             draws=1)[0]
                         tgt = quantile_map(gtr, spl["train_t"])
-                        gen_test = None
                     elif arm == "fidelity_selected_fm":
                         gtr6 = base.sample_windows(
                             model, down["train_h"],
                             np.zeros((n_down, 0), np.float32), gidx_arm,
                             draws=args.n_cand)
-                        tgt, sel_info_tr = fidelity_select(
+                        tgt, _ = fidelity_select(
                             gtr6, spl["train_t"],
                             np.random.default_rng(seed))
-                        gen_test = None
                     else:
                         gtr = base.sample_windows(
                             model, down["train_h"],
@@ -309,6 +304,8 @@ def main() -> None:
                             draws=1)[0]
                         tgt = gtr
                     aug = {"hist": down["train_h"][gidx], "target": tgt}
+                # test-window fidelity is never used for selection
+                # (stage A freeze); only stage-A validation fidelity decides
                 pred = w28.train_downstream(
                     "gru", down, aug, tuple(args.downstream_seeds),
                     args.downstream_steps, args.batch_size)

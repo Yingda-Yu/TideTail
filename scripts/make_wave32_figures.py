@@ -9,15 +9,16 @@ Usage:
     python3 scripts/make_wave32_figures.py F7 F9      # build a subset
 """
 import argparse
-import glob
 import json
+import math
 import os
 
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
 import numpy as np
+
+matplotlib.use("Agg")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIG_DIR = os.path.join(ROOT, "paper", "figures")
@@ -152,7 +153,6 @@ def fig_F8_arch_interaction():
     ax.set_xticklabels([REGION_LABELS[r] for r in REGION_ORDER],
                        rotation=20, ha="right")
     ax.set_ylabel("TCN minus GRU augmentation effect (mm)")
-    ymin, ymax = ax.get_ylim()
     ax.text(0.02, 0.97,
             f"{d['summary']['n_survive_bonferroni']}/10 survive "
             f"Bonferroni $\\alpha$={d['bonferroni_alpha']}",
@@ -191,9 +191,8 @@ def fig_F9_heterogeneity_severity():
                     ha="center", va="center", fontsize=8.5,
                     fontweight="bold" if sig else "normal",
                     color=("k" if sig else "0.45"),
-                    bbox=dict(boxstyle="round,pad=0.15",
-                              fc="none" if sig else "none",
-                              ec="k" if sig else "none", lw=1.0))
+                    bbox={"boxstyle": "round,pad=0.15", "fc": "none",
+                          "ec": "k" if sig else "none", "lw": 1.0})
     ax.set_xticks(range(len(REGION_ORDER)))
     ax.set_xticklabels([REGION_LABELS[r] for r in REGION_ORDER],
                        rotation=20, ha="right")
@@ -287,7 +286,7 @@ def fig_F11_fidelity_stratified():
     for i, f in enumerate(fams):
         for vals, dx, marker, color in ((bg[f], -0.16, "o", "#1b6ca8"),
                                         (ext[f], 0.16, "^", "#c0392b")):
-            finite = [v for v in vals if v == v]
+            finite = [v for v in vals if not math.isnan(v)]
             if not finite:
                 continue
             med = float(np.median(finite))
@@ -301,7 +300,7 @@ def fig_F11_fidelity_stratified():
             if hi > CAP:
                 ax.annotate("", xy=(i + dx, CAP * 1.35),
                             xytext=(i + dx, CAP * 0.95),
-                            arrowprops=dict(arrowstyle="->", color=color, lw=1.1))
+                            arrowprops={"arrowstyle": "->", "color": color, "lw": 1.1})
             if med > CAP:
                 ax.text(i + dx, CAP * 1.9, f"{med:.0f}" if med < 1e4 else
                         f"{med:.0e}".replace("e+0", "e"), ha="center",
