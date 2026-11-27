@@ -759,6 +759,11 @@ INPUT figures/W32_heterogeneity_severity.pdf
 INPUT ./figures/W32_heterogeneity_severity.pdf
 INPUT ./figures/W32_heterogeneity_severity.pdf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti9.tfm
+INPUT ./figures/W32_tail_calibration.pdf
+INPUT ./figures/W32_tail_calibration.pdf
+INPUT figures/W32_tail_calibration.pdf
+INPUT ./figures/W32_tail_calibration.pdf
+INPUT ./figures/W32_tail_calibration.pdf
 INPUT ./sections/7-discussion.tex
 INPUT ./sections/7-discussion.tex
 INPUT ./sections/7-discussion.tex

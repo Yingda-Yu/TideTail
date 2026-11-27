@@ -822,17 +822,53 @@ Section~\ref{sec:results-physics}.
 The severity analysis above motivates one bounded, pre-registered question:
 can a tail-targeted calibration improve validation fidelity without
 destabilising the overall distribution, and if so, does the improvement
-survive the frozen five-region downstream protocol? The study compares at
-most six arms --- standard FM, the existing tail-aware FM, one
-quantile-calibration candidate, one fidelity-aware sample-selection
-candidate, real-event oversampling, and a simple history-noise control ---
-with all thresholds and hyperparameters chosen on train/validation data
-only and the method frozen before any retrospective test evaluation. It
-prioritises the two regions with opposite augmentation outcomes (Southeast
-Australia and Thames/North Sea). \textbf{Status: this section is
-finalised after the bounded run completes; the study is classified as an
-exploratory extension, not a confirmatory test, because the 2022--2024
-test years are retrospective (Section~\ref{sec:results-expanded}).} A
-negative or null outcome is preserved and reported with the same detail as
-a positive one; no generator re-tuning beyond this bounded set is
-performed.
+survive the frozen five-region downstream protocol? The study compares six
+arms --- standard FM, the existing tail-aware FM, a post-hoc
+quantile-calibration candidate (per-position ECDF mapping onto train
+targets), a fidelity-aware sample-selection candidate (six draws per
+window, keep the first draw inside a train-derived plausibility band),
+real-event oversampling, and a history-noise control --- in the two regions
+with opposite augmentation outcomes (Southeast Australia and Thames/North
+Sea), with downstream GRU only, all thresholds and hyperparameters chosen on
+train/validation data only, and the frozen selection written to disk before
+any test evaluation. The study is an \emph{exploratory extension}, not a
+confirmatory test: the 2022--2024 test years are retrospective
+(Section~\ref{sec:results-expanded}); 12 GRU paired comparisons are tested
+against an exploratory Bonferroni $\alpha=0.0042$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/W32_tail_calibration.pdf}
+\caption{Bounded tail-calibration study (exploratory extension;
+GRU downstream; bars show mean change in extreme-event MAE vs.\ A0 over
+generator seeds, whiskers the per-seed range; shaded bars are the
+non-generative controls). Validation-frozen adoptions were marginal
+(fidelity-selected FM in Southeast Australia seed 99; quantile-calibrated
+FM in Thames seed 99), and neither escapes the regional pattern:
+all four generative arms remain seed-robustly harmful in Thames
+(+2.8\ldots+3.4\%), and oversampling is strongly harmful where augmentation
+helps (+7.6\% in Southeast Australia).}
+\label{fig:tail-calibration}
+\end{figure}
+
+Four results (Figure~\ref{fig:tail-calibration}). First, validation
+adoption was marginal and seed-inconsistent: the composite fidelity rule
+adopted fidelity-selected FM only for Southeast Australia seed 99 and
+quantile-calibrated FM only for Thames seed 99. Second, calibration does
+not rescue the harmful region: every generative arm remains harmful in
+Thames (+2.84\ldots+3.38\% per seed, all $p=10^{-4}$, far beyond the
+exploratory threshold) --- the harm is not a tail-calibration artefact
+that post-hoc mapping removes. Third, in the beneficial region the
+fidelity-selected arm is the best generative arm ($-1.22\%$ vs.\ $-1.04\%$
+standard), consistent with its validation adoption, but the margin is
+within seed variability --- a weak ordering, not a proven improvement.
+Fourth, the controls separate cleanly: real-event oversampling is strongly
+harmful where augmentation helps (+7.6\%, both seeds $p=10^{-4}$) and null
+where augmentation harms (+0.4\%, ns), while the history-noise control is
+null in Thames ($-0.07\%$, ns) and marginally harmful in Southeast
+Australia (+0.60\%) --- crude non-generative augmentation neither
+reproduces the FM benefit nor explains it away. The fidelity-versus-utility
+gap is thus confirmed prospectively: the variants that scored best on
+validation fidelity in Thames remained the most harmful downstream. The
+negative Thames result is preserved without further generator re-tuning;
+no claim in this paper rests on the calibrated variants.

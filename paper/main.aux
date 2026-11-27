@@ -192,36 +192,38 @@
 \newlabel{sec:results-tail-calibration}{{6.11}{28}{Bounded tail-calibration extension}{subsection.6.11}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Spearman correlation between the per-event augmentation effect and event severity (peak residual), for all four augmentation arms and five regions. Boxed cells are Holm-significant ($p<0.05$). Positive $\rho $ (red): augmentation harm grows with severity (Southeast Australia, where the benefit erodes toward the most severe events). Negative $\rho $ (blue): harm concentrates in weak events (Thames, Charleston).}}{29}{figure.11}\protected@file@percent }
 \newlabel{fig:heterogeneity}{{11}{29}{Spearman correlation between the per-event augmentation effect and event severity (peak residual), for all four augmentation arms and five regions. Boxed cells are Holm-significant ($p<0.05$). Positive $\rho $ (red): augmentation harm grows with severity (Southeast Australia, where the benefit erodes toward the most severe events). Negative $\rho $ (blue): harm concentrates in weak events (Thames, Charleston)}{figure.11}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{29}{section.7}\protected@file@percent }
-\newlabel{sec:discussion}{{7}{29}{Discussion}{section.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Why Flow Matching produces plausible samples}{29}{subsection.7.1}\protected@file@percent }
-\newlabel{subsec:why-fm}{{7.1}{29}{Why Flow Matching produces plausible samples}{subsection.7.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Bounded tail-calibration study (exploratory extension; GRU downstream; bars show mean change in extreme-event MAE vs.\ A0 over generator seeds, whiskers the per-seed range; shaded bars are the non-generative controls). Validation-frozen adoptions were marginal (fidelity-selected FM in Southeast Australia seed 99; quantile-calibrated FM in Thames seed 99), and neither escapes the regional pattern: all four generative arms remain seed-robustly harmful in Thames (+2.8\ldots  +3.4\%), and oversampling is strongly harmful where augmentation helps (+7.6\% in Southeast Australia).}}{29}{figure.12}\protected@file@percent }
+\newlabel{fig:tail-calibration}{{12}{29}{Bounded tail-calibration study (exploratory extension; GRU downstream; bars show mean change in extreme-event MAE vs.\ A0 over generator seeds, whiskers the per-seed range; shaded bars are the non-generative controls). Validation-frozen adoptions were marginal (fidelity-selected FM in Southeast Australia seed 99; quantile-calibrated FM in Thames seed 99), and neither escapes the regional pattern: all four generative arms remain seed-robustly harmful in Thames (+2.8\ldots +3.4\%), and oversampling is strongly harmful where augmentation helps (+7.6\% in Southeast Australia)}{figure.12}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Six-arm physics ablation (both regions complete; two generator seeds per arm, mean over seeds). Top: extreme-event MAE delta vs.\ the real-only A0 baseline per architecture. Bottom: the five pre-specified mechanism contrasts (C1--C5) with sign-flip permutation $p$; Bonferroni $\alpha =0.0025$ over 20 comparisons. All generator arms are fidelity-INCONCLUSIVE (scale ratios $0.83$--$1.08$). Positive $\Delta $ = harm.}}{30}{table.8}\protected@file@percent }
 \newlabel{tab:physics-ablation}{{8}{30}{Six-arm physics ablation (both regions complete; two generator seeds per arm, mean over seeds). Top: extreme-event MAE delta vs.\ the real-only A0 baseline per architecture. Bottom: the five pre-specified mechanism contrasts (C1--C5) with sign-flip permutation $p$; Bonferroni $\alpha =0.0025$ over 20 comparisons. All generator arms are fidelity-INCONCLUSIVE (scale ratios $0.83$--$1.08$). Positive $\Delta $ = harm}{table.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Why the other three implementations struggled}{30}{subsection.7.2}\protected@file@percent }
-\newlabel{subsec:why-others}{{7.2}{30}{Why the other three implementations struggled}{subsection.7.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Conditional VAE: a sampling-path mismatch.}{30}{section*.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{TimeGrad: an unstable autoregressive state.}{30}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Diffusion-TS: numerical amplification in the objective.}{30}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{30}{section.7}\protected@file@percent }
+\newlabel{sec:discussion}{{7}{30}{Discussion}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Why Flow Matching produces plausible samples}{30}{subsection.7.1}\protected@file@percent }
+\newlabel{subsec:why-fm}{{7.1}{30}{Why Flow Matching produces plausible samples}{subsection.7.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Why the other three implementations struggled}{31}{subsection.7.2}\protected@file@percent }
+\newlabel{subsec:why-others}{{7.2}{31}{Why the other three implementations struggled}{subsection.7.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Conditional VAE: a sampling-path mismatch.}{31}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{TimeGrad: an unstable autoregressive state.}{31}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Diffusion-TS: numerical amplification in the objective.}{31}{section*.26}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Why GRU and TCN respond differently}{31}{subsection.7.3}\protected@file@percent }
 \newlabel{subsec:why-arch}{{7.3}{31}{Why GRU and TCN respond differently}{subsection.7.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Why some regions benefit and others do not}{31}{subsection.7.4}\protected@file@percent }
-\newlabel{subsec:why-region}{{7.4}{31}{Why some regions benefit and others do not}{subsection.7.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}Severity dependence: the effect attenuates where it matters most}{31}{subsection.7.5}\protected@file@percent }
-\newlabel{subsec:why-severity}{{7.5}{31}{Severity dependence: the effect attenuates where it matters most}{subsection.7.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.6}What independent-event evaluation changes}{32}{subsection.7.6}\protected@file@percent }
-\newlabel{subsec:why-events}{{7.6}{32}{What independent-event evaluation changes}{subsection.7.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.7}Global fidelity does not predict forecasting utility}{32}{subsection.7.7}\protected@file@percent }
-\newlabel{subsec:why-fidelity-utility}{{7.7}{32}{Global fidelity does not predict forecasting utility}{subsection.7.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.8}Do physical priors help?}{32}{subsection.7.8}\protected@file@percent }
-\newlabel{subsec:why-physics}{{7.8}{32}{Do physical priors help?}{subsection.7.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Why some regions benefit and others do not}{32}{subsection.7.4}\protected@file@percent }
+\newlabel{subsec:why-region}{{7.4}{32}{Why some regions benefit and others do not}{subsection.7.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}Severity dependence: the effect attenuates where it matters most}{32}{subsection.7.5}\protected@file@percent }
+\newlabel{subsec:why-severity}{{7.5}{32}{Severity dependence: the effect attenuates where it matters most}{subsection.7.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.6}What independent-event evaluation changes}{33}{subsection.7.6}\protected@file@percent }
+\newlabel{subsec:why-events}{{7.6}{33}{What independent-event evaluation changes}{subsection.7.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.7}Global fidelity does not predict forecasting utility}{33}{subsection.7.7}\protected@file@percent }
+\newlabel{subsec:why-fidelity-utility}{{7.7}{33}{Global fidelity does not predict forecasting utility}{subsection.7.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.8}Do physical priors help?}{33}{subsection.7.8}\protected@file@percent }
+\newlabel{subsec:why-physics}{{7.8}{33}{Do physical priors help?}{subsection.7.8}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {7.9}Limitations}{33}{subsection.7.9}\protected@file@percent }
 \newlabel{subsec:limitations}{{7.9}{33}{Limitations}{subsection.7.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{34}{section.8}\protected@file@percent }
+\newlabel{sec:conclusion}{{8}{34}{Conclusion}{section.8}{}}
 \bibstyle{plainnat}
 \bibdata{references}
 \bibcite{albergo2025stochastic}{{1}{2025}{{Albergo et~al.}}{{Albergo, Boffi, and Vanden-Eijnden}}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{34}{section.8}\protected@file@percent }
-\newlabel{sec:conclusion}{{8}{34}{Conclusion}{section.8}{}}
 \bibcite{arjovsky2017towards}{{2}{2017}{{Arjovsky and Bottou}}{{}}}
 \bibcite{arjovsky2017wasserstein}{{3}{2017}{{Arjovsky et~al.}}{{Arjovsky, Chintala, and Bottou}}}
 \bibcite{bajo2010storm}{{4}{2010}{{Bajo and Umgiesser}}{{}}}
@@ -261,10 +263,10 @@
 \bibcite{xu2020cotgan}{{38}{2020}{{Xu et~al.}}{{Xu, Wenliang, Munn, and Acciaio}}}
 \bibcite{yoon2019timegan}{{39}{2019}{{Yoon et~al.}}{{Yoon, Jarrett, and van~der Schaar}}}
 \bibcite{yuan2024diffusionts}{{40}{2024}{{Yuan and Qiao}}{{}}}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Audit Evidence}{38}{appendix.A}\protected@file@percent }
-\newlabel{sec:audit}{{A}{38}{Audit Evidence}{appendix.A}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Repository state}{38}{subsection.A.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Evidence table}{38}{subsection.A.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Known discrepancies retained}{39}{subsection.A.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Reproduction}{39}{subsection.A.4}\protected@file@percent }
-\gdef \@abspage@last{39}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Audit Evidence}{39}{appendix.A}\protected@file@percent }
+\newlabel{sec:audit}{{A}{39}{Audit Evidence}{appendix.A}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Repository state}{39}{subsection.A.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Evidence table}{39}{subsection.A.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Known discrepancies retained}{40}{subsection.A.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Reproduction}{40}{subsection.A.4}\protected@file@percent }
+\gdef \@abspage@last{40}

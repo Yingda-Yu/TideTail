@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex main"] 1795797587 "main.aux" "main.bbl" "main" 1795797587
+["bibtex main"] 1795799957 "main.aux" "main.bbl" "main" 1795799958
   "/usr/share/texlive/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "main.aux" 1795797587 34654 1d3a8ee8250fc43c63baca1c21d0b77e "pdflatex"
+  "main.aux" 1795799958 35983 83b8d2857b14fff33aea929c35ceb5b0 "pdflatex"
   "references.bib" 1795790925 28132 fe6d216310a3be7de00a096cf341444a ""
   (generated)
   "main.bbl"
   "main.blg"
-["pdflatex"] 1795797587 "main.tex" "main.pdf" "main" 1795797587
+["pdflatex"] 1795799957 "main.tex" "main.pdf" "main" 1795799958
   "/etc/texmf/web2c/texmf.cnf" 1781397932 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1095.tfm" 1136768653 1536 02c06700a42be0f5a28664c7273f82e7 ""
@@ -149,16 +149,17 @@
   "figures/W32_five_region_effects.pdf" 1795790858 29863 d37c58a6c6bf199f3870a479b2e6dcd2 ""
   "figures/W32_heterogeneity_severity.pdf" 1795790834 31190 1a0e23071f9372220f36efbfd90214d5 ""
   "figures/W32_representative_extremes.pdf" 1795792143 22826 a9498871512b47292a6f78c9705ee059 ""
-  "main.aux" 1795797587 34654 1d3a8ee8250fc43c63baca1c21d0b77e "pdflatex"
-  "main.bbl" 1795797587 14695 d5148587eaf2e8c64f0da79e48daa099 "bibtex main"
-  "main.out" 1795797587 13324 347057a4fc5d980bc7ec3a6b3dbacc83 "pdflatex"
+  "figures/W32_tail_calibration.pdf" 1795799864 19683 7865774eb79d8da171154b07c2e18d0f ""
+  "main.aux" 1795799958 35983 83b8d2857b14fff33aea929c35ceb5b0 "pdflatex"
+  "main.bbl" 1795799957 14695 d5148587eaf2e8c64f0da79e48daa099 "bibtex main"
+  "main.out" 1795799958 13324 347057a4fc5d980bc7ec3a6b3dbacc83 "pdflatex"
   "main.tex" 1795789941 3920 9babcd2767e6049da123fc59b0d464c0 ""
   "sections/1-introduction.tex" 1795789973 8641 5725088faec35868966590bba6dad627 ""
   "sections/2-related-work.tex" 1795790970 7437 ed22c0132f508ab441ab2a08e667e83f ""
   "sections/3-protocol.tex" 1795792096 6311 6eb09b5bd7bd681b90902abd5a9cecaf ""
   "sections/4-method.tex" 1795792107 11588 64ac6ef560da521396307491bb0a13c0 ""
   "sections/5-experiments.tex" 1795792090 8419 82d439ea376821e97d5384f77427f2e6 ""
-  "sections/6-results.tex" 1795797551 48127 194d7d9b73f9f04b10fd4dc0f257bdea ""
+  "sections/6-results.tex" 1795799943 50324 d40c1d919df21fd4cd3764c90238fb2e ""
   "sections/7-discussion.tex" 1795791968 15808 e3a2f2e2d42bff2420bbf54204a48d6a ""
   "sections/8-conclusion.tex" 1795790219 4001 df485953ac5d00e33b0306e7ad5e3967 ""
   "sections/a-audit.tex" 1795797570 4899 b7b6b2c2fce5e4fa12ecc12ca117aa70 ""

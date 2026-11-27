@@ -338,11 +338,68 @@ def fig_F11_fidelity_stratified():
 
 # ---------------------------------------------------------------- F12 (P3)
 def fig_F12_tail_calibration():
-    src = os.path.join(ROOT, "data/results/wave32_tail_calibration.json")
-    if not os.path.exists(src):
-        print("[SKIP] F12: wave32_tail_calibration.json not created yet (P3)")
-        return None
-    raise NotImplementedError("F12 implementation lands at P3 completion")
+    d = _load("data/results/wave32_tail_calibration.json")
+    arm_labels = {
+        "standard_fm": "std FM", "tail_aware_fm": "tail FM",
+        "quantile_calibrated_fm": "quantile-cal.",
+        "fidelity_selected_fm": "fid.-selected",
+        "oversampling": "real oversamp.", "history_noise": "hist. noise",
+    }
+    regions = ["southeast_australia", "thames_north_sea"]
+    arms = ["standard_fm", "tail_aware_fm", "quantile_calibrated_fm",
+            "fidelity_selected_fm", "oversampling", "history_noise"]
+    gen_arms = set(arms[:4])
+
+    fig, ax = plt.subplots(figsize=(7.0, 3.6))
+    width = 0.13
+    for ai, arm in enumerate(arms):
+        for ri, region in enumerate(regions):
+            ao = d["regions"][region]["stage_b"]["arms"][arm]
+            mean = ao["mean_delta_pct"]
+            seeds = [ao["per_seed"][s]["delta_pct_vs_A0"]
+                     for s in ao["per_seed"]]
+            lo, hi = min(seeds), max(seeds)
+            x = ri * 4.4 + (ai - 2.5) * width
+            color = (BENEFIT if mean < 0 else HARM)
+            alpha = 1.0 if arm in gen_arms else 0.55
+            ax.bar(x, mean, width=width * 0.9, color=color, alpha=alpha,
+                   zorder=3)
+            ax.errorbar(x, mean, yerr=[[mean - lo], [hi - mean]],
+                        fmt="none", ecolor="k", elinewidth=0.9, capsize=2,
+                        zorder=4)
+    ax.axhline(0, color="k", lw=1.0)
+    ax.set_xticks([ri * 4.4 + 0 for ri in range(len(regions))])
+    ax.set_xticklabels(["Southeast Australia\n(augmentation helps)",
+                        "Thames / North Sea\n(augmentation harms)"],
+                       fontsize=9)
+    ax.set_xlim(-0.55, 4.4 + 0.55)
+    ax.set_ylabel("extreme-event MAE change vs. A0 (%)\nGRU, bars: mean over generator seeds; whiskers: per-seed range")
+    handles = [
+        plt.Rectangle((0, 0), 1, 1, color=BENEFIT, label="improves"),
+        plt.Rectangle((0, 0), 1, 1, color=HARM, label="harms"),
+        plt.Rectangle((0, 0), 1, 1, color="0.6", alpha=0.55,
+                      label="non-generative control"),
+    ]
+    ax.legend(handles=handles, loc="upper right", frameon=False, fontsize=8)
+    # per-arm labels beneath the axis (below region names)
+    trans = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
+    for ai, arm in enumerate(arms):
+        for ri in range(len(regions)):
+            x = ri * 4.4 + (ai - 2.5) * width
+            ax.text(x, -0.16, arm_labels[arm], transform=trans,
+                    ha="center", va="top", rotation=90, fontsize=6.3,
+                    clip_on=False)
+    fig.subplots_adjust(bottom=0.34)
+    fig.text(0.01, 0.005,
+             "Stage A (validation-frozen) adoptions: fidelity-selected FM in "
+             "SE-Aus seed 99, quantile-calibrated FM in Thames seed 99; both "
+             "arms nevertheless evaluated for all seeds. Exploratory "
+             "extension, retrospective test.",
+             fontsize=7)
+    _save(fig, "W32_tail_calibration.pdf")
+
+
+# ---------------------------------------------------------------- main
 
 
 FIGS = {"F7": fig_F7_five_region_effects,
