@@ -321,6 +321,28 @@ change by region. Thames is the one region where augmentation is harmful for
 both forecasters, consistent with its macrotidal regime in which surge is a
 small fraction of total water level.
 
+Figure~\ref{fig:extremes} illustrates the two opposite regimes with single
+representative extreme events from the same historical archives: in Southeast
+Australia both forecasters track a developing residual surge, while in
+Thames the observed event contains structure that neither the real-only nor
+the augmented model anticipates; the two forecasts differ negligibly, which
+foreshadows the seed-robust harm measured event-by-event in the frozen
+protocol (Section~\ref{sec:results-expanded}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/W32_representative_extremes.pdf}
+\caption{Representative extreme-event forecasts from the historical
+candidate-zoo archives (retrospective 2022--2024 test window): highest-peak
+independent event unit per region, A0 real-only GRU versus A3
+FM-augmented GRU (generator seed 42). Illustrative only --- all quantitative
+claims rest on the paired event-unit statistics of
+Sections~\ref{sec:results-augmentation} and~\ref{sec:results-expanded}.
+The Thames and Southeast Australia residual series carry regional datum
+offsets inherited from the source archives.}
+\label{fig:extremes}
+\end{figure}
+
 \begin{table}[htbp]
 \centering
 \caption{Mean extreme-window MAE change versus the same-architecture A0
@@ -511,6 +533,26 @@ dispersion fidelity alone is a poor predictor of downstream value, which
 motivates the bounded tail-calibration analysis of
 Section~\ref{sec:results-tail-calibration}.
 
+Figure~\ref{fig:arch-interaction} shows the ten interaction contrasts: the
+two Bonferroni-surviving Gulf contrasts and the standard-arm Southeast
+Australia contrast are all negative (TCN benefits more), the Southeast
+Australia tail-aware arm sits just above the corrected threshold, and the
+harmful regions show insignificant, mixed-sign interactions.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/W32_arch_interaction.pdf}
+\caption{Paired architecture interaction contrasts (TCN augmentation effect
+minus GRU augmentation effect, matched event units, seed-averaged, mm).
+Black edges mark the 3 of 10 comparisons surviving Bonferroni
+$\alpha=0.005$ (US Gulf standard and tail-aware, Southeast Australia
+standard); the Southeast Australia tail-aware contrast
+($p_{\text{bonf}}=0.008$) does not survive. Where augmentation helps, TCN
+extracts a significantly larger benefit; where augmentation harms, the
+architecture difference is statistically insignificant and mixed in sign.}
+\label{fig:arch-interaction}
+\end{figure}
+
 \begin{table}[t]
 \centering
 \caption{Five-region expanded evaluation (Wave 3.0). Extreme-event MAE
@@ -536,6 +578,26 @@ Thames/N.\ Sea & 32 & 0.239 & 0.229 & $+4.31^{*}$ & $+3.44^{*}$ & $+4.30^{*}$ & 
 \texttt{wave30\_expanded\_five\_region.json} / \texttt{\_event\_metrics.csv}.}\\
 \end{tabular}
 \end{table}
+
+Figure~\ref{fig:five-region} visualises the same 20 primary comparisons with
+generator-seed standard deviations: the regional sign pattern is the dominant
+feature, and seed-level uncertainty ($\pm$0.5--1.7 percentage points) is
+small relative to the between-region spread but large enough to matter in
+null regions.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/W32_five_region_effects.pdf}
+\caption{The 20 primary five-region comparisons (mean extreme-event MAE
+change vs.\ no augmentation, \%; error bars are generator-seed standard
+deviations). Filled markers survive Bonferroni $\alpha=0.0025$; open
+markers do not. Blue = augmentation improves, red = augmentation harms.
+The dominant pattern is regional, not architectural or variant-specific:
+all four cells improve in Southeast Australia, all four harm in
+Thames/North Sea, the Gulf TCN pair improves, the Charleston TCN pair
+harms, and NY Bight is null throughout.}
+\label{fig:five-region}
+\end{figure}
 
 \subsection{Regional heterogeneity, severity and season dependence}
 \label{sec:results-heterogeneity}
@@ -568,7 +630,20 @@ $-0.68$, Holm-significant for five region--arm cells; Thames median split
 $+10.09\%$ versus $+1.81\%$). Gulf Coast and NY Bight show no severity
 gradient ($|\rho| \le 0.11$). The mechanism statement is symmetric:
 augmentation acts mainly on low-to-moderate severity events, in beneficial
-and harmful regions alike.
+and harmful regions alike. Figure~\ref{fig:heterogeneity} maps the full
+region $\times$ arm severity matrix.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/W32_heterogeneity_severity.pdf}
+\caption{Spearman correlation between the per-event augmentation effect and
+event severity (peak residual), for all four augmentation arms and five
+regions. Boxed cells are Holm-significant ($p<0.05$). Positive $\rho$ (red):
+augmentation harm grows with severity (Southeast Australia, where the
+benefit erodes toward the most severe events). Negative $\rho$ (blue): harm
+concentrates in weak events (Thames, Charleston).}
+\label{fig:heterogeneity}
+\end{figure}
 
 \paragraph{No seasonal moderation.} Across-season permutation tests within
 each region and arm survive Holm correction nowhere (adjusted $p > 0.15$;

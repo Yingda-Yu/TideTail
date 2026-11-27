@@ -12,10 +12,10 @@ Vector PDF is the deliverable; PNG is a preview convenience only.
 | F4 | `figures/W27_fidelity_gate.pdf` | §6.2 (historical four-generator gate) | `scripts/make_wave27_figures.py` | `data/results/wave27_gen_benchmark.json`-era runs | EXISTS |
 | F5 | `figures/W27_recovery.pdf` | §6.3 Recovery | `scripts/make_wave27_figures.py` | `data/results/wave27_model_recovery.json` | EXISTS |
 | F6 | `figures/W28_physics_ablation.pdf` | §6.x Six-arm ablation | `scripts/make_wave28_figures.py` | `data/results/wave28_physics_fm.json` | EXISTS |
-| F7 | `figures/W32_five_region_effects.pdf` | §6.5 Five-region primary | `scripts/make_wave32_figures.py` | `data/results/wave30_expanded_five_region.json` | NEW (Wave 3.2) |
-| F8 | `figures/W32_arch_interaction.pdf` | §6.5 Architecture interaction | `scripts/make_wave32_figures.py` | `data/results/wave30_architecture_interaction.json` (v2) | NEW (Wave 3.2) |
-| F9 | `figures/W32_heterogeneity_severity.pdf` | §6.6 Heterogeneity/severity | `scripts/make_wave32_figures.py` | `data/results/wave30_mechanism_light.json` | NEW (Wave 3.2) |
-| F10 | `figures/W32_representative_extremes.pdf` | §6.x Representative extreme events | `scripts/make_wave32_figures.py` | `data/predictions/v2/*A0*A3*.npz` (historical candidate-zoo archives, retrospective test; labelled as such) | NEW (Wave 3.2) |
+| F7 | `figures/W32_five_region_effects.pdf` | §6.5 Five-region primary | `scripts/make_wave32_figures.py` | `data/results/wave30_expanded_five_region.json` | EXISTS (2026-11-27) |
+| F8 | `figures/W32_arch_interaction.pdf` | §6.5 Architecture interaction | `scripts/make_wave32_figures.py` | `data/results/wave30_architecture_interaction.json` (v2) | EXISTS (2026-11-27) |
+| F9 | `figures/W32_heterogeneity_severity.pdf` | §6.6 Heterogeneity/severity | `scripts/make_wave32_figures.py` | `data/results/wave30_mechanism_light.json` | EXISTS (2026-11-27) |
+| F10 | `figures/W32_representative_extremes.pdf` | §6.4 Representative extreme events | `scripts/make_wave32_figures.py` | `data/predictions/v2/*A0*A3*.npz` (historical candidate-zoo archives, retrospective test; labelled as such) | EXISTS (2026-11-27) |
 | F11 | `figures/W32_fidelity_stratified.pdf` | §6.x Stratified seven-family benchmark | `scripts/make_wave32_figures.py` | `data/results/wave30_generator_fidelity.json` (70 cells, post-refresh) | PENDING P2 completion |
 | F12 | `figures/W32_tail_calibration.pdf` | §6.x Tail calibration | `scripts/make_wave32_figures.py` | `data/results/wave32_tail_calibration.json` | PENDING P3 |
 | H1 | `figures/W27_architecture_region.pdf` | historical candidate-zoo figure (retained for §6.4 historical analysis) | `scripts/make_wave27_figures.py` | historical candidate-zoo JSON | EXISTS (historical only) |

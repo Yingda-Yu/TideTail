@@ -1,47 +1,114 @@
 \section{Related Work}
 \label{sec:related}
 
-\subsection{Coastal water-level forecasting}
-Traditional coastal water-level forecasting combines deterministic tidal
-constituents with empirical or dynamical storm-surge models~\citep{yang2023storm}.
-In recent years, neural approaches have improved forecast quality on held-out
-gauges. \citet{sergeev2024spatial} demonstrated that information from multiple
-gauges along a coastline substantially improves forecast accuracy for downstream
-stations. \citet{tong2024dual} introduced dual-timescale residual memory that
-separately models slow tidal evolution and fast storm-driven residuals, with
-particular attention to extreme events. These works establish that (a) the
-de-tided residual signal carries the most operationally relevant information during
-storms, and (b) extreme events demand model architectures that differ from those
-optimized for benign conditions.
+\subsection{Coastal water-level and storm-surge forecasting}
+Operational coastal water-level forecasting has long combined deterministic
+tidal constituents with dynamical surge models; statistical and, more
+recently, machine-learning components are added on top of these baselines.
+\citet{bajo2010storm} combined a finite-element surge model with an artificial
+neural network for the Venice lagoon, an architecture that remains
+representative of operational hybrid chains. Data-driven deep learning for
+surge prediction has since been explored at scale: \citet{tiggeloven2021exploring}
+trained global neural networks on gauge and reanalysis data and found
+competitive surge skill in coastal areas, and \citet{bruneau2020estimation}
+estimated coastal sea-level extremes globally with neural networks.
+Process understanding matters as much as model class: tide--surge interaction
+structures the residual itself, so that in the North Sea the largest skew
+surges occur preferentially near low water \citep{horsburgh2007tidesurge}.
+At the operational end, pan-European extreme sea-level forecasts from the
+Copernicus Marine Service show skill that is real but uneven across regions
+and return periods \citep{irazoqui2022towards}. Two lessons carry over to this
+work: the non-tidal residual is the operationally critical signal during
+storms, and regional heterogeneity is the norm rather than the exception.
 
-\subsection{Data augmentation for time-series forecasting}
-Data augmentation for time series is reviewed by~\citet{hoppe2024diffusion} and
-related surveys. Standard approaches include: (1) \emph{oversampling} rare events
-or weighting them in the loss function, (2) \emph{perturbation} with additive or
-multiplicative noise, (3) \emph{interpolation} between adjacent real windows, and
-(4) \emph{generative models} including GANs, VAEs, and diffusion. A key
-distinction for coastal water levels is whether augmentation preserves the
-\emph{physical plausibility} of the residual signal: unrealistic samples may
-actually degrade downstream forecasting by corrupting the training distribution.
+\subsection{Extreme-value statistics for coastal extremes}
+The statistical backbone of extreme-event definition is peaks-over-threshold
+modelling of exceedances over a high threshold \citep{davison1990models},
+consolidated in the classical monograph of \citet{coles2001introduction}.
+Because storm residuals cluster in time, declustering is required before
+threshold exceedances can be treated as independent; the runs method and its
+inference were formalised by \citet{ferro2003inference}. \citet{katz2002statistics}
+review extremes in hydrology, emphasising that return-level estimates are only
+as trustworthy as the independence assumptions behind them. Our event census
+(POT clusters with 168\,h declustering, unioned with canonical tropical
+cyclones under a frozen one-to-one matching rule) is a direct application of
+this tradition, and the double-counting failure documented in
+Section~\ref{sec:results-census} is precisely the kind of error the
+declustering literature warns about.
 
-\subsection{Conditional diffusion models for time series}
-Conditional score-based diffusion models have been applied to time-series
-imputation~\citep{tashiro2022csdi,ma2023marginal} and generation. The canonical
-formulation~\citep{ho2020denoising} defines a forward process
-$q(x_t | x_0) = \mathcal{N}(\sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t) I)$
-and trains a network $\epsilon_\theta(x_t, t, c)$ to predict the injected noise,
-where $c$ denotes conditioning information. During generation, the reverse process
-iteratively denoises from $T$ back to 0:
-\begin{equation}
-    x_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}} \epsilon_\theta(x_t, t, c) \right) + \sigma_t z,
-    \label{eq:reverse}
-\end{equation}
-where $\sigma_t^2 = \beta_t (1 - \bar{\alpha}_{t-1}) / (1 - \bar{\alpha}_t)$ is the
-posterior variance and $z \sim \mathcal{N}(0, I)$.
+\subsection{Data augmentation for time series}
+Augmentation for time series is surveyed by \citet{wen2021time}, with
+empirical evidence for classification tasks in \citet{iwana2021empirical}.
+Classical stochastic methods decompose and resample the series: bagging with
+STL decomposition and Box--Cox transformation \citep{bergmeir2016bagging}, and
+window-warping or magnitude-warping style perturbations validated on wearable
+sensor data \citep{um2017data}. Generative augmentation replaces synthetic
+perturbation with learned conditional sampling, raising a question these
+surveys do not answer for our setting: does a generatively ``better'' sample
+distribution improve downstream forecasting of extremes, or only the bulk?
 
-\subsection{This work's niche}
-To our knowledge, this is the first systematic application of conditional diffusion
-augmentation to coastal water-level forecasting with (a) event-grouped leakage-safe
-splits, (b) train-only threshold estimation, (c) matched-budget comparison across
-augmentation methods, and (d) pre-registration of hypotheses before running
-experiments.
+\subsection{Conditional GANs, VAEs, and diffusion models for time series}
+VAEs learn latent variable models through the variational bound of
+\citet{kingma2014autoencoding}; GP-VAE extends them to probabilistic time
+series imputation \citep{fortuin2020gpvae}. On the adversarial side,
+\citet{esteban2017realvalued} introduced recurrent conditional GANs for
+real-valued medical series, \citet{yoon2019timegan} proposed TimeGAN with
+stepwise supervised loss, and \citet{xu2020cotgan} addressed sequential data
+through causal optimal transport. Diffusion models, introduced for images by
+\citet{ho2020denoising}, now dominate time-series generation:
+CSDI for probabilistic imputation \citep{tashiro2021csdi}, TimeGrad for
+autoregressive probabilistic forecasting \citep{rasul2021timegrad},
+Diffusion-TS with interpretable decomposition \citep{yuan2024diffusionts},
+and structured state-space variants for imputation and forecasting
+\citep{alcaraz2023diffusion}. Flow Matching \citep{lipman2023flow} offers a
+simulation-free alternative built on continuous normalising flows, later
+generalised and connected to minibatch optimal transport
+\citep{tong2024improving} and unified with diffusion through stochastic
+interpolants \citep{albergo2025stochastic}; Neural Flows provide efficient
+continuous-time alternatives \citep{bilos2021neural}. Training failures and
+evaluation pitfalls of GANs are well documented: the Wasserstein reformulation
+\citep{arjovsky2017wasserstein} and its principled-analysis companion
+\citep{arjovsky2017towards}, gradient-penalty training
+\citep{gulrajani2017wgangp}, and precision/recall or FID-style diagnostics for
+generative quality \citep{sajjadi2018assessing,heusel2017gans}. Our
+seven-family benchmark inherits both the model families and the evaluation
+cautions from this literature.
+
+\subsection{Physics-guided machine learning for Earth systems}
+\citet{reichstein2019deep} argued that the next step for Earth-system science
+is hybrid modelling that couples deep learning with process understanding.
+Concrete instantiations include physics-guided RNNs for lake temperatures
+\citep{jia2019physics} and the broader taxonomy of physics-informed machine
+learning collected by \citet{karniadakis2021physics}, with engineering and
+environmental applications surveyed by \citet{willard2022integrating}. We
+adopt their terminology deliberately and conservatively: our ``physical
+priors'' are ERA5 meteorological conditioning and physics-inspired
+statistical regularisation, not governing-equation PDE constraints. Nothing
+in our six-arm ablation should be read as constraining shallow-water
+dynamics.
+
+\subsection{Event-level forecast evaluation}
+Verification theory distinguishes distributional skill from event skill:
+strictly proper scoring rules \citep{gneiting2007strictly}, scale-selective
+verification for high-impact convective events \citep{roberts2008scale}, the
+extreme dependency score for rare events \citep{stephenson2008extreme}, and
+forecast verification tailored to extreme-value distributions
+\citep{friederichs2012forecast}. Our evaluation protocol follows the same
+principle: paired, event-unit-level sign-flip tests with hierarchy-corrected
+multiple-testing control, stratified by background/moderate/extreme intensity,
+because bulk distributional fidelity is exactly the quantity that our results
+show does not automatically transfer to extreme-event utility.
+
+\subsection{Positioning of this work}
+Prior applications of generative augmentation to geophysical forecasting
+typically report aggregate skill on held-out windows. What is missing, and
+what this paper contributes, is a controlled account of \emph{when}
+generative augmentation helps extreme coastal forecasting at all: one
+protocol, five contrasting regions, two downstream architectures, seven
+generator families under one fidelity gate and one matched budget, a
+six-arm physical-prior ablation, and inference keyed to independent event
+units rather than overlapping windows. The niche we claim is therefore not
+``first diffusion augmentation for tides'' but the first systematic
+region- and architecture-resolved audit of generative augmentation for
+extreme coastal water-level forecasting, with the fidelity-versus-utility
+gap as its central empirical finding.

@@ -1,57 +1,324 @@
-\begin{thebibliography}{8}
+\begin{thebibliography}{40}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
+\bibitem[Albergo et~al.(2025)Albergo, Boffi, and
+  Vanden-Eijnden]{albergo2025stochastic}
+Michael~S. Albergo, Nicholas~M. Boffi, and Eric Vanden-Eijnden.
+\newblock Stochastic interpolants: A unifying framework for flows and
+  diffusions.
+\newblock \emph{Journal of Machine Learning Research}, 26\penalty0
+  (209):\penalty0 1--80, 2025.
+
+\bibitem[Arjovsky and Bottou(2017)]{arjovsky2017towards}
+Martin Arjovsky and L{\'e}on Bottou.
+\newblock Towards principled methods for training generative adversarial
+  networks.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2017.
+\newblock arXiv:1701.04862.
+
+\bibitem[Arjovsky et~al.(2017)Arjovsky, Chintala, and
+  Bottou]{arjovsky2017wasserstein}
+Martin Arjovsky, Soumith Chintala, and L{\'e}on Bottou.
+\newblock Wasserstein generative adversarial networks.
+\newblock In \emph{Proceedings of the 34th International Conference on Machine
+  Learning (ICML)}, volume~70 of \emph{Proceedings of Machine Learning
+  Research}, pages 214--223. PMLR, 2017.
+
+\bibitem[Bajo and Umgiesser(2010)]{bajo2010storm}
+Marco Bajo and Georg Umgiesser.
+\newblock Storm surge forecast through a combination of dynamic and neural
+  network models.
+\newblock \emph{Ocean Modelling}, 33:\penalty0 1--9, 2010.
+\newblock \doi{10.1016/j.ocemod.2009.12.007}.
+
+\bibitem[Bergmeir et~al.(2016)Bergmeir, Hyndman, and
+  Ben{\'i}tez]{bergmeir2016bagging}
+Christoph Bergmeir, Rob~J. Hyndman, and Jos{\'e}~M. Ben{\'i}tez.
+\newblock Bagging exponential smoothing methods using {STL} decomposition and
+  {Box--Cox} transformation.
+\newblock \emph{International Journal of Forecasting}, 32\penalty0
+  (2):\penalty0 303--312, 2016.
+\newblock \doi{10.1016/j.ijforecast.2015.07.002}.
+
+\bibitem[Bilo{\v s} et~al.(2021)Bilo{\v s}, Sommer, Rangapuram, Januschowski,
+  and G{\"u}nnemann]{bilos2021neural}
+Marin Bilo{\v s}, Johanna Sommer, Syama~Sundar Rangapuram, Tim Januschowski,
+  and Stephan G{\"u}nnemann.
+\newblock Neural flows: Efficient alternative to neural {ODEs}.
+\newblock In \emph{Advances in Neural Information Processing Systems 34
+  (NeurIPS 2021)}, pages 21325--21337, 2021.
+
+\bibitem[Bruneau et~al.(2020)Bruneau, Polton, Williams, and
+  Holt]{bruneau2020estimation}
+Nicolas Bruneau, Jeff Polton, Joanne Williams, and Jason Holt.
+\newblock Estimation of global coastal sea level extremes using neural
+  networks.
+\newblock \emph{Environmental Research Letters}, 15:\penalty0 074030, 2020.
+\newblock \doi{10.1088/1748-9326/ab89d6}.
+
+\bibitem[Coles(2001)]{coles2001introduction}
+Stuart Coles.
+\newblock \emph{An Introduction to Statistical Modeling of Extreme Values}.
+\newblock Springer Series in Statistics. Springer, London, 2001.
+\newblock \doi{10.1007/978-1-4471-3675-0}.
+
+\bibitem[Davison and Smith(1990)]{davison1990models}
+A.~C. Davison and R.~L. Smith.
+\newblock Models for exceedances over high thresholds.
+\newblock \emph{Journal of the Royal Statistical Society: Series B
+  (Methodological)}, 52\penalty0 (3):\penalty0 393--425, 1990.
+\newblock \doi{10.1111/j.2517-6161.1990.tb01796.x}.
+
+\bibitem[Esteban et~al.(2017)Esteban, Hyland, and
+  R{\"a}tsch]{esteban2017realvalued}
+Crist{\'o}bal Esteban, Stephanie~L. Hyland, and Gunnar R{\"a}tsch.
+\newblock Real-valued (medical) time series generation with recurrent
+  conditional {GANs}.
+\newblock \emph{arXiv preprint arXiv:1706.02633}, 2017.
+
+\bibitem[Ferro and Segers(2003)]{ferro2003inference}
+Christopher A.~T. Ferro and Johan Segers.
+\newblock Inference for clusters of extreme values.
+\newblock \emph{Journal of the Royal Statistical Society: Series B (Statistical
+  Methodology)}, 65\penalty0 (2):\penalty0 545--556, 2003.
+\newblock \doi{10.1111/1467-9868.00401}.
+
+\bibitem[Fortuin et~al.(2020)Fortuin, Baranchuk, Raetsch, and
+  Mandt]{fortuin2020gpvae}
+Vincent Fortuin, Dmitry Baranchuk, Gunnar Raetsch, and Stephan Mandt.
+\newblock {GP-VAE}: Deep probabilistic time series imputation.
+\newblock In \emph{Proceedings of the 23rd International Conference on
+  Artificial Intelligence and Statistics (AISTATS)}, volume 108 of
+  \emph{Proceedings of Machine Learning Research}, pages 1651--1661. PMLR,
+  2020.
+
+\bibitem[Friederichs and Thorarinsdottir(2012)]{friederichs2012forecast}
+Petra Friederichs and Thordis~L. Thorarinsdottir.
+\newblock Forecast verification for extreme value distributions with an
+  application to probabilistic peak wind prediction.
+\newblock \emph{Environmetrics}, 23\penalty0 (7):\penalty0 579--594, 2012.
+\newblock \doi{10.1002/env.2176}.
+
+\bibitem[Gneiting and Raftery(2007)]{gneiting2007strictly}
+Tilmann Gneiting and Adrian~E. Raftery.
+\newblock Strictly proper scoring rules, prediction, and estimation.
+\newblock \emph{Journal of the American Statistical Association}, 102\penalty0
+  (477):\penalty0 359--378, 2007.
+\newblock \doi{10.1198/016214506000001437}.
+
+\bibitem[Gulrajani et~al.(2017)Gulrajani, Ahmed, Arjovsky, Dumoulin, and
+  Courville]{gulrajani2017wgangp}
+Ishaan Gulrajani, Faruk Ahmed, Martin Arjovsky, Vincent Dumoulin, and Aaron
+  Courville.
+\newblock Improved training of {Wasserstein} {GANs}.
+\newblock In \emph{Advances in Neural Information Processing Systems 30 (NIPS
+  2017)}, 2017.
+\newblock arXiv:1704.00028.
+
+\bibitem[Heusel et~al.(2017)Heusel, Ramsauer, Unterthiner, Nessler, and
+  Hochreiter]{heusel2017gans}
+Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp
+  Hochreiter.
+\newblock {GANs} trained by a two time-scale update rule converge to a local
+  {Nash} equilibrium.
+\newblock In \emph{Advances in Neural Information Processing Systems 30
+  (NeurIPS 2017)}, 2017.
+
 \bibitem[Ho et~al.(2020)Ho, Jain, and Abbeel]{ho2020denoising}
 Jonathan Ho, Ajay Jain, and Pieter Abbeel.
 \newblock Denoising diffusion probabilistic models.
-\newblock In \emph{NeurIPS}, 2020.
+\newblock In \emph{Advances in Neural Information Processing Systems 33
+  (NeurIPS 2020)}, 2020.
+\newblock arXiv:2006.11239.
 
-\bibitem[Hoppe et~al.(2024)]{hoppe2024diffusion}
-Frederik Hoppe et~al.
-\newblock Denoising diffusion probabilistic models for time-series generation:
-  A review.
-\newblock \emph{arXiv preprint arXiv:2410.24947}, 2024.
+\bibitem[Horsburgh and Wilson(2007)]{horsburgh2007tidesurge}
+K.~J. Horsburgh and C.~Wilson.
+\newblock Tide--surge interaction and its role in the distribution of surge
+  residuals in the north sea.
+\newblock \emph{Journal of Geophysical Research: Oceans}, 112\penalty0 (C8),
+  2007.
+\newblock \doi{10.1029/2006JC004033}.
+
+\bibitem[Irazoqui~Apecechea et~al.(2023)Irazoqui~Apecechea, Melet, and
+  Armaroli]{irazoqui2022towards}
+Maialen Irazoqui~Apecechea, Ang{\'e}lique Melet, and Clara Armaroli.
+\newblock Towards a pan-european coastal flood awareness system: Skill of
+  extreme sea-level forecasts from the {Copernicus Marine Service}.
+\newblock \emph{Frontiers in Marine Science}, 9:\penalty0 1091844, 2023.
+\newblock \doi{10.3389/fmars.2022.1091844}.
+
+\bibitem[Iwana and Uchida(2021)]{iwana2021empirical}
+Brian~Kenji Iwana and Seiichi Uchida.
+\newblock An empirical survey of data augmentation for time series
+  classification with neural networks.
+\newblock \emph{PLOS ONE}, 16:\penalty0 e0254841, 2021.
+\newblock \doi{10.1371/journal.pone.0254841}.
+
+\bibitem[Jia et~al.(2019)Jia, Willard, Karpatne, Read, Zwart, Steinbach, and
+  Kumar]{jia2019physics}
+Xiaowei Jia, Jared Willard, Anuj Karpatne, Jordan Read, Jacob Zwart, Michael
+  Steinbach, and Vipin Kumar.
+\newblock Physics guided {RNNs} for modeling dynamical systems: A case study in
+  simulating lake temperature profiles.
+\newblock In \emph{Proceedings of the 2019 SIAM International Conference on
+  Data Mining (SDM)}, pages 558--566. SIAM, 2019.
+\newblock \doi{10.1137/1.9781611975673.63}.
+
+\bibitem[Karniadakis et~al.(2021)Karniadakis, Kevrekidis, Lu, Perdikaris, Wang,
+  and Yang]{karniadakis2021physics}
+George~Em Karniadakis, Ioannis~G. Kevrekidis, Lu~Lu, Paris Perdikaris, Sifan
+  Wang, and Liu Yang.
+\newblock Physics-informed machine learning.
+\newblock \emph{Nature Reviews Physics}, 3\penalty0 (6):\penalty0 422--440,
+  2021.
+\newblock \doi{10.1038/s42254-021-00314-5}.
+
+\bibitem[Katz et~al.(2002)Katz, Parlange, and Naveau]{katz2002statistics}
+Richard~W. Katz, Marc~B. Parlange, and Philippe Naveau.
+\newblock Statistics of extremes in hydrology.
+\newblock \emph{Advances in Water Resources}, 25\penalty0 (8--12):\penalty0
+  1287--1304, 2002.
+\newblock \doi{10.1016/S0309-1708(02)00056-8}.
+
+\bibitem[Kingma and Welling(2014)]{kingma2014autoencoding}
+Diederik~P. Kingma and Max Welling.
+\newblock Auto-encoding variational {Bayes}.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2014.
+\newblock arXiv:1312.6114.
 
 \bibitem[Lipman et~al.(2023)Lipman, Chen, Ben-Hamu, Nickel, and
   Le]{lipman2023flow}
 Yaron Lipman, Ricky T.~Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matt Le.
 \newblock Flow matching for generative modeling.
-\newblock In \emph{Proceedings of the Eleventh International Conference on
-  Learning Representations (ICLR)}, 2023.
-\newblock URL \url{https://arxiv.org/abs/2210.02747}.
+\newblock In \emph{The Eleventh International Conference on Learning
+  Representations (ICLR)}, 2023.
+\newblock arXiv:2210.02747.
 
-\bibitem[Ma et~al.(2023)]{ma2023marginal}
-Xin Ma et~al.
-\newblock Diffusion-based time series imputation with marginally weighted
-  conditioning.
-\newblock \emph{NeurIPS}, 2023.
+\bibitem[L{\'o}pez~Alcaraz and Strodthoff(2023)]{alcaraz2023diffusion}
+Juan~Miguel L{\'o}pez~Alcaraz and Nils Strodthoff.
+\newblock Diffusion-based time series imputation and forecasting with
+  structured state space models.
+\newblock \emph{Transactions on Machine Learning Research}, 2023.
+\newblock arXiv:2208.09399.
 
-\bibitem[Sergeev et~al.(2024)]{sergeev2024spatial}
-Ivan Sergeev et~al.
-\newblock Spatial information pathways for coastal water-level forecasting
-  across diverse gauge networks.
-\newblock \emph{Coastal Engineering}, 2024.
+\bibitem[Rasul et~al.(2021)Rasul, Seward, Schuster, and
+  Vollgraf]{rasul2021timegrad}
+Kashif Rasul, Calvin Seward, Ingmar Schuster, and Roland Vollgraf.
+\newblock Autoregressive denoising diffusion models for multivariate
+  probabilistic time series forecasting.
+\newblock In \emph{Proceedings of the 38th International Conference on Machine
+  Learning (ICML)}, volume 139 of \emph{Proceedings of Machine Learning
+  Research}, pages 8857--8868. PMLR, 2021.
 
-\bibitem[Tashiro et~al.(2021)Tashiro, Song, Song, and Ermon]{tashiro2022csdi}
-Yusuke Tashiro, Yang Song, Jiaming Song, and Stefano Ermon.
-\newblock Csdi: Conditional score-based diffusion models for probabilistic time
-  series imputation.
-\newblock \emph{NeurIPS}, 2021.
+\bibitem[Reichstein et~al.(2019)Reichstein, Camps-Valls, Stevens, Jung,
+  Denzler, Carvalhais, and Prabhat]{reichstein2019deep}
+Markus Reichstein, Gustau Camps-Valls, Bjorn Stevens, Martin Jung, Joachim
+  Denzler, Nuno Carvalhais, and Prabhat.
+\newblock Deep learning and process understanding for data-driven earth system
+  science.
+\newblock \emph{Nature}, 566:\penalty0 195--204, 2019.
+\newblock \doi{10.1038/s41586-019-0912-1}.
 
-\bibitem[Tong et~al.(2024)]{tong2024dual}
-Mengxue Tong et~al.
-\newblock Dual-timescale residual memory for extreme coastal water-level
-  forecasting.
-\newblock \emph{Ocean Modelling}, 2024.
+\bibitem[Roberts and Lean(2008)]{roberts2008scale}
+Nigel~M. Roberts and Humphrey~W. Lean.
+\newblock Scale-selective verification of rainfall accumulations from
+  high-resolution forecasts of convective events.
+\newblock \emph{Monthly Weather Review}, 136\penalty0 (1):\penalty0 78--97,
+  2008.
+\newblock \doi{10.1175/2007MWR2123.1}.
 
-\bibitem[Yang et~al.(2023)]{yang2023storm}
-Z.~Yang et~al.
-\newblock Storm surge prediction using machine learning: A comprehensive
-  review.
-\newblock \emph{Progress in Oceanography}, 255:\penalty0 103603, 2023.
+\bibitem[Sajjadi et~al.(2018)Sajjadi, Bachem, Lucic, Bousquet, and
+  Gelly]{sajjadi2018assessing}
+Mehdi S.~M. Sajjadi, Olivier Bachem, Mario Lucic, Olivier Bousquet, and Sylvain
+  Gelly.
+\newblock Assessing generative models via precision and recall.
+\newblock In \emph{Advances in Neural Information Processing Systems 31
+  (NeurIPS 2018)}, 2018.
+
+\bibitem[Stephenson et~al.(2008)Stephenson, Casati, Ferro, and
+  Wilson]{stephenson2008extreme}
+D.~B. Stephenson, B.~Casati, C.~A.~T. Ferro, and C.~A. Wilson.
+\newblock The extreme dependency score: a non-vanishing measure for forecasts
+  of rare events.
+\newblock \emph{Meteorological Applications}, 15\penalty0 (1):\penalty0 41--50,
+  2008.
+\newblock \doi{10.1002/met.53}.
+
+\bibitem[Tashiro et~al.(2021)Tashiro, Song, Song, and Ermon]{tashiro2021csdi}
+Yusuke Tashiro, Jiaming Song, Yang Song, and Stefano Ermon.
+\newblock {CSDI}: Conditional score-based diffusion models for probabilistic
+  time series imputation.
+\newblock In \emph{Advances in Neural Information Processing Systems 34
+  (NeurIPS 2021)}, 2021.
+
+\bibitem[Tiggeloven et~al.(2021)Tiggeloven, Couasnon, van Straaten, Muis, and
+  Ward]{tiggeloven2021exploring}
+Timothy Tiggeloven, Ana{\"i}s Couasnon, Chiem van Straaten, Sanne Muis, and
+  Philip~J. Ward.
+\newblock Exploring deep learning capabilities for surge predictions in coastal
+  areas.
+\newblock \emph{Scientific Reports}, 11\penalty0 (1):\penalty0 17224, 2021.
+\newblock \doi{10.1038/s41598-021-96674-0}.
+
+\bibitem[Tong et~al.(2024)Tong, Fatras, Malkin, Huguet, Zhang, Rector-Brooks,
+  Wolf, and Bengio]{tong2024improving}
+Alexander Tong, Kilian Fatras, Nikolay Malkin, Guillaume Huguet, Yanlei Zhang,
+  Jarrid Rector-Brooks, Guy Wolf, and Yoshua Bengio.
+\newblock Improving and generalizing flow-based generative models with
+  minibatch optimal transport.
+\newblock \emph{Transactions on Machine Learning Research}, 2024.
+\newblock arXiv:2302.00482.
+
+\bibitem[Um et~al.(2017)Um, Pfister, Pichler, Endo, Lang, Hirche, Fietzek, and
+  Kuli{\'c}]{um2017data}
+Terry~T. Um, Franz M.~J. Pfister, Daniel Pichler, Satoshi Endo, Muriel Lang,
+  Sandra Hirche, Urban Fietzek, and Dana Kuli{\'c}.
+\newblock Data augmentation of wearable sensor data for {Parkinson's} disease
+  monitoring using convolutional neural networks.
+\newblock In \emph{Proceedings of the 19th ACM International Conference on
+  Multimodal Interaction (ICMI '17)}, 2017.
+\newblock \doi{10.1145/3136755.3136817}.
+
+\bibitem[Wen et~al.(2021)Wen, Sun, Yang, Song, Gao, Wang, and Xu]{wen2021time}
+Qingsong Wen, Liang Sun, Fan Yang, Xiaomin Song, Jingkun Gao, Xue Wang, and
+  Huan Xu.
+\newblock Time series data augmentation for deep learning: A survey.
+\newblock In \emph{Proceedings of the Thirtieth International Joint Conference
+  on Artificial Intelligence (IJCAI)}, pages 4653--4660, 2021.
+\newblock \doi{10.24963/ijcai.2021/631}.
+
+\bibitem[Willard et~al.(2022)Willard, Jia, Xu, Steinbach, and
+  Kumar]{willard2022integrating}
+Jared Willard, Xiaowei Jia, Shaoming Xu, Michael Steinbach, and Vipin Kumar.
+\newblock Integrating scientific knowledge with machine learning for
+  engineering and environmental systems.
+\newblock \emph{ACM Computing Surveys}, 55\penalty0 (4):\penalty0 1--37, 2022.
+\newblock \doi{10.1145/3514228}.
+
+\bibitem[Xu et~al.(2020)Xu, Wenliang, Munn, and Acciaio]{xu2020cotgan}
+Tianlin Xu, Li~K. Wenliang, Michael Munn, and Beatrice Acciaio.
+\newblock {COT-GAN}: Generating sequential data via causal optimal transport.
+\newblock In \emph{Advances in Neural Information Processing Systems 33
+  (NeurIPS 2020)}, 2020.
+
+\bibitem[Yoon et~al.(2019)Yoon, Jarrett, and van~der Schaar]{yoon2019timegan}
+Jinsung Yoon, Daniel Jarrett, and Mihaela van~der Schaar.
+\newblock Time-series generative adversarial networks.
+\newblock In \emph{Advances in Neural Information Processing Systems 32
+  (NeurIPS 2019)}, 2019.
+
+\bibitem[Yuan and Qiao(2024)]{yuan2024diffusionts}
+Xinyu Yuan and Yan Qiao.
+\newblock {Diffusion-TS}: Interpretable diffusion for general time series
+  generation.
+\newblock In \emph{The Twelfth International Conference on Learning
+  Representations (ICLR)}, 2024.
+\newblock arXiv:2403.01742.
 
 \end{thebibliography}

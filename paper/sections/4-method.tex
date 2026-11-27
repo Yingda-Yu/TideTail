@@ -33,7 +33,7 @@ history of the non-tidal residual as conditioning:
     re-weighted objective that emphasises high-magnitude target windows
     (27{,}937 parameters).
     \item \textbf{Conditional VAE} (63{,}273 parameters encoder+decoder)
-    \citep{kingma2014vae} with a latent sampled from $\mathcal{N}(0,I)$.
+    \citep{kingma2014autoencoding} with a latent sampled from $\mathcal{N}(0,I)$.
     \item \textbf{TimeGrad}. An autoregressive DDPM rolled out over the
     horizon; the denoiser has 7{,}177 parameters \citep{rasul2021timegrad}.
     \item \textbf{Conditional DDPM}. A single-shot denoising model with a
@@ -43,7 +43,7 @@ history of the non-tidal residual as conditioning:
     reported separately) \citep{gulrajani2017wgangp}.
     \item \textbf{Diffusion-TS}. Trend/seasonal/residual decomposition with
     the residual diffused by a ResidualDenoiser (39{,}425 parameters)
-    \citep{xu2024diffusionts}.
+    \citep{yuan2024diffusionts}.
 \end{enumerate}
 
 \paragraph{Fairness contract.} Every family is trained with the same fixed
