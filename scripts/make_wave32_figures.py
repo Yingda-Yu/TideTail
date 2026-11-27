@@ -248,10 +248,11 @@ def fig_F10_representative_extremes():
         ax.legend(frameon=False, fontsize=8, loc="upper right")
     axes[-1].set_xlabel("forecast horizon (h)")
     fig.text(0.01, -0.02,
-             "Historical candidate-zoo archives (retrospective 2022-2024 test "
-             "window; highest-peak independent event unit per region, illustrative "
-             "only). The Thames and Southeast Australia residual series carry "
-             "regional datum offsets inherited from the source archives.",
+             "Historical candidate-zoo archives (retired 8:1:1 split, 2022 "
+             "test year; highest-peak independent event unit per region, "
+             "illustrative only). The Thames and Southeast Australia residual "
+             "series carry regional datum offsets inherited from the source "
+             "archives.",
              fontsize=7.5)
     _save(fig, "W32_representative_extremes.pdf")
 

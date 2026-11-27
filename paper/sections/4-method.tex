@@ -110,8 +110,10 @@ The Wave 2.0 pilot used a 1D temporal DDPM with the following components:
 \end{enumerate}
 
 Total parameter count: 27,169 (pilot 72$\rightarrow$24). For the main task 96$\rightarrow$72,
-the horizon changes to 72 and the conditioning input to 96 values; parameter
-count remains in the 30--40K range, matched to the GRU and TCN budgets below.
+the horizon changes to 72 and the conditioning input to 96 values; the
+benchmark implementation (Section~\ref{sec:results-benchmark-pilot}) counts
+27{,}937 parameters, of the same order as the GRU and TCN budgets below
+(exact counts per family are reported with the pilot results).
 
 \subsection{Noise schedule and forward process}
 We implement cosine cumulative noise schedule~\citep{ho2020denoising} with
@@ -136,8 +138,9 @@ Gaussian noise:
         \left\| \epsilon - \epsilon_\theta(\sqrt{\bar{\alpha}_t} x_0 + \sqrt{1-\bar{\alpha}_t} \epsilon, t, \text{history}) \right\|^2
     \right].
 \end{equation}
-Training hyperparameters for the pilot run (Issue~\#6): AdamW with $\text{lr}=0.001$,
-batch size 128, three epochs, BF16 precision on RTX3090 GPU~4, seed 20261025.
+Training hyperparameters for the pilot run: AdamW with $\text{lr}=0.001$,
+batch size 128, three epochs, BF16 precision on a single RTX3090 GPU, seed
+20261025.
 
 \subsection{Forecasting baselines}
 All baselines consume 96 hours of hourly history and produce 72 hours of
@@ -152,8 +155,9 @@ Missing-value masks are concatenated as an extra input channel.
 \paragraph{GRU encoder-decoder.}
 A 2-layer GRU encoder maps the 96-hour history into a hidden state; a GRU
 decoder then autoregressively produces 72 forecast steps, each step feeding
-its own output back as input. Hidden size is matched to DDPM parameter budget
-($\approx$ 5--10K). The GRU operates on normalized values with explicit
+its own output back as input. Hidden size is chosen to keep the
+total parameter count of the same order as the DDPM's ($\approx$ 5--10K);
+the exact per-family counts are reported with the pilot results. The GRU operates on normalized values with explicit
 gradient tracking for training and a no-grad \texttt{predict\_eval} path for
 inference.
 

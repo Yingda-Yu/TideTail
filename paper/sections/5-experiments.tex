@@ -21,20 +21,32 @@ Five regions are admitted: \texttt{ny\_bight}, \texttt{thames\_north\_sea},
 Hong Kong (\texttt{pearl\_river\_hong\_kong}) is excluded pending license/datum/signoff.
 
 \subsection{Split protocol}
-\begin{itemize}
-    \item \textbf{Event-grouped chronological 8:1:1 split}. Each partition contains
-    independent storm events in chronological order, with no event appearing in
-    two partitions.
-    \item \textbf{Full-support embargo}: a forecast origin $o$ is safe only if
-    $o \geq a + 96$ and $o \leq b - 72$, where $[a, b)$ is the partition's row block.
-    This ensures no window's support $[o-L, o+H)$ crosses a partition boundary.
-    \item \textbf{Train-only scalers}: mean/SD fit on train rows only, applied
-    without re-fit to all partitions.
-    \item \textbf{Train-only thresholds}: q95/q99 from train rows only, used for
-    tail metrics and oversampling weights.
-    \item \textbf{Missing masks}: all models consume a boolean mask per hour,
-    fixed and common across all A0--A4 methods.
-\end{itemize}
+Two split protocols appear in this paper's experiments, and all current
+claims use the first.
+
+\paragraph{Operative: frozen calendar split (Section 3.4).} All five-region
+expanded evaluations, the architecture-interaction analysis, the
+mechanism probes and the six-arm physics ablation use the pre-registered
+calendar protocol: 2015--2020 for fitting, 2021 for epoch selection,
+2022--2024 touched once. Splits are event-grouped with a 168\,h embargo at
+both boundaries, scalers and tail thresholds are fitted on training rows
+only, and the 2022--2024 test period is disclosed as retrospective
+(Section 3.4); it is not an untouched confirmatory holdout.
+
+\paragraph{Historical: event-grouped 8:1:1 split.} The candidate-zoo
+experiments (the four-generator production benchmark, the Wave 1.7 audit
+aggregates and the 320-test family) used an event-grouped chronological
+8:1:1 split over a single test year. A forecast origin $o$ is safe only if
+$o \geq a + 96$ and $o \leq b - 72$, where $[a, b)$ is the partition's row
+block, so no window's support $[o-L, o+H)$ crosses a partition boundary.
+Aggregates from this protocol are tagged \emph{historical} wherever they
+appear and are never merged with the frozen-protocol results.
+
+\paragraph{Shared guarantees.} Under both protocols: train-only scalers
+(mean/SD fit on train rows only, applied without re-fit), train-only
+thresholds (q95/q99 from train rows only, used for tail metrics and
+oversampling weights), and missing masks (all models consume a boolean mask
+per hour, fixed and common across all A0--A4 methods).
 
 \subsection{Evaluation metrics}
 All metrics are organized by their statistical unit (hourly cell, threshold event,
@@ -142,13 +154,11 @@ the physics ablation ran on CPU with explicit thread caps
 (\texttt{torch.set\_num\_threads($\le 8$)} and
 \texttt{CUDA\_VISIBLE\_DEVICES=""}); heavy jobs are strictly serial (a
 concurrent-job incident triggered a systemd-oomd kill, recorded and
-corrected). The five-region expanded recompute used GPU~5 (the only GPU
-effectively free at the time), and the season-stratified benchmark refresh
+corrected). The five-region expanded recompute used a single spare GPU, and the
+season-stratified benchmark refresh
 was run CPU-only under its fairness contract. One historical DDPM pilot,
 retained only for the diagnosis in Section~\ref{sec:results-pilot}, executed
-on RTX3090 index 4 (UUID
-\texttt{GPU-6be030f8-625e-c4e7-a2fb-1309a673664b}) with
-\texttt{CUDA\_VISIBLE\_DEVICES=4}; its CPU reproduction confirmed the
+on one RTX~3090 GPU; its CPU reproduction confirmed the
 magnitude failure using the same checkpoint loaded with
 \texttt{map\_location="cpu"}. Checkpoints are preserved locally and never
 committed to Git; their SHA256 digests are recorded in the result artifacts.

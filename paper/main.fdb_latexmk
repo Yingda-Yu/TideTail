@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex main"] 1795791084 "main.aux" "main.bbl" "main" 1795791085
+["bibtex main"] 1795792144 "main.aux" "main.bbl" "main" 1795792145
   "/usr/share/texlive/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "main.aux" 1795791085 32282 5dc47febbd1573c2211feaf18f6964de "pdflatex"
+  "main.aux" 1795792145 33154 0dd490c520405677198409f314451a19 "pdflatex"
   "references.bib" 1795790925 28132 fe6d216310a3be7de00a096cf341444a ""
   (generated)
   "main.bbl"
   "main.blg"
-["pdflatex"] 1795791084 "main.tex" "main.pdf" "main" 1795791085
+["pdflatex"] 1795792144 "main.tex" "main.pdf" "main" 1795792145
   "/etc/texmf/web2c/texmf.cnf" 1781397932 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1095.tfm" 1136768653 1536 02c06700a42be0f5a28664c7273f82e7 ""
@@ -147,20 +147,20 @@
   "figures/W32_arch_interaction.pdf" 1795790834 20292 58dd4a89e3459cf0036134efe456a8cd ""
   "figures/W32_five_region_effects.pdf" 1795790858 29863 d37c58a6c6bf199f3870a479b2e6dcd2 ""
   "figures/W32_heterogeneity_severity.pdf" 1795790834 31190 1a0e23071f9372220f36efbfd90214d5 ""
-  "figures/W32_representative_extremes.pdf" 1795790834 22837 837a48b189045a189c58fc1966d4d80e ""
-  "main.aux" 1795791085 32282 5dc47febbd1573c2211feaf18f6964de "pdflatex"
-  "main.bbl" 1795791084 14695 d5148587eaf2e8c64f0da79e48daa099 "bibtex main"
-  "main.out" 1795791085 13324 347057a4fc5d980bc7ec3a6b3dbacc83 "pdflatex"
+  "figures/W32_representative_extremes.pdf" 1795792143 22826 a9498871512b47292a6f78c9705ee059 ""
+  "main.aux" 1795792145 33154 0dd490c520405677198409f314451a19 "pdflatex"
+  "main.bbl" 1795792144 14695 d5148587eaf2e8c64f0da79e48daa099 "bibtex main"
+  "main.out" 1795792145 13324 347057a4fc5d980bc7ec3a6b3dbacc83 "pdflatex"
   "main.tex" 1795789941 3920 9babcd2767e6049da123fc59b0d464c0 ""
   "sections/1-introduction.tex" 1795789973 8641 5725088faec35868966590bba6dad627 ""
   "sections/2-related-work.tex" 1795790970 7437 ed22c0132f508ab441ab2a08e667e83f ""
-  "sections/3-protocol.tex" 1795790017 6304 8c910bb93018d7eacf44690d09955f52 ""
-  "sections/4-method.tex" 1795790981 11361 fecf1ad54ee8ee844870c45ffb6689de ""
-  "sections/5-experiments.tex" 1795790098 7804 5f1fea340adc9e494d8acf3f87e62dc2 ""
-  "sections/6-results.tex" 1795791071 42475 c19bf0eadb3a8f394789a8878aa886c4 ""
-  "sections/7-discussion.tex" 1795790202 15787 24a480665a42c857027c02ff21037639 ""
+  "sections/3-protocol.tex" 1795792096 6311 6eb09b5bd7bd681b90902abd5a9cecaf ""
+  "sections/4-method.tex" 1795792107 11588 64ac6ef560da521396307491bb0a13c0 ""
+  "sections/5-experiments.tex" 1795792090 8419 82d439ea376821e97d5384f77427f2e6 ""
+  "sections/6-results.tex" 1795792133 44803 ce503993481437575bf68394a893c0cf ""
+  "sections/7-discussion.tex" 1795791968 15808 e3a2f2e2d42bff2420bbf54204a48d6a ""
   "sections/8-conclusion.tex" 1795790219 4001 df485953ac5d00e33b0306e7ad5e3967 ""
-  "sections/a-audit.tex" 1794145007 4023 84d68236fe629af7662faa3de93f15f0 ""
+  "sections/a-audit.tex" 1795792119 4092 62f3252420595db608fc82ab61d65b13 ""
   (generated)
   "main.aux"
   "main.log"

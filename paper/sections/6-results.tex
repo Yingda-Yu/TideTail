@@ -60,7 +60,11 @@ no matching parameter was selected using downstream outcomes.
 
 Window integrity checks pass: \textbf{0 duplicate timestamps} in every region,
 8,601 test windows in four regions and 6,968 in Thames (whose source series has
-24.7\% NaN gaps), and every window's event-id array matches its length. There is
+24.7\% NaN gaps; Thames windows are reduced by its gap mask accordingly).
+These window counts belong to the \emph{historical candidate-zoo archives}
+(Wave 1.7 integrity audit under the retired 8:1:1 split), not to the frozen
+calendar protocol of Section~\ref{sec:results-expanded}; and every window's
+event-id array matches its length. There is
 no forecast-window overlap across the train/validation/test boundaries.
 Figure~\ref{fig:census} shows the raw components against the deduplicated union:
 the gap between the stacked bars and the black marker is exactly the
@@ -293,9 +297,10 @@ The earlier ``Charleston 5/48 multiplicity-adjusted'' result is withdrawn.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/W27_architecture_region.pdf}
-\caption{Mean extreme-window MAE change versus the same-architecture A0
-baseline, averaged over all candidate configurations within each region.
-Negative values mean augmentation helps.}
+\caption{Historical candidate-zoo aggregate: mean extreme-window MAE change
+versus the same-architecture A0 baseline, averaged over all candidate
+configurations within each region (2022 test year, retired 8:1:1 split,
+descriptive only). Negative values mean augmentation helps.}
 \label{fig:arch}
 \end{figure}
 
@@ -308,18 +313,26 @@ before it could be distinguished from seed noise.}
 \label{fig:seedvar}
 \end{figure}
 
-\paragraph{Architecture dependence.} Aggregating over all 160 comparisons per
+\paragraph{Architecture dependence (historical candidate zoo).} Aggregating
+over all 160 comparisons per
 architecture, the GRU improves in 86 and worsens in 74 (mean $-0.17\%$), while
 the TCN improves in 110 and worsens in 50 (mean $-7.08\%$). This reverses the
 earlier claim that architecture effects dwarf augmentation effects: under a
 corrected pairing the TCN responds to augmentation roughly forty times more
-strongly in relative terms. The GRU's better absolute accuracy is a separate
+strongly in relative terms. \emph{This is a descriptive historical aggregate
+under the retired split; the controlled test of architecture dependence is the
+interaction analysis of Section~\ref{sec:results-expanded}, which finds a
+significant TCN advantage only in beneficial regions (3 of 10 comparisons).}
+The GRU's better absolute accuracy is a separate
 observation and does not imply insensitivity.
 
-\paragraph{Region dependence.} Table~\ref{tab:region-delta} gives the mean
+\paragraph{Region dependence (historical candidate zoo).}
+Table~\ref{tab:region-delta} gives the mean
 change by region. Thames is the one region where augmentation is harmful for
 both forecasters, consistent with its macrotidal regime in which surge is a
-small fraction of total water level.
+small fraction of total water level; the same regional ordering reappears,
+with corrected statistics, in the frozen protocol
+(Table~\ref{tab:five-region}).
 
 Figure~\ref{fig:extremes} illustrates the two opposite regimes with single
 representative extreme events from the same historical archives: in Southeast
@@ -333,7 +346,7 @@ protocol (Section~\ref{sec:results-expanded}).
 \centering
 \includegraphics[width=0.95\textwidth]{figures/W32_representative_extremes.pdf}
 \caption{Representative extreme-event forecasts from the historical
-candidate-zoo archives (retrospective 2022--2024 test window): highest-peak
+candidate-zoo archives (retired 8:1:1 split, 2022 test year): highest-peak
 independent event unit per region, A0 real-only GRU versus A3
 FM-augmented GRU (generator seed 42). Illustrative only --- all quantitative
 claims rest on the paired event-unit statistics of
@@ -345,8 +358,9 @@ offsets inherited from the source archives.}
 
 \begin{table}[htbp]
 \centering
-\caption{Mean extreme-window MAE change versus the same-architecture A0
-baseline, by region (\%). Negative means augmentation helps.}
+\caption{Historical candidate-zoo: mean extreme-window MAE change versus the
+same-architecture A0 baseline, by region (\%); 2022 test year, retired 8:1:1
+split, descriptive only. Negative means augmentation helps.}
 \begin{tabular}{l r r}
 \toprule
 Region & GRU & TCN \\
@@ -466,7 +480,8 @@ augmentation, not fully calibrated augmentation. Second, the 2022--2024 span
 partially informed earlier exploratory waves of this project, so the evaluation
 is retrospective validation rather than untouched confirmatory inference. The
 six-cell follow-up (GRU and TCN $\times$ standard and tail-aware augmentation,
-multiple seeds) is reported in the Wave 2.8 results.
+multiple seeds) is superseded by the five-region Wave 3.0 evaluation
+(Table~\ref{tab:five-region}).
 
 The protocol itself is verified. The split builder produces 168~h embargoes at
 both boundaries with no cross-split window overlap, validation-only selection
@@ -584,6 +599,26 @@ generator-seed standard deviations: the regional sign pattern is the dominant
 feature, and seed-level uncertainty ($\pm$0.5--1.7 percentage points) is
 small relative to the between-region spread but large enough to matter in
 null regions.
+
+\paragraph{Reconciling the tables.} Three tables in this section report a
+standard-FM arm, and their point estimates differ because they come from
+different run batches under different unit bases, not from re-use of one
+number. Table~\ref{tab:five-region} (Wave 3.0) is the primary result:
+five regions, 2022--2024 POT test units (40 Charleston / 51 NY Bight / 37
+Gulf / 20 SE Australia / 32 Thames), two generator seeds averaged, three
+downstream seeds. The physics ablation (Table~\ref{tab:physics-ablation}) is
+a different run batch (2024 extreme-unit horizon, $n=14$--$15$ units per
+region, two generator seeds per arm); its ``std'' column therefore measures
+the standard arm against a different event set and is not comparable
+cell-by-cell with Table~\ref{tab:five-region}. The corrected pilot
+(Section~\ref{sec:results-expanded}) is the single-region-pair predecessor of
+the primary result. The sign flips between batches (e.g.\ Charleston TCN
+$-0.32$ in the physics batch versus $+1.56^{*}$ in the primary table; NY
+Bight GRU $-1.35$ versus $-0.18$) are consistent with the generator-seed
+variance the paper documents explicitly (the NY Bight sign flip between
+generator seeds 42 and 99), and are the reason the primary comparison family
+averages over generator seeds and pre-specifies its regions. Where the two
+batches disagree in significance, the primary frozen protocol prevails.
 
 \begin{figure}[t]
 \centering
