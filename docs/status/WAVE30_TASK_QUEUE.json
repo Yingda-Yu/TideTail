@@ -1,9 +1,9 @@
 {
   "queue_version": "3.0-wave30",
   "created": "2026-11-26",
-  "last_updated": "2026-11-26T19:35:00+08:00",
+  "last_updated": "2026-11-27T14:12:00+08:00",
   "branch": "trae/global-data-generative-research-20261031",
-  "head_sha": "4cb1d5f",
+  "head_sha": "5024e4e",
   "pr": 23,
   "pr_state": "DRAFT — do not merge main",
   "gpu_policy": "GPU0 PROHIBITED. 2026-11-26 16:43 nvidia-smi: GPU5 (286MiB) and GPU8 (286MiB) effectively free; GPU4/6/9 lightly used by others; GPU1/2/3/7 heavily used. Use CUDA_VISIBLE_DEVICES=5 (or 8) with --device cuda:0 mapping. Heavy jobs serial.",
@@ -117,9 +117,9 @@
       "run_id": "wave30_p2_fidelity_20261126 PID 3543561",
       "commit": "f839384",
       "acceptance": "5 regions x 7 families x 2 gen seeds accounted; stratified windows from FULL test frame; strata sizes persisted; fairness fields persisted",
-      "result": "ALIVE 2026-11-26 19:32 CST: elapsed 1h42m, 164% CPU, state Rsl, CPU-only BY DESIGN (CUDA_VISIBLE_DEVICES='' — pilot fairness contract; nvidia-smi shows NO TideTail compute process; GPU0 untouched), OMP threads 8. JSON last write 19:20:43 advancing (incremental atomic writes). ACCOUNTING (70 total cells = 5 regions x 7 families x 2 gen seeds; family order flow_matching, tail_aware_fm, cvae, timegrad, ddpm_cond, wgan_gp, diffusion_ts): 7/70 complete, 1 running, 6 pending — Charleston 7/14 (NOT region-complete): fm s42 (1016s, scale 1.017) / s99 (1013s, 0.985); tail_aware_fm s42 (1033s, 1.017) / s99 (1059s, 0.978); cvae s42 (148s, 1.992) / s99 (143s, 2.196); timegrad s42 (985s, scale 14927 -> expected REJECT, matches pilot); timegrad s99 RUNNING; ddpm_cond s42/s99, wgan_gp s42/s99, diffusion_ts s42/s99 PENDING. ny_bight, us_gulf_coast, southeast_australia, thames_north_sea untouched (0/14 each). Strata: 174 unique windows from 8,601-frame (160 background + 4 independent q95 extremes + 10 q90 moderate-tail); all_extreme n=4 -> tail-fidelity conclusions will be classified INCONCLUSIVE where support is insufficient; no robust q99 claim from four events. ETA ~17h (~3.4h/region, ~2026-11-27 13:00 CST). NOTE: running process (launched at f839384) writes legacy 6-field strata cells; post-run --resume --refresh pass with script@1c149b1 recomputes ALL cells with full metrics + fairness fields + checkpoints. Do not kill healthy process.",
+      "result": "RUN 1 COMPLETE 2026-11-27 02:24 CST: PID 3543561 exited normally ('[WROTE]' final line, no errors/tracebacks in log). ALL 70/70 cells accounted (Charleston 14, NY-Bight 14 [8818s], Gulf 14 [2847s], SE-Aus 14 [8301s], Thames 14 [1116s]; 6968-8601 test windows per region, 171-174 stratified unique windows selected). Run-1 JSON preserved: data/results/backups/wave30_generator_fidelity_run1_20261127_140753.json. Run-1 early signals (legacy 6-field metrics): diffusion_ts s42 scale=NaN in NY+Gulf (generation failure pattern), timegrad scale collapse 14927-715847, FM/tailFM 0.70-1.46. REFRESH PASS LAUNCHED 14:08 CST: PID 1269171, script@1c149b1 with --resume --refresh (CPU-only CUDA_VISIBLE_DEVICES='', OMP 8), log data/logs/wave30_p2_fidelity_refresh.log, resumed from run-1 JSON and recompute-confirmed '[REFRESH] ... lacks full metrics'. Adds full metric set (mean_bias, autocorr_rmse, psd, peak KS/timing/duration, diversity, dup diagnostics) + fairness fields + checkpoints. ETA ~10-14h. Tail stratum disclosure: all_extreme n=4-5 per region -> INCONCLUSIVE classification where support insufficient; no robust q99 claim from 4-5 events.",
       "failure_reason": null,
-      "next_action": "after PID exits: --resume --refresh full-metric pass (sequential, CPU) -> verify 5x7x2 accounting -> wave30_generator_fidelity_stratified.csv -> WAVE30_GENERATOR_BENCHMARK.md + WAVE30_GENERATOR_FAILURE_ANALYSIS.md (extreme-stratum INCONCLUSIVE classification) -> P3"
+      "next_action": "monitor refresh PID 1269171; on completion verify full metrics + fairness fields -> wave30_generator_fidelity_stratified.csv -> WAVE30_GENERATOR_BENCHMARK.md + WAVE30_GENERATOR_FAILURE_ANALYSIS.md -> P3"
     },
     {
       "task_id": "W30-P3-01",
