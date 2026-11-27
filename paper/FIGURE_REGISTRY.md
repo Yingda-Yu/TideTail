@@ -16,7 +16,7 @@ Vector PDF is the deliverable; PNG is a preview convenience only.
 | F8 | `figures/W32_arch_interaction.pdf` | §6.5 Architecture interaction | `scripts/make_wave32_figures.py` | `data/results/wave30_architecture_interaction.json` (v2) | EXISTS (2026-11-27) |
 | F9 | `figures/W32_heterogeneity_severity.pdf` | §6.6 Heterogeneity/severity | `scripts/make_wave32_figures.py` | `data/results/wave30_mechanism_light.json` | EXISTS (2026-11-27) |
 | F10 | `figures/W32_representative_extremes.pdf` | §6.4 Representative extreme events | `scripts/make_wave32_figures.py` | `data/predictions/v2/*A0*A3*.npz` (historical candidate-zoo archives, retrospective test; labelled as such) | EXISTS (2026-11-27) |
-| F11 | `figures/W32_fidelity_stratified.pdf` | §6.x Stratified seven-family benchmark | `scripts/make_wave32_figures.py` | `data/results/wave30_generator_fidelity.json` (70 cells, post-refresh) | PENDING P2 completion |
+| F11 | `figures/W32_fidelity_stratified.pdf` | §6.2 Stratified seven-family benchmark | `scripts/make_wave32_figures.py` | `data/results/wave30_generator_fidelity.json` (70 cells, post-refresh) | EXISTS (2026-11-28) |
 | F12 | `figures/W32_tail_calibration.pdf` | §6.x Tail calibration | `scripts/make_wave32_figures.py` | `data/results/wave32_tail_calibration.json` | PENDING P3 |
 | H1 | `figures/W27_architecture_region.pdf` | historical candidate-zoo figure (retained for §6.4 historical analysis) | `scripts/make_wave27_figures.py` | historical candidate-zoo JSON | EXISTS (historical only) |
 | H2 | `figures/W27_baseline_seed.pdf` | seed-variance illustration | `scripts/make_wave27_figures.py` | historical A0 archives | EXISTS |

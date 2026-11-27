@@ -131,6 +131,58 @@ median. Flow Matching is the only generator whose median lies inside the band.}
 \label{fig:fidelity}
 \end{figure}
 
+\paragraph{Checkpoint verification.} Every generative checkpoint of the
+70-cell stratified benchmark (below) was verified by a strict validator that
+enforces exact set equality over the pre-declared grid (5 regions $\times$ 7
+families $\times$ seeds $\{42, 99\}$), re-loads each checkpoint with
+per-cell exception reporting, verifies SHA256 against the run manifest, and
+audits parameters through the real architectures' \texttt{named\_parameters}
+(e.g.\ WGAN-GP 55{,}586 total parameters are split into generator 30{,}401
+and critic 25{,}185, never conflated): \textbf{70/70 present, 70 OK, 0
+failures}, all parameter counts matching the recorded per-cell values.
+
+\paragraph{Stratified seven-family benchmark.} The full pre-declared grid
+extends the pilot to all five regions and two generator seeds under the same
+fairness contract (10 epochs, batch 256, 8 CPU threads, no CUDA fallback;
+per-cell optimizer-step counts 2{,}740, and 1{,}980 in Thames whose source
+series carries 24.7\% NaN gaps), with per-season background strata (160
+windows/region) and an extreme stratum of 4 independent events per region
+(Figure~\ref{fig:stratified}). Three results matter. First, Flow Matching
+and tail-aware FM are never REJECTED in any background or moderate-tail
+stratum in any region (one tail-aware background exception: US Gulf seed 99,
+scale 2.00, q95 exceedance $4.9\times$), but their extreme pools are
+INCONCLUSIVE everywhere (median pooled scale 0.80, range 0.40--1.79) ---
+\emph{bulk agreement with systematic under-dispersion exactly at the
+extreme}. Second, every other family is REJECTED: CVAE by background
+over-dispersion (regional pools 0.94--4.60, q95 exceedance 3.8--8.3$\times$), TimeGrad
+by dispersion blow-up (scale up to $1.2\times10^{6}$), DDPM by systematic
+over-dispersion (scale 3.1--6.9), WGAN-GP by region-conditional collapse
+(REJECTED in all Thames strata, scale 0.26--0.48), and Diffusion-TS by
+degenerate output (exact-duplicate ratio 0.998 where finite; NaN metric
+pools in NY Bight, Gulf and Southeast Australia). Third, the
+background--extreme discordance is family-dependent in \emph{direction}
+(CVAE: over-dispersed bulk, near-nominal tail; FM: exact bulk,
+under-dispersed tail), so no single pooled fidelity score can summarise
+gate status. The extreme stratum is never accepted for any family and is
+reported as INCONCLUSIVE by design ($n=4$ independent events per region);
+the complete per-cell metric panel (770 rows) is the supplementary table
+\texttt{wave30\_generator\_fidelity\_stratified.csv}, and the failure
+criteria of every rejected cell are itemised in the experiment record.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/W32_fidelity_stratified.pdf}
+\caption{Stratified seven-family benchmark (5 regions $\times$ 2 seeds per
+family): pooled generated/real scale ratio for background strata (blue
+circles) and the extreme stratum (red triangles), median over regions with
+region range as error bars, log axis; the shaded band is the accepted gate
+$[0.5, 2.0]$. Arrows and numerals mark pools beyond the axis (TimeGrad up to
+$1.2\times10^{6}$). FM and tail-aware FM are the only families never
+REJECTED outside the extreme stratum, yet their extreme pools fall to
+$\approx 0.8$ --- INCONCLUSIVE, never accepted.}
+\label{fig:stratified}
+\end{figure}
+
 \subsection{Diagnosing the failed generators}
 \label{sec:results-recovery}
 

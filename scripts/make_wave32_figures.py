@@ -259,13 +259,81 @@ def fig_F10_representative_extremes():
 
 # ---------------------------------------------------------------- F11 (P2)
 def fig_F11_fidelity_stratified():
-    src = os.path.join(ROOT, "data/results/wave30_generator_fidelity.json")
-    if not os.path.exists(src):
-        print("[SKIP] F11: wave30_generator_fidelity.json not final yet (P2 running)")
-        return None
     d = _load("data/results/wave30_generator_fidelity.json")
-    # Filled in after P2 acceptance; structure mirrors W27_fidelity_gate.
-    raise NotImplementedError("F11 implementation lands at P2 acceptance")
+    regs = d["regions"]
+    fams = list(regs["south_atlantic_charleston"]["families"].keys())
+    fam_labels = {
+        "flow_matching": "FM", "tail_aware_fm": "Tail-FM", "cvae": "CVAE",
+        "timegrad": "TimeGrad", "ddpm_cond": "DDPM", "wgan_gp": "WGAN-GP",
+        "diffusion_ts": "Diffusion-TS",
+    }
+    verdict = {
+        "flow_matching": "INCONCL.", "tail_aware_fm": "INCONCL.",
+        "cvae": "REJECT.", "timegrad": "REJECT.", "ddpm_cond": "REJECT.",
+        "wgan_gp": "INCONCL.*", "diffusion_ts": "REJECT.+NaN",
+    }
+    bg, ext = {}, {}
+    for f in fams:
+        bg[f] = [regs[r]["families"][f]["pooled_background_scale_mean"]
+                 for r in regs]
+        ext[f] = [regs[r]["families"][f]["pooled_extreme_scale_mean"]
+                  for r in regs]
+
+    fig, ax = plt.subplots(figsize=(7.4, 4.0))
+    xs = np.arange(len(fams))
+    ax.axhspan(0.5, 2.0, color="#d8e9f3", zorder=0)
+    ax.axhline(1.0, color="0.6", lw=0.8, ls="--", zorder=1)
+    CAP = 40.0
+    for i, f in enumerate(fams):
+        for vals, dx, marker, color in ((bg[f], -0.16, "o", "#1b6ca8"),
+                                        (ext[f], 0.16, "^", "#c0392b")):
+            finite = [v for v in vals if v == v]
+            if not finite:
+                continue
+            med = float(np.median(finite))
+            lo, hi = min(finite), max(finite)
+            med_p = min(med, CAP)
+            lo_p, hi_p = min(lo, CAP), min(hi, CAP)
+            ax.errorbar(i + dx, med_p,
+                        yerr=[[max(med_p - lo_p, 0)], [max(hi_p - med_p, 0)]],
+                        fmt=marker, color=color, markersize=7, capsize=3,
+                        elinewidth=1.1, zorder=3)
+            if hi > CAP:
+                ax.annotate("", xy=(i + dx, CAP * 1.35),
+                            xytext=(i + dx, CAP * 0.95),
+                            arrowprops=dict(arrowstyle="->", color=color, lw=1.1))
+            if med > CAP:
+                ax.text(i + dx, CAP * 1.9, f"{med:.0f}" if med < 1e4 else
+                        f"{med:.0e}".replace("e+0", "e"), ha="center",
+                        fontsize=6.5, color=color)
+    ax.set_yscale("log")
+    ax.set_ylim(0.1, 200)
+    ax.set_xticks(xs)
+    ax.set_xticklabels([fam_labels[f] for f in fams])
+    ax.set_ylabel("generated/real scale ratio\n(median over regions; bars = region range)")
+    handles = [
+        plt.Line2D([], [], marker="o", ls="", color="#1b6ca8",
+                   label="background strata (160 windows/region)"),
+        plt.Line2D([], [], marker="^", ls="", color="#c0392b",
+                   label="extreme strata (4 events/region — INCONCLUSIVE)"),
+        plt.Rectangle((0, 0), 1, 1, color="#d8e9f3",
+                      label="accepted gate $[0.5, 2.0]$"),
+    ]
+    ax.legend(handles=handles, loc="lower left", frameon=False, fontsize=7.5,
+              ncol=1)
+    # verdict line under family labels
+    for i, f in enumerate(fams):
+        ax.text(i, 0.035, verdict[f], transform=ax.get_xaxis_transform(),
+                ha="center", va="top", fontsize=6.5,
+                color=("#c0392b" if "REJECTED" in verdict[f] else "#1b6ca8"))
+    fig.subplots_adjust(bottom=0.24)
+    fig.text(0.01, 0.005,
+             "* WGAN-GP: INCONCLUSIVE in four regions, REJECTED in Thames/North Sea "
+             "(all strata). Extreme strata: n=4 independent events per region — "
+             "never accepted, INCONCLUSIVE by design. Diffusion-TS extreme/background "
+             "pools are NaN in NY Bight, Gulf and SE Australia (generation failure).",
+             fontsize=7)
+    _save(fig, "W32_fidelity_stratified.pdf")
 
 
 # ---------------------------------------------------------------- F12 (P3)

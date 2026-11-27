@@ -47,6 +47,18 @@ committed, checkpoints and raw data are not.
   \texttt{wave27\_expanded\_evaluation.json}; boundary fields plus unit counts.
   \item \textbf{Residual identity.} \texttt{test\_target\_semantics\_contract.py}:
   MAE $=0$, $r=1$.
+  \item \textbf{Stratified 70-cell benchmark and checkpoint integrity.}
+  \texttt{wave30\_generator\_fidelity.json} (per-cell SHA256, param counts,
+  optimizer steps, fairness fields) and
+  \texttt{wave30\_generator\_fidelity\_stratified.csv} (770 rows);
+  70/70 verified by \texttt{wave30\_validate\_checkpoints.py}
+  (set-equality, SHA256, \texttt{named\_parameters} audit, WGAN-GP
+  generator/critic split); guarded by the validator's 14 regression tests.
+  \item \textbf{Five-region primary family, interaction and heterogeneity
+  probes.} \texttt{wave30\_expanded\_five\_region.json} (+
+  \texttt{\_event\_metrics.csv}), \texttt{wave30\_architecture\_interaction.json}
+  (v2, Bonferroni-flag corrected), \texttt{wave30\_mechanism\_light.json};
+  statistical-audit disclosure in the project repository.
 \end{itemize}
 
 \subsection{Known discrepancies retained}
