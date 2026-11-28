@@ -140,8 +140,13 @@ audits parameters through the real architectures' \texttt{named\_parameters}
 (e.g.\ WGAN-GP 55{,}586 total parameters are split into generator 30{,}401
 and critic 25{,}185, never conflated): \textbf{70/70 present, 70 OK, 0
 failures}, all parameter counts matching the recorded per-cell values.
+This is an \emph{artifact and protocol acceptance} --- it certifies that the
+checkpoints are the pre-declared ones and the run contract was honoured ---
+not a scientific fidelity acceptance: the per-cell gate statuses remain
+REJECTED or INCONCLUSIVE exactly as evaluated below.
 
-\paragraph{Stratified seven-family benchmark.} The full pre-declared grid
+\paragraph{Stratified seven-configuration benchmark.} The full pre-declared grid
+(seven generator configurations, including two Flow Matching variants)
 extends the pilot to all five regions and two generator seeds under the same
 fairness contract (10 epochs, batch 256, 8 CPU threads, no CUDA fallback;
 per-cell optimizer-step counts 2{,}740, and 1{,}980 in Thames whose source
@@ -172,7 +177,7 @@ criteria of every rejected cell are itemised in the experiment record.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/W32_fidelity_stratified.pdf}
-\caption{Stratified seven-family benchmark (5 regions $\times$ 2 seeds per
+\caption{Stratified seven-configuration benchmark (5 regions $\times$ 2 seeds per
 family): pooled generated/real scale ratio for background strata (blue
 circles) and the extreme stratum (red triangles), median over regions with
 region range as error bars, log axis; the shaded band is the accepted gate
@@ -246,7 +251,8 @@ recorded rather than tuned away until it looked positive.
 \subsection{Seven families under one matched budget: a pilot}
 \label{sec:results-benchmark-pilot}
 
-To place Flow Matching in a wider design space, a seven-family benchmark —
+To place Flow Matching in a wider design space, a seven-configuration
+benchmark —
 standard FM, tail-aware FM, conditional VAE, TimeGrad, conditional DDPM,
 WGAN-GP and Diffusion-TS — was run in Charleston and NY Bight under one
 contract: identical splits (69{,}970/8{,}601 windows), identical windows,
@@ -374,7 +380,7 @@ corrected pairing the TCN responds to augmentation roughly forty times more
 strongly in relative terms. \emph{This is a descriptive historical aggregate
 under the retired split; the controlled test of architecture dependence is the
 interaction analysis of Section~\ref{sec:results-expanded}, which finds a
-significant TCN advantage only in beneficial regions (3 of 10 comparisons).}
+significant TCN advantage only in beneficial regions (4 of 10 comparisons).}
 The GRU's better absolute accuracy is a separate
 observation and does not imply insensitivity.
 
@@ -570,9 +576,9 @@ regions where augmentation helps: US Gulf (standard arm $-2.09$~mm,
 $p_{\text{bonf}} = 0.001$, CI $[-2.98,-1.27]$; tail-aware arm $-2.06$~mm,
 $p_{\text{bonf}} = 0.001$) and Southeast Australia (standard arm
 $-1.29$~mm, $p_{\text{bonf}} = 0.004$, CI $[-1.99,-0.66]$; the tail-aware
-arm, $-1.22$~mm, $p_{\text{bonf}} = 0.008$, falls just short of the
-threshold). Three of ten comparisons survive correction, all in
-beneficial regions. In Charleston the interaction \emph{reverses} sign
+arm, $-1.22$~mm, $p_{\text{bonf}} = 0.008$). Four of ten comparisons
+survive Bonferroni correction at the family-wise $\alpha=0.05$ (raw
+threshold $\alpha/n=0.005$), all in beneficial regions. In Charleston the interaction \emph{reverses} sign
 (TCN harmed more than GRU, $+0.76$~mm, $p=0.014$ uncorrected), and in
 Thames the interaction is \emph{negative but far from significant}
 ($-2.41$~mm, $p=0.18$, CI $[-5.92,+0.83]$, huge unit variance). The
@@ -600,21 +606,21 @@ dispersion fidelity alone is a poor predictor of downstream value, which
 motivates the bounded tail-calibration analysis of
 Section~\ref{sec:results-tail-calibration}.
 
-Figure~\ref{fig:arch-interaction} shows the ten interaction contrasts: the
-two Bonferroni-surviving Gulf contrasts and the standard-arm Southeast
-Australia contrast are all negative (TCN benefits more), the Southeast
-Australia tail-aware arm sits just above the corrected threshold, and the
-harmful regions show insignificant, mixed-sign interactions.
+Figure~\ref{fig:arch-interaction} shows the ten interaction contrasts:
+all four Bonferroni-surviving contrasts (both Gulf arms, both Southeast
+Australia arms) are negative (TCN benefits more), and the harmful regions
+show insignificant, mixed-sign interactions.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/W32_arch_interaction.pdf}
 \caption{Paired architecture interaction contrasts (TCN augmentation effect
 minus GRU augmentation effect, matched event units, seed-averaged, mm).
-Black edges mark the 3 of 10 comparisons surviving Bonferroni
-$\alpha=0.005$ (US Gulf standard and tail-aware, Southeast Australia
-standard); the Southeast Australia tail-aware contrast
-($p_{\text{bonf}}=0.008$) does not survive. Where augmentation helps, TCN
+Black edges mark the 4 of 10 comparisons surviving Bonferroni
+correction at the family-wise $\alpha=0.05$ (raw threshold
+$\alpha/n=0.005$; equivalently adjusted $p<0.05$): US Gulf standard and
+tail-aware, Southeast Australia standard and tail-aware
+($p_{\text{bonf}}=0.008$). Where augmentation helps, TCN
 extracts a significantly larger benefit; where augmentation harms, the
 architecture difference is statistically insignificant and mixed in sign.}
 \label{fig:arch-interaction}
@@ -831,7 +837,9 @@ real-event oversampling, and a history-noise control --- in the two regions
 with opposite augmentation outcomes (Southeast Australia and Thames/North
 Sea), with downstream GRU only, all thresholds and hyperparameters chosen on
 train/validation data only, and the frozen selection written to disk before
-any test evaluation. The study is an \emph{exploratory extension}, not a
+any test evaluation. All candidate arms are then evaluated and reported
+individually; no validation-selected deployment policy is chosen or endorsed
+on test data. The study is an \emph{exploratory extension}, not a
 confirmatory test: the 2022--2024 test years are retrospective
 (Section~\ref{sec:results-expanded}); 12 GRU paired comparisons are tested
 against an exploratory Bonferroni $\alpha=0.0042$.
@@ -868,7 +876,8 @@ where augmentation harms (+0.4\%, ns), while the history-noise control is
 null in Thames ($-0.07\%$, ns) and marginally harmful in Southeast
 Australia (+0.60\%) --- crude non-generative augmentation neither
 reproduces the FM benefit nor explains it away. The fidelity-versus-utility
-gap is thus confirmed prospectively: the variants that scored best on
+gap is thus confirmed under a validation-frozen retrospective design:
+the variants that scored best on
 validation fidelity in Thames remained the most harmful downstream. The
 negative Thames result is preserved without further generator re-tuning;
 no claim in this paper rests on the calibrated variants.

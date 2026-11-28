@@ -88,7 +88,7 @@ Direct paired TCN−GRU interaction test on matched event units
 (`scripts/wave30_arch_interaction.py` → `wave30_architecture_interaction.json`,
 v2 corrected 2026-11-27):
 10 paired tests (5 regions × std/tail arms), Bonferroni α=0.005.
-**CORRECTION (Wave 3.2, verified independently): 3/10 survive, not 4/10.**
+**CORRECTION (Wave 3.2.1, final): 4/10 survive under the correct Bonferroni rule (raw p < α/n = 0.005). Wave 3.2's v2 "correction" (adjusted p vs α/n) was a double correction; v1's original 4/10 conclusion was right for the wrong reason. Regression-tested in `tests/test_wave32_bonferroni_rule.py`.**
 v1 compared the RAW signflip_p against α=0.005 (bug); the corrected v2
 compares the Bonferroni-adjusted p. Survivors: US Gulf Coast −2.09 mm
 (p_bonf=0.001), US Gulf tail −2.06 mm (p_bonf=0.001), SE Australia std

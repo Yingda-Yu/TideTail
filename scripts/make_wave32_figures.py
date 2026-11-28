@@ -154,8 +154,8 @@ def fig_F8_arch_interaction():
                        rotation=20, ha="right")
     ax.set_ylabel("TCN minus GRU augmentation effect (mm)")
     ax.text(0.02, 0.97,
-            f"{d['summary']['n_survive_bonferroni']}/10 survive "
-            f"Bonferroni $\\alpha$={d['bonferroni_alpha']}",
+            f"{d['summary']['n_survive_bonferroni']}/10 survive Bonferroni "
+            f"(raw threshold $\\alpha/n$={d['bonferroni_alpha']})",
             transform=ax.transAxes, fontsize=8.5, va="top")
     handles = [
         plt.Rectangle((0, 0), 1, 1, color="#2c7fb8", label="standard FM"),

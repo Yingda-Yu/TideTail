@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.6.15)  28 NOV 2026 01:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.6.15)  28 NOV 2026 22:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -563,19 +563,13 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (./sections/1-introduction.tex [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
-Overfull \hbox (11.98473pt too wide) in paragraph at lines 78--87
-\OT1/cmr/m/n/10.95 tail-aware Flow Match-ing, con-di-tional VAE, TimeGrad, con-
-di-tional DDPM, con-di-tional WGAN-
+Overfull \hbox (1.72334pt too wide) in paragraph at lines 79--88
+[]\OT1/cmr/bx/n/10.95 A seven-configuration gen-er-a-tive bench-mark (two Flow 
+Match-ing vari-ants, CVAE,
  []
 
 
-Overfull \hbox (28.98772pt too wide) in paragraph at lines 78--87
-\OT1/cmr/m/n/10.95 e-ter search) on iden-ti-cal splits, with season-stratified 
-fi-delity scor-ing, back-ground/moderate/extreme
- []
-
-
-Overfull \hbox (3.39552pt too wide) in paragraph at lines 109--116
+Overfull \hbox (3.39552pt too wide) in paragraph at lines 110--117
 []\OT1/cmr/bx/n/10.95 A six-arm physical-prior ab-la-tion with an ex-plic-itly 
 bounded in-ter-pre-ta-tion. \OT1/cmr/m/n/10.95 ERA5-
  []
@@ -586,7 +580,7 @@ Overfull \hbox (3.3768pt too wide) in paragraph at lines 25--38
 is peaks-over-threshold mod-elling of ex-ceedances
  []
 
-[4]) (./sections/3-protocol.tex [5] [6] [7]) (./sections/4-method.tex
+[4] [5]) (./sections/3-protocol.tex [6] [7]) (./sections/4-method.tex
 <figures/W27_schematic.pdf, id=471, 384.11504pt x 155.42818pt>
 File: figures/W27_schematic.pdf Graphic file (type pdf)
 <use figures/W27_schematic.pdf>
@@ -611,74 +605,73 @@ File: figures/W27_fidelity_gate.pdf Graphic file (type pdf)
 Package pdftex.def Info: figures/W27_fidelity_gate.pdf  used on input line 127.
 
 (pdftex.def)             Requested size: 385.20255pt x 159.00009pt.
-[16 <./figures/W27_event_census.pdf>]
-<figures/W32_fidelity_stratified.pdf, id=720, 1032.13106pt x 268.85757pt>
+[16 <./figures/W27_event_census.pdf>] [17 <./figures/W27_fidelity_gate.pdf>]
+<figures/W32_fidelity_stratified.pdf, id=779, 1032.13106pt x 268.85757pt>
 File: figures/W32_fidelity_stratified.pdf Graphic file (type pdf)
 <use figures/W32_fidelity_stratified.pdf>
 Package pdftex.def Info: figures/W32_fidelity_stratified.pdf  used on input lin
-e 174.
+e 179.
 (pdftex.def)             Requested size: 469.75502pt x 122.36319pt.
- [17 <./figures/W27_fidelity_gate.pdf>]
+
 [18 <./figures/W32_fidelity_stratified.pdf>]
-<figures/W27_recovery.pdf, id=861, 386.36221pt x 199.26997pt>
+<figures/W27_recovery.pdf, id=860, 386.36221pt x 199.26997pt>
 File: figures/W27_recovery.pdf Graphic file (type pdf)
 <use figures/W27_recovery.pdf>
-Package pdftex.def Info: figures/W27_recovery.pdf  used on input line 234.
+Package pdftex.def Info: figures/W27_recovery.pdf  used on input line 239.
 (pdftex.def)             Requested size: 366.40834pt x 188.98611pt.
  [19 <./figures/W27_recovery.pdf>]
-<figures/W27_architecture_region.pdf, id=925, 433.37846pt x 218.64859pt>
+[20]
+<figures/W27_architecture_region.pdf, id=933, 433.37846pt x 218.64859pt>
 File: figures/W27_architecture_region.pdf Graphic file (type pdf)
 <use figures/W27_architecture_region.pdf>
 Package pdftex.def Info: figures/W27_architecture_region.pdf  used on input lin
-e 351.
+e 357.
 (pdftex.def)             Requested size: 446.26582pt x 225.15051pt.
-<figures/W27_baseline_seed.pdf, id=926, 413.46564pt x 201.20142pt>
+<figures/W27_baseline_seed.pdf, id=934, 413.46564pt x 201.20142pt>
 File: figures/W27_baseline_seed.pdf Graphic file (type pdf)
 <use figures/W27_baseline_seed.pdf>
-Package pdftex.def Info: figures/W27_baseline_seed.pdf  used on input line 361.
+Package pdftex.def Info: figures/W27_baseline_seed.pdf  used on input line 367.
 
 (pdftex.def)             Requested size: 422.77664pt x 205.74463pt.
-
-[20] [21 <./figures/W27_architecture_region.pdf> <./figures/W27_baseline_seed.p
-df>]
-<figures/W32_representative_extremes.pdf, id=1066, 965.69536pt x 368.00046pt>
+<figures/W32_representative_extremes.pdf, id=940, 965.69536pt x 368.00046pt>
 File: figures/W32_representative_extremes.pdf Graphic file (type pdf)
 <use figures/W32_representative_extremes.pdf>
 Package pdftex.def Info: figures/W32_representative_extremes.pdf  used on input
- line 399.
+ line 405.
 (pdftex.def)             Requested size: 446.26582pt x 170.05716pt.
- [22 <./figures/W32_representative_extremes.pdf>] [23] [24]
+ [21 <./figures/W27_architecture_region.pdf>] [22 <./figures/W27_baseline_seed.
+pdf>] [23 <./figures/W32_representative_extremes.pdf>] [24]
 <figures/W32_arch_interaction.pdf, id=1160, 418.69731pt x 259.58318pt>
 File: figures/W32_arch_interaction.pdf Graphic file (type pdf)
 <use figures/W32_arch_interaction.pdf>
 Package pdftex.def Info: figures/W32_arch_interaction.pdf  used on input line 6
-11.
+16.
 (pdftex.def)             Requested size: 422.77664pt x 262.11751pt.
  [25]
 <figures/W32_five_region_effects.pdf, id=1176, 460.96968pt x 224.50146pt>
 File: figures/W32_five_region_effects.pdf Graphic file (type pdf)
 <use figures/W32_five_region_effects.pdf>
 Package pdftex.def Info: figures/W32_five_region_effects.pdf  used on input lin
-e 677.
+e 683.
 (pdftex.def)             Requested size: 469.75502pt x 228.7932pt.
  [26 <./figures/W32_arch_interaction.pdf>]
-<figures/W32_heterogeneity_severity.pdf, id=1242, 727.66232pt x 211.80328pt>
+<figures/W32_heterogeneity_severity.pdf, id=1243, 727.66232pt x 211.80328pt>
 File: figures/W32_heterogeneity_severity.pdf Graphic file (type pdf)
 <use figures/W32_heterogeneity_severity.pdf>
 Package pdftex.def Info: figures/W32_heterogeneity_severity.pdf  used on input 
-line 725.
+line 731.
 (pdftex.def)             Requested size: 432.17375pt x 125.79344pt.
 
-Overfull \hbox (198.34352pt too wide) in paragraph at lines 778--797
+Overfull \hbox (198.34352pt too wide) in paragraph at lines 784--803
  [][] 
  []
 
 [27] [28 <./figures/W32_five_region_effects.pdf>]
-<figures/W32_tail_calibration.pdf, id=1339, 756.6801pt x 243.56306pt>
+<figures/W32_tail_calibration.pdf, id=1340, 756.6801pt x 243.56306pt>
 File: figures/W32_tail_calibration.pdf Graphic file (type pdf)
 <use figures/W32_tail_calibration.pdf>
 Package pdftex.def Info: figures/W32_tail_calibration.pdf  used on input line 8
-41.
+49.
 (pdftex.def)             Requested size: 469.75502pt x 151.20822pt.
 ) (./sections/7-discussion.tex [29 <./figures/W32_heterogeneity_severity.pdf> <
 ./figures/W32_tail_calibration.pdf>] [30] [31] [32] [33]) (./sections/8-conclus
@@ -706,11 +699,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 Here is how much of TeX's memory you used:
  11133 strings out of 479654
  173968 string characters out of 5883416
- 481800 words of memory out of 5000000
+ 481848 words of memory out of 5000000
  28800 multiletter control sequences out of 15000+600000
  484075 words of font info for 85 fonts, out of 8000000 for 9000
  309 hyphenation exceptions out of 8191
- 60i,13n,63p,726b,496s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,13n,63p,737b,496s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dis
@@ -737,9 +730,9 @@ xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/share/texlive/t
 exmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texmf/font
 s/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/type1/public/cm-su
 per/sfti1200.pfb>
-Output written on main.pdf (40 pages, 694599 bytes).
+Output written on main.pdf (40 pages, 696084 bytes).
 PDF statistics:
- 1728 PDF objects out of 1728 (max. 8388607)
+ 1729 PDF objects out of 2073 (max. 8388607)
  925 compressed objects within 10 object streams
  241 named destinations out of 1000 (max. 500000)
  581 words of extra memory for PDF output out of 10000 (max. 10000000)

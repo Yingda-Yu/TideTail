@@ -32,7 +32,8 @@ The independent-event census is 679 union units (634 peak-over-threshold
 clusters, 73 tropical cyclones, 28 matched), not the 707 a naive sum yields;
 all inference is paired per event unit, never per sliding window. Under a
 fixed-budget fairness contract (ten epochs, zero hyperparameter search) we
-benchmark seven conditional generator families, verify every checkpoint
+benchmark seven conditional generator configurations (including two Flow
+Matching variants), verify every checkpoint
 against its declared architecture, and find that generation quality spans
 reproduced dispersion to numerical collapse: Flow Matching reproduces the
 target dispersion (scale ratio near unity), while several families fail
@@ -47,7 +48,7 @@ Australia ($-1.29$ to $-3.02\%$), all four harm in Thames/North Sea
 ($+3.44$ to $+4.31\%$), TCN cells benefit on the US Gulf Coast, TCN cells are
 harmed in Charleston, and New York Bight is null-to-mixed. A paired
 TCN-versus-GRU interaction test shows the popular ``TCN responds more''
-pattern is region-dependent: only 3 of 10 comparisons survive correction, all
+pattern is region-dependent: only 4 of 10 comparisons survive correction, all
 in beneficial regions, and a regional-heterogeneity test confirms region
 identity moderates the effect (Cochran--Q $p \le 1.4\times10^{-10}$), with
 effects attenuating at high event severity. A six-arm physical-prior ablation

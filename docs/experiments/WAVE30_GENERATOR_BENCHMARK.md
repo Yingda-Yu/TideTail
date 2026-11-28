@@ -8,7 +8,7 @@ Stratified row-level CSV: `data/results/wave30_generator_fidelity_stratified.csv
 
 ## 1. Design (frozen)
 
-5 regions × 7 generator families × 2 generator seeds (42, 99) = **70 cells**.
+5 regions × 7 generator configurations × 2 generator seeds (42, 99) = **70 cells** (the seven configurations comprise two Flow Matching variants — standard and tail-aware — plus CVAE, TimeGrad, DDPM, WGAN-GP and Diffusion-TS).
 Families: `flow_matching`, `tail_aware_fm`, `cvae`, `timegrad`, `ddpm_cond`,
 `wgan_gp`, `diffusion_ts`. Contract: 10 epochs, batch 256, 8 CPU threads,
 `CUDA_VISIBLE_DEVICES=""`, draws=3 per stratum, no CUDA fallback. The 96 h
@@ -25,6 +25,11 @@ background 40 per season (160 total); extreme **4 per region total**
 NY Bight and Gulf analogous) and 0–3 per seasonal extreme cell.
 
 ## 2. Checkpoint verification (strict validator, commit 310c685)
+
+Scope note: this section certifies **artifact and protocol acceptance** —
+that the checkpoints are the pre-declared ones and the run contract was
+honoured. It is distinct from scientific fidelity acceptance: the per-cell
+gate statuses in §4 remain REJECTED/INCONCLUSIVE as evaluated.
 
 `scripts/wave30_validate_checkpoints.py` (set-equality gate: exactly 5
 predefined regions × 7 families × seeds {42, 99}; duplicate-JSON-key

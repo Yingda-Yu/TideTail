@@ -5,7 +5,7 @@
 \label{subsec:why-fm}
 
 Flow Matching is the only generator that is never \textsc{rejected} by the
-fidelity gate in any wave of our programme — including the seven-family pilot
+fidelity gate in any wave of our programme — including the seven-configuration pilot
 of Section~\ref{sec:results-benchmark-pilot}, where its two variants and
 WGAN-GP are the only \textsc{inconclusive} (not \textsc{rejected}) generators
 under the hard scale window $[0.5, 2.0]$ (WGAN-GP sits at 0.831–0.959, i.e.\
@@ -79,11 +79,12 @@ observed at a small budget can reverse once the model actually fits the data.
 \label{subsec:why-arch}
 
 The paired interaction test (Section~\ref{sec:results-expanded}) bounds what
-may be claimed: of ten TCN-minus-GRU contrasts, only three survive Bonferroni
-correction --- US Gulf (standard and tail-aware arms, $-2.09$/$-2.06$~mm,
-$p_{\text{bonf}} = 0.001$) and Southeast Australia (standard arm, $-1.29$~mm,
-$p_{\text{bonf}} = 0.004$) --- and the Southeast Australia tail-aware arm
-falls just short ($-1.22$~mm, $p_{\text{bonf}} = 0.008$). Eight of ten
+may be claimed: of ten TCN-minus-GRU contrasts, four survive Bonferroni
+correction at the family-wise $\alpha=0.05$ (raw threshold
+$\alpha/n=0.005$) --- US Gulf (standard and tail-aware arms,
+$-2.09$/$-2.06$~mm, $p_{\text{bonf}} = 0.001$) and Southeast Australia
+(standard $-1.29$~mm, $p_{\text{bonf}} = 0.004$; tail-aware $-1.22$~mm,
+$p_{\text{bonf}} = 0.008$). Eight of ten
 interactions are negative (TCN benefits more or suffers less), but in the two
 harm-dominated regions the direction either reverses (Charleston: TCN harmed
 more, $+0.76$~mm, ns after correction) or is drowned by event variance
@@ -251,7 +252,7 @@ penalty.
     correspondingly scoped.
     \item \textbf{Thames data quality.} 24.7\% of the source timeline is NaN,
     which both reduces its unit count and weakens any generator fitted to it.
-    \item \textbf{Pilot budgets.} The seven-family comparison gives every
+    \item \textbf{Pilot budgets.} The seven-configuration comparison gives every
     family ten epochs, fixed defaults and zero hyperparameter search; equal
     epochs are neither equal compute nor evidence of convergence, so its
     rejections are implementation-at-budget statements, not family verdicts.

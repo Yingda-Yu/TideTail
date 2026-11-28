@@ -10,7 +10,8 @@ For each region x variant:
     interaction delta_i = d_T[i] - d_G[i]      (paired on event unit)
 Effect = mean(delta). Sign-flip randomisation p (exact/MC floor), paired
 bootstrap CI. Multiplicity: 5 regions x 2 variants = 10 interaction tests,
-Bonferroni alpha = 0.005.
+Bonferroni family-wise alpha = 0.05, i.e. per-comparison raw threshold
+0.05/10 = 0.005 (adjusted p = min(1, 10*raw) compared against 0.05).
 
 Units are matched by event ID across architectures (identical test windows
 and POT units; arrays are aligned on the sorted event-unit list, verified
@@ -77,24 +78,31 @@ def paired_stats(delta: np.ndarray, seed: int = 0) -> dict:
     st["ci95"] = [float(lo), float(hi)]
     st["bonferroni_p"] = (min(1.0, st["signflip_p"] * N_TESTS)
                           if st["signflip_p"] is not None else None)
+    # Bonferroni rule: reject when raw p < alpha_family/n_tests (equivalently
+    # adjusted p = min(1, n*raw) < alpha_family). Comparing the ADJUSTED p
+    # against alpha_family/n_tests would double-correct (Wave 3.2.1 fix).
     st["survives_bonferroni"] = bool(
-        st["bonferroni_p"] is not None and st["bonferroni_p"] < BONF_ALPHA)
+        st["signflip_p"] is not None and st["signflip_p"] < BONF_ALPHA)
     return st
 
 
 def main() -> None:
     src = json.loads(SRC.read_text())
-    out = {"audit_version": "wave30_arch_interaction_v2",
-           "correction_note": "v1 compared raw signflip_p against "
-                              "BONF_ALPHA (bug); v2 compares the "
-                              "Bonferroni-adjusted p. Corrected count "
-                              "3/10 survivors (SE-Aus tail_aware "
-                              "p_bonf=0.008 does not pass).",
+    out = {"audit_version": "wave30_arch_interaction_v3",
+           "correction_note": "v1 compared raw signflip_p against BONF_ALPHA "
+                              "(bug); v2 over-corrected by comparing the "
+                              "ADJUSTED p against BONF_ALPHA (double "
+                              "correction). v3 (Wave 3.2.1) uses the correct "
+                              "rule: raw p < alpha/n = 0.005, equivalently "
+                              "adjusted p = min(1, 10*raw) < 0.05. Corrected "
+                              "count 4/10 survivors (incl. SE-Aus tail_aware, "
+                              "raw p=0.0008, adjusted p=0.008).",
            "estimand": "TCN augmentation effect minus GRU augmentation "
                        "effect, per event unit (seed-averaged), paired on "
                        "event ID; positive = TCN more positive (more harm/"
                        "less benefit) than GRU",
-           "n_tests": N_TESTS, "bonferroni_alpha": BONF_ALPHA,
+           "n_tests": N_TESTS, "family_wise_alpha": 0.05,
+           "bonferroni_alpha": BONF_ALPHA,
            "n_boot": N_BOOT, "comparisons": [], "summary": {}}
 
     n_done = 0
@@ -109,7 +117,7 @@ def main() -> None:
             st = paired_stats(inter)
             out["comparisons"].append({
                 "region": region, "variant": variant,
-                "n_units": int(len(inter)),
+                "n_units": len(inter),
                 "mean_interaction": float(inter.mean()),
                 "grueffect_mean": float(d_g.mean()),
                 "tcn_effect_mean": float(d_t.mean()),

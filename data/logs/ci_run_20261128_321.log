@@ -1,0 +1,15 @@
+=== FINAL CI RUN — Wave 3.2.1 integrity patch ===
+date: 2026-11-28T22:33:59+08:00
+HEAD: c99a4eb9e919567a9cc6e6ad8afa34626f5f6bce
+runner: GuanchaoTong (self-hosted, CPU-only)
+
+--- pytest ---
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+338 passed, 1 warning in 65.24s (0:01:05)
+
+--- ruff (gate) ---
+All checks passed!
+[*] 1 fixable with the `--fix` option.
+
+--- placeholder scan (PDF text) ---
+placeholder scan: CLEAN | pages: 40

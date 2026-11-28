@@ -8,12 +8,12 @@
 
 | # | Criterion | Status | Evidence |
 |---|---|---|---|
-| 1 | P2 passed full 70-cell acceptance | ✅ PASS | strict validator 70 present / 70 OK / 0 failures (SHA256, `named_parameters` audit, WGAN-GP G/C split); `docs/experiments/WAVE30_GENERATOR_BENCHMARK.md`; ledger E37 |
+| 1 | P2 passed full 70-cell acceptance | ✅ PASS | strict validator 70 present / 70 OK / 0 failures (SHA256, `named_parameters` audit, WGAN-GP G/C split). NOTE (Wave 3.2.1): this is an **artifact/protocol acceptance**, distinct from scientific fidelity acceptance — per-cell gate statuses remain REJECTED/INCONCLUSIVE as evaluated; `docs/experiments/WAVE30_GENERATOR_BENCHMARK.md`; ledger E37 |
 | 2 | Five-region main results verified | ✅ PASS | 12/20 Bonferroni α=0.0025 (6 ben / 6 harm), seed-averaged, per-unit persistence; `wave30_expanded_five_region.json`; retrospective-test disclosure retained in §3.4/§6.8 |
-| 3 | Statistical discrepancies resolved | ✅ PASS | arch interaction corrected 4/10 → **3/10** (v2, commit `b61d09c`); pilot 11/28 → **9/26**; census 707 → **679**; `docs/audits/WAVE32_FINAL_STATISTICAL_AUDIT.md` |
+| 3 | Statistical discrepancies resolved | ✅ PASS | arch interaction survivor rule fixed to the correct Bonferroni form (v3, Wave 3.2.1): **4/10** survive (raw p < α/n = 0.005), incl. SE-Aus tail-aware (raw 8e-4 / adj 0.008); v2's 3/10 was a double correction; pilot 11/28 → **9/26**; census 707 → **679**; MC-SE corrected (≈1e-4 at p≈1e-4); `docs/audits/WAVE32_FINAL_STATISTICAL_AUDIT.md` §3; regression-tested |
 | 4 | Six-arm physical results integrated | ✅ PASS | 3/20 survive, all Charleston GRU, all harm; physics priors scoped to ERA5 conditioning + statistical regularisation, never PDE constraints (§4, §6.9, §7) |
 | 5 | P3 completed as bounded exploratory study | ✅ PASS | 6 arms, validation-frozen stage A, Thames harm unrescued (+2.8…+3.4 %), oversampling +7.6 % harmful in SE-Aus; `docs/experiments/WAVE32_TAIL_CALIBRATION.md`; classified exploratory (retrospective test years), §6.11 + F12 |
-| 6 | Abstract/Intro/Methods/Results/Discussion/Conclusion mutually consistent | ✅ PASS | first-pass simulated review + fixes (see below); headline numbers cross-checked (12/20, 3/10, 3/20, 679, 9/26, 70/70) |
+| 6 | Abstract/Intro/Methods/Results/Discussion/Conclusion mutually consistent | ✅ PASS | first-pass simulated review + fixes (see below); headline numbers cross-checked (12/20, 4/10, 3/20, 679, 9/26, 70/70) |
 | 7 | Core figures + supplementary tables exist | ✅ PASS | F1–F12 all EXISTS (`paper/FIGURE_REGISTRY.md`); supplementary = `wave30_generator_fidelity_stratified.csv` (770 rows), `wave30_expanded_event_metrics.csv`, per-seed JSONs |
 | 8 | Bibliography verified | ✅ PASS | 40 entries, each with `% VERIFIED:` primary-source comment; fabricated legacy entries dropped; Diffusion-TS corrected to Yuan & Qiao ICLR 2024 (arXiv:2403.01742); 0 undefined citations |
 | 9 | Final PDF compiled and visually inspected | ✅ PASS | 40 pages, latexmk exit 0, 0 undefined refs, placeholder scan CLEAN; figure pages, title, Discussion and appendix pages inspected (p2, p18–27, p31, p40) |
@@ -32,7 +32,7 @@
 | Test counts | **334 passed**, 1 benign warning (`test_baselines.py` tensor-detach UserWarning) |
 | Ruff | gate (src + Wave 3.2 scripts) clean; legacy `scripts/` debt outside the gate, disclosed in the log |
 | LaTeX | 40 pages, 0 undefined citations/references, placeholder scan CLEAN |
-| Log | `data/logs/ci_run_20261128_final.log` |
+| Log | `data/logs/ci_run_20261128_final.log` (Wave 3.2); `data/logs/ci_run_20261128_321.log` (Wave 3.2.1 integrity patch, final: 338 passed) |
 | Note | GitHub-hosted Actions are NOT the acceptance authority for this project (owner mandate) |
 
 ## Manuscript state

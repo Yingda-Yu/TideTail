@@ -74,7 +74,8 @@ work.
     cross-split leakage, and run every primary test as a per-event-unit paired
     comparison within region and architecture. The five regional event-unit
     sets (40--51 units each) are never pooled as independent storms.
-    \item \textbf{A seven-family generative benchmark under one fairness
+    \item \textbf{A seven-configuration generative benchmark (two Flow Matching
+    variants, CVAE, TimeGrad, DDPM, WGAN-GP and Diffusion-TS) under one fairness
     contract.} Standard and tail-aware Flow Matching, conditional VAE,
     TimeGrad, conditional DDPM, conditional WGAN-GP and Diffusion-TS are
     trained with fixed defaults (ten epochs, batch 256, zero hyperparameter
@@ -95,7 +96,7 @@ work.
     New York Bight is null-to-mixed.
     \item \textbf{A paired architecture-interaction test.} On matched event
     units, the TCN-versus-GRU difference in augmentation response survives
-    correction in only 3 of 10 comparisons, all in beneficial regions. The
+    correction in only 4 of 10 comparisons, all in beneficial regions. The
     popular ``TCN responds more'' pattern is therefore descriptive, not a
     universal architecture effect (Section~\ref{sec:results-expanded}).
     \item \textbf{Tested regional heterogeneity and severity dependence.} A
@@ -131,7 +132,7 @@ earlier waves, and every downstream claim carries that disclosure.
 
 Section~\ref{sec:related} positions the work. Section~\ref{sec:protocol}
 describes the frozen data protocol and the event census. Section~\ref{sec:method}
-describes the seven generator families, the forecasters, and the physical-prior
+describes the seven generator configurations, the forecasters, and the physical-prior
 variants. Section~\ref{sec:exp} states the experimental design, fairness
 contract and multiple-testing families. Section~\ref{sec:results} reports the
 census, the generator benchmark and recovery study, the five-region primary
