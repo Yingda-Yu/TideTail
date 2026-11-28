@@ -1,0 +1,208 @@
+{
+  "migration_present_and_checked": true,
+  "regions": {
+    "ny_bight": {
+      "formal_training_authorized": true,
+      "crossing_events": [],
+      "cut_indices": [
+        70137,
+        78904
+      ],
+      "independent_storm_count": null
+    },
+    "thames_north_sea": {
+      "formal_training_authorized": true,
+      "crossing_events": [],
+      "cut_indices": [
+        70137,
+        78904
+      ],
+      "independent_storm_count": null,
+      "target_valid_count": 68071,
+      "scaler_probes": {
+        "water_level_m": {
+          "stored_count": 68071,
+          "per_column_finite_count": 68071,
+          "target_valid_finite_count": 68071,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "tide_level_m": {
+          "stored_count": 68071,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 68071,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "u10_ms": {
+          "stored_count": 68071,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 68071,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "v10_ms": {
+          "stored_count": 68071,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 68071,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "mslp_pa": {
+          "stored_count": 68071,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 68071,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "pressure_proxy": {
+          "stored_count": 68071,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 68071,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "wind_speed_ms": {
+          "stored_count": 68071,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 68071,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "wind_energy_recent": {
+          "stored_count": 68071,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 68071,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        }
+      }
+    },
+    "pearl_river_hong_kong": {
+      "formal_training_authorized": false,
+      "crossing_events": [
+        {
+          "event_id": "pearl_river_hong_kong_event_01149",
+          "start": 78903,
+          "end": 78904,
+          "cut": 78904,
+          "assigned_split": "validation"
+        }
+      ],
+      "cut_indices": [
+        70137,
+        78904
+      ],
+      "independent_storm_count": null,
+      "target_valid_count": 70012,
+      "scaler_probes": {
+        "water_level_m": {
+          "stored_count": 70012,
+          "per_column_finite_count": 70012,
+          "target_valid_finite_count": 70012,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "tide_level_m": {
+          "stored_count": 70012,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 70012,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "u10_ms": {
+          "stored_count": 70012,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 70012,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "v10_ms": {
+          "stored_count": 70012,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 70012,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "mslp_pa": {
+          "stored_count": 70012,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 70012,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "pressure_proxy": {
+          "stored_count": 70012,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 70012,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "wind_speed_ms": {
+          "stored_count": 70012,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 70012,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        },
+        "wind_energy_recent": {
+          "stored_count": 70012,
+          "per_column_finite_count": 70137,
+          "target_valid_finite_count": 70012,
+          "common_mask_mean_delta": 0.0,
+          "common_mask_std_delta": 0.0
+        }
+      }
+    },
+    "southeast_australia": {
+      "formal_training_authorized": true,
+      "crossing_events": [],
+      "cut_indices": [
+        70137,
+        78904
+      ],
+      "independent_storm_count": null
+    },
+    "us_gulf_coast": {
+      "formal_training_authorized": true,
+      "crossing_events": [],
+      "cut_indices": [
+        70137,
+        78904
+      ],
+      "independent_storm_count": null
+    },
+    "south_atlantic_charleston": {
+      "formal_training_authorized": true,
+      "crossing_events": [],
+      "cut_indices": [
+        70137,
+        78904
+      ],
+      "independent_storm_count": null
+    }
+  },
+  "source_hashes": {
+    "../MIGRATION_MANIFEST.json": "1be7c46960cbe622b8abbc699335623e485e2dfc143e54011a835c057f44de9c",
+    "region_availability.json": "87144ebeeebcf94aec18b4fd4e71bdb1d297f92ae81cef0447ae94ab3daedeb8",
+    "derived/prime_coast/ny_bight/train_only_metadata_v1.json": "8862b0410eabb83eb53583edb8b80a35049489b38fc8fb9027e092a355ae0233",
+    "derived/prime_coast/ny_bight/event_table_v1.csv": "bc9db6a4cc29cbaa849c63a141e61fab1fcc5932031fca97d04bf101199b3fcb",
+    "derived/prime_coast/thames_north_sea/train_only_metadata_v1.json": "b401f087b205e6e3c8c2f5de2aac6dd3fe5e959d10f656026a46269c315e3881",
+    "derived/prime_coast/thames_north_sea/event_table_v1.csv": "abed71d7d526a2e1d1b5f3a2c53e049b0d2a40aab9f2bd0af8e08c9a2b9902ef",
+    "derived/prime_coast/thames_north_sea/target_timeline_v1.csv": "e8bc1e2fe55e1eb3b9e8fd01bdd65875030b09b9f595597095ec5e6480f215f6",
+    "derived/prime_coast/thames_north_sea/forcing_timeline_v1.csv": "ec1a9f6d2f68017dcf558f3a67fa5cf88a56fd055f67c1368c98852c4909643e",
+    "derived/prime_coast/thames_north_sea/tide_timeline_v1.csv": "d89a789cb2053a5428836472d3a39451b230ccb95d4be7fd70d9f7e1cedceb3a",
+    "derived/prime_coast/pearl_river_hong_kong/train_only_metadata_v1.json": "50570cbfd82fd51f27574a323f2de456a07cc2a49eb8f1c275a56420c7f186ec",
+    "derived/prime_coast/pearl_river_hong_kong/event_table_v1.csv": "0d2c50ce4b77a802688ed5444f7cf3cc05f20f1e06742662b90a3e9981e2b5da",
+    "derived/prime_coast/pearl_river_hong_kong/target_timeline_v1.csv": "a760ffa69e7c96516f354b2369c3b4a66a969dbc6270a1960eacb707258c44e7",
+    "derived/prime_coast/pearl_river_hong_kong/forcing_timeline_v1.csv": "6a665d275c13104d189cf7495615bef3989adeee32cea10552955a49f7434340",
+    "derived/prime_coast/pearl_river_hong_kong/tide_timeline_v1.csv": "3e51b3f19a2ef0882b19433fe04c3565837c129c1cb1d235382c7c690770b51d",
+    "derived/prime_coast/southeast_australia/train_only_metadata_v1.json": "b9ca0116103509a8e2712afc22a768fff17b3f39acd9de9be599a87baeb23a64",
+    "derived/prime_coast/southeast_australia/event_table_v1.csv": "5d61936be0f9e4cbcd0fcf117c7675c99bc82301a536da5763f40ddc7996f818",
+    "derived/prime_coast/us_gulf_coast/train_only_metadata_v1.json": "17212578e875a16b7280c26995058b924f80693d009aaf15bdc98f8e624addf8",
+    "derived/prime_coast/us_gulf_coast/event_table_v1.csv": "15c3403c389816e8c0d31ce61e04279b08489f903399c60cf5c0ab3cc8dae2e7",
+    "derived/prime_coast/south_atlantic_charleston/train_only_metadata_v1.json": "13104d13c63cc42dc8be2e6f792ddd7974ed3d69c6e45752884834982a4069e7",
+    "derived/prime_coast/south_atlantic_charleston/event_table_v1.csv": "8396753dc02ecba0497129819f8c1c772e5f285080f313b9bb3d70c04cb6493e"
+  },
+  "claim": "Common-target-mask numerical reproduction only; builder provenance, license/datum and independent-storm G1 signoff remain unresolved"
+}

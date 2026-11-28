@@ -1,0 +1,142 @@
+\section{Introduction}
+
+Coastal flooding is among the most costly natural hazards, and the events that
+matter most operationally are the ones that are rarest in the historical
+record. A forecaster trained on ten years of gauge observations therefore spends
+most of its capacity on benign conditions. Generative augmentation is the
+obvious response: synthesise additional extreme residuals so that the
+downstream forecaster sees more of the tail. The question this paper asks is
+narrower and more useful than ``does augmentation work'': \emph{when} does
+generative augmentation help extreme coastal water-level forecasting, and what
+does the answer depend on?
+
+We began with the standard hypothesis, stated here in its original form so that
+the reader can see what the evidence did to it:
+
+\begin{quote}
+\textbf{H1}: Tail-aware conditional generative augmentation, applied under a
+matched forecaster training budget, improves prediction accuracy on
+\emph{independent held-out real storm events} relative to real-only training,
+standard oversampling, perturbation augmentation, and standard conditional
+diffusion.
+\end{quote}
+
+The evidence assembled here supports neither a blanket acceptance nor a
+blanket rejection of H1. It supports a different, more structured answer:
+augmentation effects on extreme-event error are \emph{region-dependent} and
+\emph{architecture-dependent}, are moderated by event severity, and are
+poorly predicted by the global distributional fidelity of the generator. The
+contribution of this paper is less a verdict than a measured map of that
+dependence, obtained under controls that published evaluations of time-series
+augmentation frequently omit: event-level pairing, within-architecture
+baselines, declared multiple-testing families, verified generator
+checkpoints, and an explicit fairness contract for the generator comparison.
+
+\subsection{Why the question is harder than it looks}
+
+Four problems recur in published and internal evaluations of generative
+augmentation for time series, and all four were present in our own earlier
+work.
+
+\begin{enumerate}
+    \item \textbf{Window overlap masquerades as sample size.} A 96\,h$\rightarrow$72\,h
+    contract produces tens of thousands of sliding windows per region, but a
+    single storm supplies hundreds of them. Treating windows as independent
+    inflates every confidence interval by roughly the square root of the
+    within-event window count. The unit of inference must be the \emph{event},
+    not the window.
+    \item \textbf{Event counts are easy to double-count.} Tropical-cyclone
+    catalogues and peak-over-threshold (POT) declustering describe overlapping
+    phenomena. Adding the two totals without computing the intersection inflates
+    the census; in our own repository this produced a decade count of 707
+    instead of 679 (Section~\ref{sec:results-census}).
+    \item \textbf{Generator failures are attributed to families rather than to
+    code.} A diffusion model whose reverse sampler is correct but whose Fourier
+    regulariser regresses the wrong target will fail, and it is tempting to
+    conclude that diffusion is unsuited to the problem. It is not a
+    family-level conclusion; it is a line-level defect
+    (Section~\ref{sec:results-recovery}).
+    \item \textbf{Augmentation effects are read globally.} Averaging a
+    treatment effect over regions and architectures can return zero while the
+    per-region effects are large, opposite in sign, and individually
+    significant. Without an explicit heterogeneity test, a genuine regional
+    signal is reported as a null result --- or, worse, a regional gain is
+    promoted to a universal claim.
+\end{enumerate}
+
+\subsection{Contributions}
+
+\begin{enumerate}
+    \item \textbf{A verified event census and frozen event-level inference.} We
+    recompute the 2015--2024 independent-event union for five regions from raw
+    cluster artefacts (634 POT clusters, 73 tropical cyclones, 28 matched
+    $\Rightarrow$ \textbf{679} units), check duplicate timestamps and
+    cross-split leakage, and run every primary test as a per-event-unit paired
+    comparison within region and architecture. The five regional event-unit
+    sets (40--51 units each) are never pooled as independent storms.
+    \item \textbf{A seven-configuration generative benchmark (two Flow Matching
+    variants, CVAE, TimeGrad, DDPM, WGAN-GP and Diffusion-TS) under one fairness
+    contract.} Standard and tail-aware Flow Matching, conditional VAE,
+    TimeGrad, conditional DDPM, conditional WGAN-GP and Diffusion-TS are
+    trained with fixed defaults (ten epochs, batch 256, zero hyperparameter
+    search) on identical splits, with season-stratified fidelity scoring,
+    background/moderate/extreme strata, and checkpoint verification
+    (architecture, parameter counts, SHA256) for every cell of the
+    5\,regions\,$\times$\,7\,families\,$\times$\,2\,generator-seed grid. Flow
+    Matching reproduces the target dispersion; several families fail outright,
+    for line-level reasons we diagnose explicitly.
+    \item \textbf{A pre-specified five-region augmentation evaluation.} Twenty
+    primary comparisons (5 regions $\times$ 4 augmentation arms) under one
+    frozen protocol (2015--2020 train / 2021 validation / 2022--2024
+    retrospective test): \textbf{12 of 20 survive Bonferroni correction at
+    $\alpha = 0.0025$, splitting exactly 6 beneficial / 6 harmful}. All four
+    augmentation cells improve in Southeast Australia ($-1.29$ to
+    $-3.02\%$), all four harm in Thames/North Sea ($+3.44$ to $+4.31\%$), the
+    TCN cells improve on the US Gulf Coast and are harmed in Charleston, and
+    New York Bight is null-to-mixed.
+    \item \textbf{A paired architecture-interaction test.} On matched event
+    units, the TCN-versus-GRU difference in augmentation response survives
+    correction in only 4 of 10 comparisons, all in beneficial regions. The
+    popular ``TCN responds more'' pattern is therefore descriptive, not a
+    universal architecture effect (Section~\ref{sec:results-expanded}).
+    \item \textbf{Tested regional heterogeneity and severity dependence.} A
+    Cochran--Q test rejects effect homogeneity across regions for every
+    augmentation arm ($p \le 1.4\times10^{-10}$), pairwise Holm tests
+    localise the differences, and per-event severity analysis shows effects
+    attenuating at high severity: benefits concentrate in low-to-moderate
+    events, and harmful regions are most harmful there too
+    (Section~\ref{sec:results-heterogeneity}).
+    \item \textbf{A six-arm physical-prior ablation with an explicitly bounded
+    interpretation.} ERA5-conditioned, pressure-, wind-, combined- and
+    tail-aware Flow Matching variants are compared against standard FM in two
+    regions (20 primary contrasts). Only three Charleston GRU contrasts
+    survive Bonferroni correction, all indicating \emph{increased} error. We
+    state plainly what the method is --- meteorological conditioning plus
+    physics-inspired statistical regularisation --- and what it is not: a
+    governing-equation, PDE-constrained generator.
+    \item \textbf{Corrected statistics, preserved negative results.} We fix
+    (and document) a cross-architecture pairing error, a $\approx5{,}000\times$
+    bootstrap p-value inflation, a Monte-Carlo resolution defect that could
+    emit $p=0$, and a Bonferroni flag that compared raw rather than adjusted
+    p-values. Repaired generator implementations that made sampling
+    \emph{worse} are reported as failures rather than re-tuned away.
+\end{enumerate}
+
+We do not claim H1 is universally supported: it is supported where the
+regions and architectures that benefit support it, and refuted where they do
+not. We also do not call the 2022--2024 retrospective test an untouched
+confirmatory holdout; the split was used during protocol development in
+earlier waves, and every downstream claim carries that disclosure.
+
+\subsection{Paper structure}
+
+Section~\ref{sec:related} positions the work. Section~\ref{sec:protocol}
+describes the frozen data protocol and the event census. Section~\ref{sec:method}
+describes the seven generator configurations, the forecasters, and the physical-prior
+variants. Section~\ref{sec:exp} states the experimental design, fairness
+contract and multiple-testing families. Section~\ref{sec:results} reports the
+census, the generator benchmark and recovery study, the five-region primary
+result, the architecture-interaction and heterogeneity analyses, the six-arm
+ablation, and the preserved historical analyses. Section~\ref{sec:discussion}
+interprets the mechanisms; Section~\ref{sec:conclusion} states what would be
+required to turn the regional map into an operational recommendation.

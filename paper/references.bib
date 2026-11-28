@@ -1,0 +1,526 @@
+% ============================================================================
+% refs_verified_new.bib -- NEW verified references (38 entries), compiled for
+% the TideTail manuscript on generative augmentation for extreme coastal
+% water-level forecasting.
+%
+% Every entry was checked against a primary source (Crossref API record,
+% publisher/journal page, arXiv abstract page, PMLR/NeurIPS proceedings page).
+% The verification source is stated in the "% VERIFIED:" comment above each
+% entry. Fields not verifiable were omitted rather than guessed.
+%
+% NOTE ON EXISTING BIB: two entries in paper/references.bib overlap with the
+% must-have canon and are corrected here: lipman2023flow (identical, kept for
+% completeness) and tashiro2022csdi (renamed tashiro2021csdi; author order
+% corrected to Tashiro, Song J., Song Y., Ermon; NeurIPS 2021). Deduplicate
+% when merging.
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+% TOPIC 1: Coastal water-level / storm-surge forecasting (ML and physical models)
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Storm surge forecast through a combination of dynamic and neural network models (DOI 10.1016/j.ocemod.2009.12.007)
+@article{bajo2010storm,
+  title     = {Storm surge forecast through a combination of dynamic and neural network models},
+  author    = {Bajo, Marco and Umgiesser, Georg},
+  journal   = {Ocean Modelling},
+  volume    = {33},
+  pages     = {1--9},
+  year      = {2010},
+  doi       = {10.1016/j.ocemod.2009.12.007}
+}
+
+% VERIFIED: https://www.nature.com/articles/s41598-021-96674-0 (Crossref DOI 10.1038/s41598-021-96674-0; article number 17224 corroborated by ProQuest record and citing papers)
+@article{tiggeloven2021exploring,
+  title     = {Exploring deep learning capabilities for surge predictions in coastal areas},
+  author    = {Tiggeloven, Timothy and Couasnon, Ana{\"i}s and van Straaten, Chiem and Muis, Sanne and Ward, Philip J.},
+  journal   = {Scientific Reports},
+  volume    = {11},
+  number    = {1},
+  pages     = {17224},
+  year      = {2021},
+  doi       = {10.1038/s41598-021-96674-0}
+}
+
+% VERIFIED: https://api.crossref.org/works/10.1029/2006jc004033 (AGU/Crossref: JGR Oceans, volume 112, issue C8, 2007)
+@article{horsburgh2007tidesurge,
+  title     = {Tide--surge interaction and its role in the distribution of surge residuals in the North Sea},
+  author    = {Horsburgh, K. J. and Wilson, C.},
+  journal   = {Journal of Geophysical Research: Oceans},
+  volume    = {112},
+  number    = {C8},
+  year      = {2007},
+  doi       = {10.1029/2006JC004033}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Estimation of global coastal sea level extremes using neural networks Bruneau (DOI 10.1088/1748-9326/ab89d6, ERL 15, 074030)
+@article{bruneau2020estimation,
+  title     = {Estimation of global coastal sea level extremes using neural networks},
+  author    = {Bruneau, Nicolas and Polton, Jeff and Williams, Joanne and Holt, Jason},
+  journal   = {Environmental Research Letters},
+  volume    = {15},
+  pages     = {074030},
+  year      = {2020},
+  doi       = {10.1088/1748-9326/ab89d6}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Towards a pan-European coastal flood awareness system (DOI 10.3389/fmars.2022.1091844; published 2023-01-19, Frontiers in Marine Science volume 9)
+@article{irazoqui2022towards,
+  title     = {Towards a pan-European coastal flood awareness system: Skill of extreme sea-level forecasts from the {Copernicus Marine Service}},
+  author    = {Irazoqui Apecechea, Maialen and Melet, Ang{\'e}lique and Armaroli, Clara},
+  journal   = {Frontiers in Marine Science},
+  volume    = {9},
+  pages     = {1091844},
+  year      = {2023},
+  doi       = {10.3389/fmars.2022.1091844}
+}
+
+% ----------------------------------------------------------------------------
+% TOPIC 2: Extreme-value statistics (GEV/POT, declustering)
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://api.crossref.org/works/10.1007/978-1-4471-3675-0 (Springer, Springer Series in Statistics, 2001, ISBN 9781447136750)
+@book{coles2001introduction,
+  title     = {An Introduction to Statistical Modeling of Extreme Values},
+  author    = {Coles, Stuart},
+  series    = {Springer Series in Statistics},
+  publisher = {Springer},
+  address   = {London},
+  year      = {2001},
+  doi       = {10.1007/978-1-4471-3675-0}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Models for exceedances over high thresholds (DOI 10.1111/j.2517-6161.1990.tb01796.x; JRSS-B 52(3):393-425)
+@article{davison1990models,
+  title     = {Models for Exceedances Over High Thresholds},
+  author    = {Davison, A. C. and Smith, R. L.},
+  journal   = {Journal of the Royal Statistical Society: Series B (Methodological)},
+  volume    = {52},
+  number    = {3},
+  pages     = {393--425},
+  year      = {1990},
+  doi       = {10.1111/j.2517-6161.1990.tb01796.x}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Inference for clusters of extreme observations Ferro Segers (DOI 10.1111/1467-9868.00401; exact title "Inference for Clusters of Extreme Values")
+@article{ferro2003inference,
+  title     = {Inference for Clusters of Extreme Values},
+  author    = {Ferro, Christopher A. T. and Segers, Johan},
+  journal   = {Journal of the Royal Statistical Society: Series B (Statistical Methodology)},
+  volume    = {65},
+  number    = {2},
+  pages     = {545--556},
+  year      = {2003},
+  doi       = {10.1111/1467-9868.00401}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Statistics of extremes in hydrology Katz Parlange Naveau (DOI 10.1016/S0309-1708(02)00056-8; note year is 2002, not 2005)
+@article{katz2002statistics,
+  title     = {Statistics of extremes in hydrology},
+  author    = {Katz, Richard W. and Parlange, Marc B. and Naveau, Philippe},
+  journal   = {Advances in Water Resources},
+  volume    = {25},
+  number    = {8--12},
+  pages     = {1287--1304},
+  year      = {2002},
+  doi       = {10.1016/S0309-1708(02)00056-8}
+}
+
+% ----------------------------------------------------------------------------
+% TOPIC 3: Time-series data augmentation (surveys, forecasting, sensor data)
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Time series data augmentation for deep learning a survey Wen (DOI 10.24963/ijcai.2021/631, IJCAI 2021, pp. 4653-4660)
+@inproceedings{wen2021time,
+  title     = {Time Series Data Augmentation for Deep Learning: A Survey},
+  author    = {Wen, Qingsong and Sun, Liang and Yang, Fan and Song, Xiaomin and Gao, Jingkun and Wang, Xue and Xu, Huan},
+  booktitle = {Proceedings of the Thirtieth International Joint Conference on Artificial Intelligence (IJCAI)},
+  pages     = {4653--4660},
+  year      = {2021},
+  doi       = {10.24963/ijcai.2021/631}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=An empirical survey of data augmentation for time series classification Iwana (DOI 10.1371/journal.pone.0254841, PLOS ONE 16: e0254841)
+@article{iwana2021empirical,
+  title     = {An empirical survey of data augmentation for time series classification with neural networks},
+  author    = {Iwana, Brian Kenji and Uchida, Seiichi},
+  journal   = {PLOS ONE},
+  volume    = {16},
+  pages     = {e0254841},
+  year      = {2021},
+  doi       = {10.1371/journal.pone.0254841}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Bagging exponential smoothing methods using STL decomposition and Box-Cox transformation (DOI 10.1016/j.ijforecast.2015.07.002, IJF 32(2):303-312)
+@article{bergmeir2016bagging,
+  title     = {Bagging exponential smoothing methods using {STL} decomposition and {Box--Cox} transformation},
+  author    = {Bergmeir, Christoph and Hyndman, Rob J. and Ben{\'i}tez, Jos{\'e} M.},
+  journal   = {International Journal of Forecasting},
+  volume    = {32},
+  number    = {2},
+  pages     = {303--312},
+  year      = {2016},
+  doi       = {10.1016/j.ijforecast.2015.07.002}
+}
+
+% VERIFIED: https://api.crossref.org/works/10.1145/3136755.3136817 (ACM ICMI '17 proceedings record; authors as listed) + https://arxiv.org/abs/1706.00527
+@inproceedings{um2017data,
+  title     = {Data augmentation of wearable sensor data for {Parkinson's} disease monitoring using convolutional neural networks},
+  author    = {Um, Terry T. and Pfister, Franz M. J. and Pichler, Daniel and Endo, Satoshi and Lang, Muriel and Hirche, Sandra and Fietzek, Urban and Kuli{\'c}, Dana},
+  booktitle = {Proceedings of the 19th ACM International Conference on Multimodal Interaction (ICMI '17)},
+  year      = {2017},
+  doi       = {10.1145/3136755.3136817}
+}
+
+% ----------------------------------------------------------------------------
+% TOPIC 4: Conditional GANs and VAEs for time series
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://proceedings.neurips.cc/paper_files/paper/2019/file/c9efe5f26cd17ba6216bbe2a7d26d490-Paper.pdf (NeurIPS 2019, authors Yoon, Jarrett, van der Schaar)
+@inproceedings{yoon2019timegan,
+  title     = {Time-series Generative Adversarial Networks},
+  author    = {Yoon, Jinsung and Jarrett, Daniel and van der Schaar, Mihaela},
+  booktitle = {Advances in Neural Information Processing Systems 32 (NeurIPS 2019)},
+  year      = {2019}
+}
+
+% VERIFIED: https://arxiv.org/abs/1706.02633 (authors Esteban, Hyland, R{\"a}tsch; RGAN/RCGAN)
+@article{esteban2017realvalued,
+  title     = {Real-valued (Medical) Time Series Generation with Recurrent Conditional {GANs}},
+  author    = {Esteban, Crist{\'o}bal and Hyland, Stephanie L. and R{\"a}tsch, Gunnar},
+  journal   = {arXiv preprint arXiv:1706.02633},
+  year      = {2017}
+}
+
+% VERIFIED: https://papers.neurips.cc/paper_files/paper/2020/file/641d77dd5271fca28764612a028d9c8e-Paper.pdf (NeurIPS 2020) + https://dl.acm.org/doi/10.5555/3495724.3496462 (Article No. 738) + https://arxiv.org/abs/2006.08571
+@inproceedings{xu2020cotgan,
+  title     = {{COT-GAN}: Generating Sequential Data via Causal Optimal Transport},
+  author    = {Xu, Tianlin and Wenliang, Li K. and Munn, Michael and Acciaio, Beatrice},
+  booktitle = {Advances in Neural Information Processing Systems 33 (NeurIPS 2020)},
+  year      = {2020}
+}
+
+% VERIFIED: https://arxiv.org/abs/1312.6114 (Kingma and Welling; published at ICLR 2014)
+@inproceedings{kingma2014autoencoding,
+  title     = {Auto-Encoding Variational {Bayes}},
+  author    = {Kingma, Diederik P. and Welling, Max},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2014},
+  note      = {arXiv:1312.6114}
+}
+
+% VERIFIED: https://proceedings.mlr.press/v108/fortuin20a.html (AISTATS 2020, PMLR 108:1651-1661)
+@inproceedings{fortuin2020gpvae,
+  title     = {{GP-VAE}: Deep Probabilistic Time Series Imputation},
+  author    = {Fortuin, Vincent and Baranchuk, Dmitry and Raetsch, Gunnar and Mandt, Stephan},
+  booktitle = {Proceedings of the 23rd International Conference on Artificial Intelligence and Statistics (AISTATS)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {108},
+  pages     = {1651--1661},
+  year      = {2020},
+  publisher = {PMLR}
+}
+
+% ----------------------------------------------------------------------------
+% TOPIC 5: Diffusion models for time series
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://arxiv.org/abs/2107.03502 (arXiv comments: "NeurIPS 2021"; author order Tashiro, Song J., Song Y., Ermon)
+@inproceedings{tashiro2021csdi,
+  title     = {{CSDI}: Conditional Score-based Diffusion Models for Probabilistic Time Series Imputation},
+  author    = {Tashiro, Yusuke and Song, Jiaming and Song, Yang and Ermon, Stefano},
+  booktitle = {Advances in Neural Information Processing Systems 34 (NeurIPS 2021)},
+  year      = {2021}
+}
+
+% VERIFIED: https://proceedings.mlr.press/v139/rasul21a.html (ICML 2021, PMLR 139:8857-8868) + https://arxiv.org/abs/2101.12072
+@inproceedings{rasul2021timegrad,
+  title     = {Autoregressive Denoising Diffusion Models for Multivariate Probabilistic Time Series Forecasting},
+  author    = {Rasul, Kashif and Seward, Calvin and Schuster, Ingmar and Vollgraf, Roland},
+  booktitle = {Proceedings of the 38th International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {139},
+  pages     = {8857--8868},
+  year      = {2021},
+  publisher = {PMLR}
+}
+
+% VERIFIED: https://arxiv.org/abs/2403.01742 (Diffusion-TS, Yuan and Qiao; PDF header "Published as a conference paper at ICLR 2024"; also https://proceedings.iclr.cc/paper_files/paper/2024/file/b5b66077d016c037576cc56a82f97f66-Paper-Conference.pdf)
+% NOTE: the must-have as given ("Xu et al. 2023, arXiv:2303.09505") is WRONG --
+% arXiv:2303.09505 is an unrelated math-ph paper; the canonical Diffusion-TS is
+% Yuan & Qiao, ICLR 2024, arXiv:2403.01742 (see final comment block).
+@inproceedings{yuan2024diffusionts,
+  title     = {{Diffusion-TS}: Interpretable Diffusion for General Time Series Generation},
+  author    = {Yuan, Xinyu and Qiao, Yan},
+  booktitle = {The Twelfth International Conference on Learning Representations (ICLR)},
+  year      = {2024},
+  note      = {arXiv:2403.01742}
+}
+
+% VERIFIED: https://arxiv.org/abs/2208.09399 (L{\'o}pez Alcaraz and Strodthoff; published in TMLR 2023, corroborated by citing papers "Diffusion-based time series imputation and forecasting with structured state space models. TMLR, 2023")
+@article{alcaraz2023diffusion,
+  title     = {Diffusion-based Time Series Imputation and Forecasting with Structured State Space Models},
+  author    = {L{\'o}pez Alcaraz, Juan Miguel and Strodthoff, Nils},
+  journal   = {Transactions on Machine Learning Research},
+  year      = {2023},
+  note      = {arXiv:2208.09399}
+}
+
+% ----------------------------------------------------------------------------
+% TOPIC 6: Flow Matching
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://arxiv.org/abs/2210.02747 (Lipman et al.; published at ICLR 2023)
+@inproceedings{lipman2023flow,
+  title     = {Flow Matching for Generative Modeling},
+  author    = {Lipman, Yaron and Chen, Ricky T. Q. and Ben-Hamu, Heli and Nickel, Maximilian and Le, Matt},
+  booktitle = {The Eleventh International Conference on Learning Representations (ICLR)},
+  year      = {2023},
+  note      = {arXiv:2210.02747}
+}
+
+% VERIFIED: https://arxiv.org/abs/2302.00482 (arXiv comments: "TMLR"; OpenReview https://openreview.net/forum?id=CD9Snc73AW; "Published in Transactions on Machine Learning Research (03/2024)")
+@article{tong2024improving,
+  title     = {Improving and generalizing flow-based generative models with minibatch optimal transport},
+  author    = {Tong, Alexander and Fatras, Kilian and Malkin, Nikolay and Huguet, Guillaume and Zhang, Yanlei and Rector-Brooks, Jarrid and Wolf, Guy and Bengio, Yoshua},
+  journal   = {Transactions on Machine Learning Research},
+  year      = {2024},
+  note      = {arXiv:2302.00482}
+}
+
+% VERIFIED: https://jmlr.org/papers/volume26/23-1605/23-1605.pdf (JMLR 26(209):1-80, 2025) + https://arxiv.org/abs/2303.08797
+@article{albergo2025stochastic,
+  title     = {Stochastic Interpolants: A Unifying Framework for Flows and Diffusions},
+  author    = {Albergo, Michael S. and Boffi, Nicholas M. and Vanden-Eijnden, Eric},
+  journal   = {Journal of Machine Learning Research},
+  volume    = {26},
+  number    = {209},
+  pages     = {1--80},
+  year      = {2025}
+}
+
+% VERIFIED: https://papers.nips.cc/paper_files/paper/2021/file/b21f9f98829dea9a48fd8aaddc1f159d-Paper.pdf (NeurIPS 2021) + https://arxiv.org/abs/2110.13040 + ACM DL Article No. 1631, pp. 21325-21337
+@inproceedings{bilos2021neural,
+  title     = {Neural Flows: Efficient Alternative to Neural {ODEs}},
+  author    = {Bilo{\v s}, Marin and Sommer, Johanna and Rangapuram, Syama Sundar and Januschowski, Tim and G{\"u}nnemann, Stephan},
+  booktitle = {Advances in Neural Information Processing Systems 34 (NeurIPS 2021)},
+  pages     = {21325--21337},
+  year      = {2021}
+}
+
+% ----------------------------------------------------------------------------
+% TOPIC 7: Physics-guided / physics-informed machine learning
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://www.nature.com/articles/s42254-021-00314-5 (Nat Rev Phys 3, 422-440, 2021; author list incl. Liu Yang confirmed on Nature page) + Crossref DOI 10.1038/s42254-021-00314-5
+@article{karniadakis2021physics,
+  title     = {Physics-informed machine learning},
+  author    = {Karniadakis, George Em and Kevrekidis, Ioannis G. and Lu, Lu and Perdikaris, Paris and Wang, Sifan and Yang, Liu},
+  journal   = {Nature Reviews Physics},
+  volume    = {3},
+  number    = {6},
+  pages     = {422--440},
+  year      = {2021},
+  doi       = {10.1038/s42254-021-00314-5}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Deep learning and process understanding for data-driven Earth system science Reichstein (DOI 10.1038/s41586-019-0912-1, Nature 566:195-204, 2019)
+@article{reichstein2019deep,
+  title     = {Deep learning and process understanding for data-driven Earth system science},
+  author    = {Reichstein, Markus and Camps-Valls, Gustau and Stevens, Bjorn and Jung, Martin and Denzler, Joachim and Carvalhais, Nuno and Prabhat},
+  journal   = {Nature},
+  volume    = {566},
+  pages     = {195--204},
+  year      = {2019},
+  doi       = {10.1038/s41586-019-0912-1}
+}
+
+% VERIFIED: https://epubs.siam.org/doi/10.1137/1.9781611975673.63 (SDM 2019, pages 558-566) + https://arxiv.org/abs/1810.13075
+@inproceedings{jia2019physics,
+  title     = {Physics Guided {RNNs} for Modeling Dynamical Systems: A Case Study in Simulating Lake Temperature Profiles},
+  author    = {Jia, Xiaowei and Willard, Jared and Karpatne, Anuj and Read, Jordan and Zwart, Jacob and Steinbach, Michael and Kumar, Vipin},
+  booktitle = {Proceedings of the 2019 SIAM International Conference on Data Mining (SDM)},
+  pages     = {558--566},
+  year      = {2019},
+  publisher = {SIAM},
+  doi       = {10.1137/1.9781611975673.63}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Integrating scientific knowledge with machine learning for engineering and environmental systems Willard (DOI 10.1145/3514228, ACM Computing Surveys 55(4):1-37)
+@article{willard2022integrating,
+  title     = {Integrating Scientific Knowledge with Machine Learning for Engineering and Environmental Systems},
+  author    = {Willard, Jared and Jia, Xiaowei and Xu, Shaoming and Steinbach, Michael and Kumar, Vipin},
+  journal   = {ACM Computing Surveys},
+  volume    = {55},
+  number    = {4},
+  pages     = {1--37},
+  year      = {2022},
+  doi       = {10.1145/3514228}
+}
+
+% ----------------------------------------------------------------------------
+% TOPIC 8: Event-level / extreme-event forecast evaluation
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://api.crossref.org/works/10.1198/016214506000001437 (JASA 102(477):359-378, 2007)
+@article{gneiting2007strictly,
+  title     = {Strictly Proper Scoring Rules, Prediction, and Estimation},
+  author    = {Gneiting, Tilmann and Raftery, Adrian E.},
+  journal   = {Journal of the American Statistical Association},
+  volume    = {102},
+  number    = {477},
+  pages     = {359--378},
+  year      = {2007},
+  doi       = {10.1198/016214506000001437}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Scale selective verification rainfall accumulations high-resolution forecasts convective Roberts Lean (DOI 10.1175/2007MWR2123.1, MWR 136(1):78-97)
+@article{roberts2008scale,
+  title     = {Scale-Selective Verification of Rainfall Accumulations from High-Resolution Forecasts of Convective Events},
+  author    = {Roberts, Nigel M. and Lean, Humphrey W.},
+  journal   = {Monthly Weather Review},
+  volume    = {136},
+  number    = {1},
+  pages     = {78--97},
+  year      = {2008},
+  doi       = {10.1175/2007MWR2123.1}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=The extreme dependency score a non-vanishing measure for forecasts of rare events (DOI 10.1002/met.53, Meteorological Applications 15(1):41-50)
+@article{stephenson2008extreme,
+  title     = {The extreme dependency score: a non-vanishing measure for forecasts of rare events},
+  author    = {Stephenson, D. B. and Casati, B. and Ferro, C. A. T. and Wilson, C. A.},
+  journal   = {Meteorological Applications},
+  volume    = {15},
+  number    = {1},
+  pages     = {41--50},
+  year      = {2008},
+  doi       = {10.1002/met.53}
+}
+
+% VERIFIED: https://api.crossref.org/works?query.bibliographic=Forecast verification for extreme values Friederichs Thorarinsdottir (DOI 10.1002/env.2176, Environmetrics 23(7):579-594; exact title as below)
+@article{friederichs2012forecast,
+  title     = {Forecast verification for extreme value distributions with an application to probabilistic peak wind prediction},
+  author    = {Friederichs, Petra and Thorarinsdottir, Thordis L.},
+  journal   = {Environmetrics},
+  volume    = {23},
+  number    = {7},
+  pages     = {579--594},
+  year      = {2012},
+  doi       = {10.1002/env.2176}
+}
+
+% ----------------------------------------------------------------------------
+% TOPIC 9: Reliable evaluation of generative models
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://proceedings.mlr.press/v70/arjovsky17a.html (ICML 2017, PMLR 70:214-223)
+@inproceedings{arjovsky2017wasserstein,
+  title     = {Wasserstein Generative Adversarial Networks},
+  author    = {Arjovsky, Martin and Chintala, Soumith and Bottou, L{\'e}on},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {70},
+  pages     = {214--223},
+  year      = {2017},
+  publisher = {PMLR}
+}
+
+% VERIFIED: https://arxiv.org/abs/1701.04862 (Arjovsky and Bottou; presented at ICLR 2017)
+@inproceedings{arjovsky2017towards,
+  title     = {Towards Principled Methods for Training Generative Adversarial Networks},
+  author    = {Arjovsky, Martin and Bottou, L{\'e}on},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2017},
+  note      = {arXiv:1701.04862}
+}
+
+% VERIFIED: https://arxiv.org/abs/1806.00035 (Sajjadi et al.) + https://papers.neurips.cc/paper/2018/file/f7696a9b362ac5a51c3dc8f098b73923-Paper.pdf (NeurIPS 2018)
+@inproceedings{sajjadi2018assessing,
+  title     = {Assessing Generative Models via Precision and Recall},
+  author    = {Sajjadi, Mehdi S. M. and Bachem, Olivier and Lucic, Mario and Bousquet, Olivier and Gelly, Sylvain},
+  booktitle = {Advances in Neural Information Processing Systems 31 (NeurIPS 2018)},
+  year      = {2018}
+}
+
+% VERIFIED: https://arxiv.org/abs/1706.08500 (arXiv journal reference: "Advances in Neural Information Processing Systems 30 (NIPS 2017)")
+@inproceedings{heusel2017gans,
+  title     = {{GANs} Trained by a Two Time-Scale Update Rule Converge to a Local {Nash} Equilibrium},
+  author    = {Heusel, Martin and Ramsauer, Hubert and Unterthiner, Thomas and Nessler, Bernhard and Hochreiter, Sepp},
+  booktitle = {Advances in Neural Information Processing Systems 30 (NeurIPS 2017)},
+  year      = {2017}
+}
+
+% ============================================================================
+% MUST-HAVE VERIFICATION STATUS (final comment block)
+% ============================================================================
+% All ten required must-have references were verified against primary sources:
+%
+% 1.  Coles (2001) An Introduction to Statistical Modeling of Extreme Values,
+%     Springer, DOI 10.1007/978-1-4471-3675-0 ......... VERIFIED (Crossref;
+%     Springer Series in Statistics; citekey coles2001introduction).
+% 2.  Yoon et al. (2019) TimeGAN, NeurIPS 2019 ........ VERIFIED (NeurIPS
+%     proceedings PDF; authors Jinsung Yoon, Daniel Jarrett, Mihaela van der
+%     Schaar; citekey yoon2019timegan).
+% 3.  Rasul et al. (2021) TimeGrad, ICML 2021 ......... VERIFIED (PMLR
+%     v139:8857-8868 + arXiv:2101.12072; note the correct arXiv ID is
+%     2101.12072, NOT 2101.12121 which is an unrelated paper; citekey
+%     rasul2021timegrad).
+% 4.  Lipman et al. (2023) Flow Matching, ICLR 2023, arXiv:2210.02747
+%     ..................................................... VERIFIED (arXiv +
+%     ICLR; citekey lipman2023flow; also already present in references.bib).
+% 5.  Xu et al. (2023) Diffusion-TS, "ICLR 2024, arXiv:2303.09505" ... FAILED
+%     AS STATED. arXiv:2303.09505 is an unrelated mathematical-physics paper
+%     (G. C. Thiang, "Topological edge states of 1D chains and index theory",
+%     J. Math. Phys. 64:061901, 2023), and no Diffusion-TS paper by "Xu et
+%     al." exists. The canonical Diffusion-TS paper is: Xinyu Yuan and Yan
+%     Qiao, "Diffusion-TS: Interpretable Diffusion for General Time Series
+%     Generation", ICLR 2024, arXiv:2403.01742 -- VERIFIED (arXiv abstract
+%     page + ICLR 2024 proceedings PDF + authors' homepage) and included as
+%     yuan2024diffusionts. If a 2023-dated citation is preferred, cite it as
+%     (Yuan and Qiao, 2024); there is no verified 2023 arXiv version.
+% 6.  Kingma & Welling (2014) Auto-Encoding Variational Bayes, ICLR 2014
+%     ..................................................... VERIFIED
+%     (arXiv:1312.6114; citekey kingma2014autoencoding).
+% 7.  Karniadakis et al. (2021) Physics-informed machine learning, Nature
+%     Reviews Physics 3(6):422-440, DOI 10.1038/s42254-021-00314-5
+%     ..................................................... VERIFIED (Nature
+%     page + Crossref; sixth author is "Liu Yang" per the Nature page;
+%     citekey karniadakis2021physics).
+% 8.  Reichstein et al. (2019) Deep learning and process understanding,
+%     Nature 566:195-204 .................. VERIFIED (Crossref; correct DOI is
+%     10.1038/s41586-019-0912-1, not the -1834-5 variant; citekey
+%     reichstein2019deep).
+% 9.  Esteban et al. (2017) RCGAN, arXiv:1706.02633 .. VERIFIED (arXiv; authors
+%     Esteban, Hyland, R{\"a}tsch; citekey esteban2017realvalued).
+% 10. Tashiro et al. (2021) CSDI, NeurIPS 2021 ....... VERIFIED (arXiv:2107.03502
+%     with "NeurIPS 2021" comment; author order is Tashiro, Jiaming Song,
+%     Yang Song, Stefano Ermon -- references.bib's tashiro2022csdi has Song
+%     order swapped and a wrong year-key; use tashiro2021csdi).
+%
+% No must-have item was left unverified; only Diffusion-TS required correcting
+% its stated author/arXiv-ID details (see item 5 above).
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+% Two additional canonical entries, verified directly against arXiv abstract
+% pages on 2026-11-27 (Wave 3.2 bibliography consolidation).
+% ----------------------------------------------------------------------------
+
+% VERIFIED: https://arxiv.org/abs/2006.11239 (Ho, Jain, Abbeel; "NIPS camera-ready"; NeurIPS 2020)
+@inproceedings{ho2020denoising,
+  title     = {Denoising Diffusion Probabilistic Models},
+  author    = {Ho, Jonathan and Jain, Ajay and Abbeel, Pieter},
+  booktitle = {Advances in Neural Information Processing Systems 33 (NeurIPS 2020)},
+  year      = {2020},
+  note      = {arXiv:2006.11239}
+}
+
+% VERIFIED: https://arxiv.org/abs/1704.00028 (Gulrajani, Ahmed, Arjovsky, Dumoulin, Courville; Comments: NIPS camera-ready; NeurIPS 2017)
+@inproceedings{gulrajani2017wgangp,
+  title     = {Improved Training of {Wasserstein} {GANs}},
+  author    = {Gulrajani, Ishaan and Ahmed, Faruk and Arjovsky, Martin and Dumoulin, Vincent and Courville, Aaron},
+  booktitle = {Advances in Neural Information Processing Systems 30 (NIPS 2017)},
+  year      = {2017},
+  note      = {arXiv:1704.00028}
+}

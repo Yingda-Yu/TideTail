@@ -1,0 +1,50 @@
+FFFF.                                                                    [100%]
+=================================== FAILURES ===================================
+___________________ test_reject_overlapping_event_intervals ____________________
+
+    def test_reject_overlapping_event_intervals():
+        groups = [EventGroup('a', 0, 200), EventGroup('b', 100, 150),
+                  EventGroup('c', 300, 350)]
+>       with pytest.raises(ValueError, match='overlap'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_split_regression.py:10: Failed
+_______________________ test_reject_duplicate_event_ids ________________________
+
+    def test_reject_duplicate_event_ids():
+        groups = [EventGroup('same', 0, 10), EventGroup('same', 20, 30),
+                  EventGroup('c', 40, 50)]
+>       with pytest.raises(ValueError, match='Duplicate'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_split_regression.py:17: Failed
+_____________________ test_reject_invalid_intervals[-1-10] _____________________
+
+start = -1, end = 10
+
+    @pytest.mark.parametrize('start,end', [(-1, 10), (20, 10)])
+    def test_reject_invalid_intervals(start, end):
+        groups = [EventGroup('a', start, end), EventGroup('b', 30, 40),
+                  EventGroup('c', 50, 60)]
+>       with pytest.raises(ValueError, match='interval'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_split_regression.py:25: Failed
+_____________________ test_reject_invalid_intervals[20-10] _____________________
+
+start = 20, end = 10
+
+    @pytest.mark.parametrize('start,end', [(-1, 10), (20, 10)])
+    def test_reject_invalid_intervals(start, end):
+        groups = [EventGroup('a', start, end), EventGroup('b', 30, 40),
+                  EventGroup('c', 50, 60)]
+>       with pytest.raises(ValueError, match='interval'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_split_regression.py:25: Failed
+=========================== short test summary info ============================
+FAILED tests/test_audit_split_regression.py::test_reject_overlapping_event_intervals - Failed: DID NOT RAISE ValueError
+FAILED tests/test_audit_split_regression.py::test_reject_duplicate_event_ids - Failed: DID NOT RAISE ValueError
+FAILED tests/test_audit_split_regression.py::test_reject_invalid_intervals[-1-10] - Failed: DID NOT RAISE ValueError
+FAILED tests/test_audit_split_regression.py::test_reject_invalid_intervals[20-10] - Failed: DID NOT RAISE ValueError
+4 failed, 1 passed in 3.33s

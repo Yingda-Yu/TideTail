@@ -1,0 +1,21 @@
+{
+  "missing_observation_threshold_metrics": {
+    "precision": 0.0,
+    "recall": null,
+    "false_alarm_rate": 1.0,
+    "tp": 0.0,
+    "fp": 1.0,
+    "fn": 0.0
+  },
+  "embargo_accepts_interval_containing_protected_row": true,
+  "transitive_run_merge": [
+    [
+      0,
+      2
+    ],
+    [
+      4,
+      4
+    ]
+  ]
+}

@@ -1,0 +1,15 @@
+=== FINAL CI RUN — Wave 3.2 acceptance ===
+date: 2026-11-28T01:29:34+08:00
+HEAD: f63a92d1b23e7402f60ecf5b66b35df6cc5eaede
+runner: GuanchaoTong (self-hosted, CPU-only)
+
+--- pytest (full suite) ---
+334 passed, 1 warning (test_baselines.py detach warning), exit 0
+
+--- ruff (gate: src + new scripts) ---
+ruff check src: clean
+ruff check scripts/make_wave32_figures.py scripts/wave32_tail_calibration.py: clean
+note: legacy scripts/ carry pre-existing lint debt (105 errors in files untouched by Wave 3.2); the acceptance gate follows the established src-only convention of ci_run_20261126_p5.log
+
+--- latexmk ---
+exit 0; main.pdf 40 pages; 0 undefined citations; 0 undefined references; placeholder scan CLEAN

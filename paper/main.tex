@@ -1,0 +1,80 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage[htt]{hyphenat}
+\usepackage{hyperref}
+\usepackage{natbib}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\title{\textbf{When Does Generative Augmentation Help Extreme Coastal
+Water-Level Forecasting?\\ Architecture Dependence, Physical Priors, and
+Independent-Event Validation}}
+
+\author{Yingda Yu \and Tong Mengxue \and Rong Jia}
+\date{\today\\\textit{Preprint --- results consolidated; retrospective test split (see \S\ref{sec:discussion})}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Generative augmentation is widely proposed as the obvious remedy for the
+scarcity of extreme events in coastal water-level training data, yet published
+evaluations rarely control for event-level dependence, cross-architecture
+pairing or generator fidelity. We report a pre-specified, five-region
+evaluation programme (New York Bight, US Gulf Coast, Charleston, Southeast
+Australia, Thames/North Sea; 2015--2024) that asks \emph{when} conditional
+generative augmentation helps extreme non-tidal water-level forecasting under
+a frozen 96\,h$\rightarrow$72\,h contract, and what the answer depends on.
+The independent-event census is 679 union units (634 peak-over-threshold
+clusters, 73 tropical cyclones, 28 matched), not the 707 a naive sum yields;
+all inference is paired per event unit, never per sliding window. Under a
+fixed-budget fairness contract (ten epochs, zero hyperparameter search) we
+benchmark seven conditional generator configurations (including two Flow
+Matching variants), verify every checkpoint
+against its declared architecture, and find that generation quality spans
+reproduced dispersion to numerical collapse: Flow Matching reproduces the
+target dispersion (scale ratio near unity), while several families fail
+ outright, and the failures are traceable to implementation defects
+(terminal-step amplification, posterior collapse, unstable autoregressive
+memory) rather than to model families. Fidelity, however, does not translate
+into forecasting utility. In the primary analysis (20 pre-specified
+augmentation-versus-baseline comparisons, Bonferroni $\alpha=0.0025$,
+retrospective 2022--2024 test), 12 comparisons survive, splitting exactly 6
+beneficial / 6 harmful: all four augmentation cells improve in Southeast
+Australia ($-1.29$ to $-3.02\%$), all four harm in Thames/North Sea
+($+3.44$ to $+4.31\%$), TCN cells benefit on the US Gulf Coast, TCN cells are
+harmed in Charleston, and New York Bight is null-to-mixed. A paired
+TCN-versus-GRU interaction test shows the popular ``TCN responds more''
+pattern is region-dependent: only 4 of 10 comparisons survive correction, all
+in beneficial regions, and a regional-heterogeneity test confirms region
+identity moderates the effect (Cochran--Q $p \le 1.4\times10^{-10}$), with
+effects attenuating at high event severity. A six-arm physical-prior ablation
+(20 contrasts) yields only three surviving contrasts --- all Charleston GRU
+cells, all indicating \emph{increased} error --- and we explicitly
+distinguish ERA5 meteorological conditioning and physics-inspired statistical
+regularisation from governing-equation constraints, which our method does not
+implement. The results reframe generative augmentation for coastal forecasting
+as a region- and architecture-dependent intervention whose benefits are
+moderated by event severity, and whose global distributional fidelity is
+neither necessary nor sufficient for extreme-event utility.
+\end{abstract}
+
+\input{sections/1-introduction}
+\input{sections/2-related-work}
+\input{sections/3-protocol}
+\input{sections/4-method}
+\input{sections/5-experiments}
+\input{sections/6-results}
+\input{sections/7-discussion}
+\input{sections/8-conclusion}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sections/a-audit}
+
+\end{document}

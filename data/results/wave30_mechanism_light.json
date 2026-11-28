@@ -1,0 +1,1530 @@
+{
+ "audit_version": "wave30-mechanism-light-1.0",
+ "rng_seed": 20261126,
+ "n_boot": 10000,
+ "n_perm": 5000,
+ "disclosure": "Descriptive mechanism probes on retrospective test events; not used for model selection. Event severity and seasons derived from POT-cluster manifest (train-reference thresholds); southern-hemisphere season labels for southeast_australia.",
+ "arms": {},
+ "regional_heterogeneity": {
+  "standard_gru": {
+   "regions": {
+    "ny_bight": {
+     "mean_delta_pct_point": -0.0534604139664593,
+     "mean_delta_pct_ratio_of_sums": -0.17892249914261946,
+     "ci95": [
+      -0.4472630908497797,
+      0.32931668242967027
+     ],
+     "boot_se": 0.19781005404640703,
+     "n_events": 51
+    },
+    "south_atlantic_charleston": {
+     "mean_delta_pct_point": 1.3434670569265756,
+     "mean_delta_pct_ratio_of_sums": 0.8899153033761912,
+     "ci95": [
+      0.5972261844691996,
+      2.1399871501236536
+     ],
+     "boot_se": 0.3915777166611012,
+     "n_events": 40
+    },
+    "southeast_australia": {
+     "mean_delta_pct_point": -1.2772462496074657,
+     "mean_delta_pct_ratio_of_sums": -1.3570047282041617,
+     "ci95": [
+      -2.042208093234016,
+      -0.6780874647761342
+     ],
+     "boot_se": 0.35143586615321987,
+     "n_events": 20
+    },
+    "thames_north_sea": {
+     "mean_delta_pct_point": 5.950193956466215,
+     "mean_delta_pct_ratio_of_sums": 4.305182675846295,
+     "ci95": [
+      3.7410456490012294,
+      8.325025537135229
+     ],
+     "boot_se": 1.168622510015418,
+     "n_events": 32
+    },
+    "us_gulf_coast": {
+     "mean_delta_pct_point": 0.3342998812837939,
+     "mean_delta_pct_ratio_of_sums": 0.11809691745738415,
+     "ci95": [
+      -0.16576082724680852,
+      0.857568320515664
+     ],
+     "boot_se": 0.25895705917456036,
+     "n_events": 37
+    }
+   },
+   "q_stat": 51.91111661163791,
+   "df": 4,
+   "p_chi2": 1.439768224355864e-10,
+   "pairwise": {
+    "ny_bight__vs__south_atlantic_charleston": {
+     "contrast_pct": -1.396927470893035,
+     "se": 0.43870482749493894,
+     "z": -3.184208112934774,
+     "p": 0.0014515061543673156,
+     "p_holm": 0.005806024617469262
+    },
+    "ny_bight__vs__southeast_australia": {
+     "contrast_pct": 1.2237858356410063,
+     "se": 0.4032815213975299,
+     "z": 3.0345695766076877,
+     "p": 0.002408791875322069,
+     "p_holm": 0.007226375625966208
+    },
+    "ny_bight__vs__thames_north_sea": {
+     "contrast_pct": -6.003654370432675,
+     "se": 1.1852457080270649,
+     "z": -5.065324708432171,
+     "p": 4.077047943312847e-07,
+     "p_holm": 3.669343148981562e-06
+    },
+    "ny_bight__vs__us_gulf_coast": {
+     "contrast_pct": -0.3877602952502532,
+     "se": 0.3258643521132363,
+     "z": -1.1899438914861984,
+     "p": 0.23406844572869573,
+     "p_holm": 0.23406844572869573
+    },
+    "south_atlantic_charleston__vs__southeast_australia": {
+     "contrast_pct": 2.620713306534041,
+     "se": 0.5261561329153025,
+     "z": 4.980866215534369,
+     "p": 6.330029101192837e-07,
+     "p_holm": 5.06402328095427e-06
+    },
+    "south_atlantic_charleston__vs__thames_north_sea": {
+     "contrast_pct": -4.606726899539639,
+     "se": 1.232481918366455,
+     "z": -3.7377642875649206,
+     "p": 0.00018566388415372942,
+     "p_holm": 0.0011139833049223767
+    },
+    "south_atlantic_charleston__vs__us_gulf_coast": {
+     "contrast_pct": 1.0091671756427818,
+     "se": 0.46945912141725227,
+     "z": 2.1496380187399544,
+     "p": 0.03158385867408208,
+     "p_holm": 0.06316771734816416
+    },
+    "southeast_australia__vs__thames_north_sea": {
+     "contrast_pct": -7.22744020607368,
+     "se": 1.2203219816645112,
+     "z": -5.922568235815517,
+     "p": 3.1695222119224883e-09,
+     "p_holm": 3.169522211922488e-08
+    },
+    "southeast_australia__vs__us_gulf_coast": {
+     "contrast_pct": -1.6115461308912595,
+     "se": 0.43653857391438,
+     "z": -3.6916465741864504,
+     "p": 0.0002228069340072197,
+     "p_holm": 0.0011140346700360985
+    },
+    "thames_north_sea__vs__us_gulf_coast": {
+     "contrast_pct": 5.615894075182421,
+     "se": 1.1969700620362533,
+     "z": 4.69175817616425,
+     "p": 2.7086717833400247e-06,
+     "p_holm": 1.8960702483380173e-05
+    }
+   },
+   "n_pairwise_survive_holm": 8
+  },
+  "standard_tcn": {
+   "regions": {
+    "ny_bight": {
+     "mean_delta_pct_point": -0.8233976557052594,
+     "mean_delta_pct_ratio_of_sums": -0.7060421673717764,
+     "ci95": [
+      -1.420585797739103,
+      -0.24501609848782288
+     ],
+     "boot_se": 0.2976071083456939,
+     "n_events": 51
+    },
+    "south_atlantic_charleston": {
+     "mean_delta_pct_point": 2.1683137957010414,
+     "mean_delta_pct_ratio_of_sums": 1.5481566976770729,
+     "ci95": [
+      1.2514275917803592,
+      3.23877361115005
+     ],
+     "boot_se": 0.5152147139078477,
+     "n_events": 40
+    },
+    "southeast_australia": {
+     "mean_delta_pct_point": -2.757387227558568,
+     "mean_delta_pct_ratio_of_sums": -3.0229105214000227,
+     "ci95": [
+      -4.286633604112948,
+      -1.5136910051404
+     ],
+     "boot_se": 0.711677547398941,
+     "n_events": 20
+    },
+    "thames_north_sea": {
+     "mean_delta_pct_point": 4.52981541228365,
+     "mean_delta_pct_ratio_of_sums": 3.4417443132851133,
+     "ci95": [
+      2.9249970690166096,
+      6.193082673004735
+     ],
+     "boot_se": 0.8322747223644615,
+     "n_events": 32
+    },
+    "us_gulf_coast": {
+     "mean_delta_pct_point": -1.1172160030335314,
+     "mean_delta_pct_ratio_of_sums": -1.2860439947036755,
+     "ci95": [
+      -1.7548123745459454,
+      -0.5571910364279351
+     ],
+     "boot_se": 0.3089305136092535,
+     "n_events": 37
+    }
+   },
+   "q_stat": 78.3203890701414,
+   "df": 4,
+   "p_chi2": 3.951294600613725e-16,
+   "pairwise": {
+    "ny_bight__vs__south_atlantic_charleston": {
+     "contrast_pct": -2.991711451406301,
+     "se": 0.5949925985800419,
+     "z": -5.028149019913965,
+     "p": 4.952369575181521e-07,
+     "p_holm": 2.4761847875907607e-06
+    },
+    "ny_bight__vs__southeast_australia": {
+     "contrast_pct": 1.9339895718533087,
+     "se": 0.7713980311160105,
+     "z": 2.507122774289861,
+     "p": 0.012171842539343312,
+     "p_holm": 0.04868737015737325
+    },
+    "ny_bight__vs__thames_north_sea": {
+     "contrast_pct": -5.353213067988909,
+     "se": 0.8838841578084354,
+     "z": -6.056464549904415,
+     "p": 1.3914578748040767e-09,
+     "p_holm": 1.1131662998432614e-08
+    },
+    "ny_bight__vs__us_gulf_coast": {
+     "contrast_pct": 0.29381834732827206,
+     "se": 0.4289615987204015,
+     "z": 0.6849525649958792,
+     "p": 0.49337385431040526,
+     "p_holm": 0.49337385431040526
+    },
+    "south_atlantic_charleston__vs__southeast_australia": {
+     "contrast_pct": 4.9257010232596095,
+     "se": 0.8785961147756784,
+     "z": 5.606331442197682,
+     "p": 2.0666004179958416e-08,
+     "p_holm": 1.446620292597089e-07
+    },
+    "south_atlantic_charleston__vs__thames_north_sea": {
+     "contrast_pct": -2.3615016165826086,
+     "se": 0.9788398310826889,
+     "z": -2.412551616305362,
+     "p": 0.015841294237057806,
+     "p_holm": 0.04868737015737325
+    },
+    "south_atlantic_charleston__vs__us_gulf_coast": {
+     "contrast_pct": 3.285529798734573,
+     "se": 0.600736434441946,
+     "z": 5.469170189064136,
+     "p": 4.521474349671365e-08,
+     "p_holm": 2.7128846098028194e-07
+    },
+    "southeast_australia__vs__thames_north_sea": {
+     "contrast_pct": -7.287202639842218,
+     "se": 1.0950644478562042,
+     "z": -6.6545879140796655,
+     "p": 2.8409490070297193e-11,
+     "p_holm": 2.840949007029719e-10
+    },
+    "southeast_australia__vs__us_gulf_coast": {
+     "contrast_pct": -1.6401712245250366,
+     "se": 0.7758369633567668,
+     "z": -2.1140668748606757,
+     "p": 0.03450955592560811,
+     "p_holm": 0.06901911185121622
+    },
+    "thames_north_sea__vs__us_gulf_coast": {
+     "contrast_pct": 5.647031415317182,
+     "se": 0.88776082123831,
+     "z": 6.3609829136639675,
+     "p": 2.0046674628288424e-10,
+     "p_holm": 1.8042007165459582e-09
+    }
+   },
+   "n_pairwise_survive_holm": 8
+  },
+  "tail_aware_gru": {
+   "regions": {
+    "ny_bight": {
+     "mean_delta_pct_point": -0.04991160710390318,
+     "mean_delta_pct_ratio_of_sums": -0.16991109975773136,
+     "ci95": [
+      -0.4359576054376451,
+      0.3355332761600659
+     ],
+     "boot_se": 0.19661445788379125,
+     "n_events": 51
+    },
+    "south_atlantic_charleston": {
+     "mean_delta_pct_point": 1.3164833992898572,
+     "mean_delta_pct_ratio_of_sums": 0.854275582117248,
+     "ci95": [
+      0.5904528754670844,
+      2.112206476336899
+     ],
+     "boot_se": 0.3860690460245673,
+     "n_events": 40
+    },
+    "southeast_australia": {
+     "mean_delta_pct_point": -1.2162763147749716,
+     "mean_delta_pct_ratio_of_sums": -1.294839473924006,
+     "ci95": [
+      -1.960027723009863,
+      -0.6277187691137357
+     ],
+     "boot_se": 0.3432655760058919,
+     "n_events": 20
+    },
+    "thames_north_sea": {
+     "mean_delta_pct_point": 5.944674837221154,
+     "mean_delta_pct_ratio_of_sums": 4.300499468037293,
+     "ci95": [
+      3.749957442762579,
+      8.238926689787798
+     ],
+     "boot_se": 1.1408643036169557,
+     "n_events": 32
+    },
+    "us_gulf_coast": {
+     "mean_delta_pct_point": 0.4709010002204212,
+     "mean_delta_pct_ratio_of_sums": 0.2678933437890919,
+     "ci95": [
+      -0.033189486448409036,
+      0.9701909734821403
+     ],
+     "boot_se": 0.2575340587919766,
+     "n_events": 37
+    }
+   },
+   "q_stat": 53.35388203401183,
+   "df": 4,
+   "p_chi2": 7.185712059072499e-11,
+   "pairwise": {
+    "ny_bight__vs__south_atlantic_charleston": {
+     "contrast_pct": -1.3663950063937604,
+     "se": 0.43325114350369187,
+     "z": -3.15381742640944,
+     "p": 0.0016114986807200201,
+     "p_holm": 0.0064459947228800805
+    },
+    "ny_bight__vs__southeast_australia": {
+     "contrast_pct": 1.1663647076710684,
+     "se": 0.39558627468555313,
+     "z": 2.948445844331171,
+     "p": 0.003193760916949562,
+     "p_holm": 0.009581282750848687
+    },
+    "ny_bight__vs__thames_north_sea": {
+     "contrast_pct": -5.994586444325057,
+     "se": 1.1576824280934468,
+     "z": -5.178092280624286,
+     "p": 2.241663487747688e-07,
+     "p_holm": 2.017497138972919e-06
+    },
+    "ny_bight__vs__us_gulf_coast": {
+     "contrast_pct": -0.5208126073243243,
+     "se": 0.32400777226296035,
+     "z": -1.6074077596559624,
+     "p": 0.10796494899711143,
+     "p_holm": 0.1368949073893475
+    },
+    "south_atlantic_charleston__vs__southeast_australia": {
+     "contrast_pct": 2.532759714064829,
+     "se": 0.5166048431528456,
+     "z": 4.9027022251811765,
+     "p": 9.452722086670474e-07,
+     "p_holm": 7.562177669336379e-06
+    },
+    "south_atlantic_charleston__vs__thames_north_sea": {
+     "contrast_pct": -4.628191437931297,
+     "se": 1.2044171484854078,
+     "z": -3.842681452810093,
+     "p": 0.00012169737828150891,
+     "p_holm": 0.0006084868914075446
+    },
+    "south_atlantic_charleston__vs__us_gulf_coast": {
+     "contrast_pct": 0.845582399069436,
+     "se": 0.4640830741755066,
+     "z": 1.8220496418054115,
+     "p": 0.06844745369467375,
+     "p_holm": 0.1368949073893475
+    },
+    "southeast_australia__vs__thames_north_sea": {
+     "contrast_pct": -7.160951151996125,
+     "se": 1.1913868452094214,
+     "z": -6.010601158465349,
+     "p": 1.8483663072674388e-09,
+     "p_holm": 1.8483663072674388e-08
+    },
+    "southeast_australia__vs__us_gulf_coast": {
+     "contrast_pct": -1.6871773149953928,
+     "se": 0.42913290145189986,
+     "z": -3.9315962707289716,
+     "p": 8.438369182028122e-05,
+     "p_holm": 0.0005063021509216873
+    },
+    "thames_north_sea__vs__us_gulf_coast": {
+     "contrast_pct": 5.473773837000732,
+     "se": 1.1695704983904436,
+     "z": 4.680157241084406,
+     "p": 2.866549787311234e-06,
+     "p_holm": 2.006584851117864e-05
+    }
+   },
+   "n_pairwise_survive_holm": 8
+  },
+  "tail_aware_tcn": {
+   "regions": {
+    "ny_bight": {
+     "mean_delta_pct_point": -0.8195887953724373,
+     "mean_delta_pct_ratio_of_sums": -0.7011083125914854,
+     "ci95": [
+      -1.4318764710290324,
+      -0.2462345612715507
+     ],
+     "boot_se": 0.30076665782758566,
+     "n_events": 51
+    },
+    "south_atlantic_charleston": {
+     "mean_delta_pct_point": 2.2014452409191265,
+     "mean_delta_pct_ratio_of_sums": 1.5597799782617594,
+     "ci95": [
+      1.2776493320307925,
+      3.310705320017554
+     ],
+     "boot_se": 0.5207987535893276,
+     "n_events": 40
+    },
+    "southeast_australia": {
+     "mean_delta_pct_point": -2.6021550219636067,
+     "mean_delta_pct_ratio_of_sums": -2.877831659710082,
+     "ci95": [
+      -4.083709906570781,
+      -1.3613214056808371
+     ],
+     "boot_se": 0.6963390966798528,
+     "n_events": 20
+    },
+    "thames_north_sea": {
+     "mean_delta_pct_point": 4.571505852749217,
+     "mean_delta_pct_ratio_of_sums": 3.463805507528324,
+     "ci95": [
+      2.9520920124234333,
+      6.268517619811013
+     ],
+     "boot_se": 0.8444515666062382,
+     "n_events": 32
+    },
+    "us_gulf_coast": {
+     "mean_delta_pct_point": -0.9845877531210703,
+     "mean_delta_pct_ratio_of_sums": -1.1119755937549456,
+     "ci95": [
+      -1.5421051238683747,
+      -0.49445066387205283
+     ],
+     "boot_se": 0.2708184581881843,
+     "n_events": 37
+    }
+   },
+   "q_stat": 76.20706415345805,
+   "df": 4,
+   "p_chi2": 1.1067824536021996e-15,
+   "pairwise": {
+    "ny_bight__vs__south_atlantic_charleston": {
+     "contrast_pct": -3.0210340362915638,
+     "se": 0.6014082841140228,
+     "z": -5.023266416660793,
+     "p": 5.079999886257984e-07,
+     "p_holm": 2.5399999431289923e-06
+    },
+    "ny_bight__vs__southeast_australia": {
+     "contrast_pct": 1.7825662265911695,
+     "se": 0.7585174487285639,
+     "z": 2.350066210842122,
+     "p": 0.018770071890312146,
+     "p_holm": 0.0676045441394409
+    },
+    "ny_bight__vs__thames_north_sea": {
+     "contrast_pct": -5.391094648121655,
+     "se": 0.8964145418301211,
+     "z": -6.014064248796309,
+     "p": 1.809287467888272e-09,
+     "p_holm": 1.4474299743106176e-08
+    },
+    "ny_bight__vs__us_gulf_coast": {
+     "contrast_pct": 0.16499895774863294,
+     "se": 0.4047261046142209,
+     "z": 0.4076805421432046,
+     "p": 0.6835082245214544,
+     "p_holm": 0.6835082245214544
+    },
+    "south_atlantic_charleston__vs__southeast_australia": {
+     "contrast_pct": 4.803600262882734,
+     "se": 0.8695513091848638,
+     "z": 5.524228659244654,
+     "p": 3.3093624165470504e-08,
+     "p_holm": 2.3165536915829352e-07
+    },
+    "south_atlantic_charleston__vs__thames_north_sea": {
+     "contrast_pct": -2.3700606118300906,
+     "se": 0.9921339577314785,
+     "z": -2.3888514180577505,
+     "p": 0.016901136034860226,
+     "p_holm": 0.0676045441394409
+    },
+    "south_atlantic_charleston__vs__us_gulf_coast": {
+     "contrast_pct": 3.186032994040197,
+     "se": 0.58700424107124,
+     "z": 5.427614949128678,
+     "p": 5.7112084548994084e-08,
+     "p_holm": 3.426725072939645e-07
+    },
+    "southeast_australia__vs__thames_north_sea": {
+     "contrast_pct": -7.173660874712824,
+     "se": 1.0945257356081872,
+     "z": -6.554127181602256,
+     "p": 5.5968253113404835e-11,
+     "p_holm": 5.596825311340484e-10
+    },
+    "southeast_australia__vs__us_gulf_coast": {
+     "contrast_pct": -1.6175672688425364,
+     "se": 0.7471484289352007,
+     "z": -2.1649878473917346,
+     "p": 0.030388615945431397,
+     "p_holm": 0.0676045441394409
+    },
+    "thames_north_sea__vs__us_gulf_coast": {
+     "contrast_pct": 5.556093605870288,
+     "se": 0.8868151361130207,
+     "z": 6.265221893057753,
+     "p": 3.7229488521554653e-10,
+     "p_holm": 3.350653966939919e-09
+    }
+   },
+   "n_pairwise_survive_holm": 6
+  }
+ },
+ "severity_dependence": {
+  "standard_gru": {
+   "ny_bight": {
+    "spearman_delta_vs_peak": -0.013755656108597285,
+    "spearman_p_peak": 0.9236761257769835,
+    "spearman_delta_vs_excess_ratio": -0.041719457013574664,
+    "spearman_p_excess": 0.7712984561386167,
+    "perm_p_peak": 0.9246150769846031,
+    "p_holm": 1.0,
+    "n_events": 51
+   },
+   "south_atlantic_charleston": {
+    "spearman_delta_vs_peak": -0.4581613508442777,
+    "spearman_p_peak": 0.002949418477116976,
+    "spearman_delta_vs_excess_ratio": -0.4842401500938087,
+    "spearman_p_excess": 0.0015449033478033777,
+    "perm_p_peak": 0.0023995200959808036,
+    "p_holm": 0.035992801439712056,
+    "n_events": 40
+   },
+   "southeast_australia": {
+    "spearman_delta_vs_peak": 0.7413533834586465,
+    "spearman_p_peak": 0.00018373904000045953,
+    "spearman_delta_vs_excess_ratio": 0.7368421052631579,
+    "spearman_p_excess": 0.00021080775336363285,
+    "perm_p_peak": 0.0003999200159968006,
+    "p_holm": 0.007198560287942411,
+    "n_events": 20
+   },
+   "thames_north_sea": {
+    "spearman_delta_vs_peak": -0.6788856304985337,
+    "spearman_p_peak": 1.9430043928762228e-05,
+    "spearman_delta_vs_excess_ratio": -0.6840175953079178,
+    "spearman_p_excess": 1.586767126278232e-05,
+    "perm_p_peak": 0.0001999600079984003,
+    "p_holm": 0.003999200159968006,
+    "n_events": 32
+   },
+   "us_gulf_coast": {
+    "spearman_delta_vs_peak": -0.11166429587482217,
+    "spearman_p_peak": 0.5105527838986048,
+    "spearman_delta_vs_excess_ratio": -0.24703651019440492,
+    "spearman_p_excess": 0.14046938451178292,
+    "perm_p_peak": 0.5078984203159368,
+    "p_holm": 1.0,
+    "n_events": 37
+   }
+  },
+  "standard_tcn": {
+   "ny_bight": {
+    "spearman_delta_vs_peak": -0.0730316742081448,
+    "spearman_p_peak": 0.6105408355716471,
+    "spearman_delta_vs_excess_ratio": -0.0816289592760181,
+    "spearman_p_excess": 0.5690527606028861,
+    "perm_p_peak": 0.611877624475105,
+    "p_holm": 1.0,
+    "n_events": 51
+   },
+   "south_atlantic_charleston": {
+    "spearman_delta_vs_peak": -0.33921200750469044,
+    "spearman_p_peak": 0.032251821744604225,
+    "spearman_delta_vs_excess_ratio": -0.3836772983114447,
+    "spearman_p_excess": 0.014525859683001123,
+    "perm_p_peak": 0.03079384123175365,
+    "p_holm": 0.3079384123175365,
+    "n_events": 40
+   },
+   "southeast_australia": {
+    "spearman_delta_vs_peak": 0.6210526315789473,
+    "spearman_p_peak": 0.0034728102725411643,
+    "spearman_delta_vs_excess_ratio": 0.613533834586466,
+    "spearman_p_excess": 0.004013734729903659,
+    "perm_p_peak": 0.004999000199960008,
+    "p_holm": 0.059988002399520096,
+    "n_events": 20
+   },
+   "thames_north_sea": {
+    "spearman_delta_vs_peak": -0.530791788856305,
+    "spearman_p_peak": 0.001775562397361389,
+    "spearman_delta_vs_excess_ratio": -0.5252932551319648,
+    "spearman_p_excess": 0.002020952897829089,
+    "perm_p_peak": 0.001999600079984003,
+    "p_holm": 0.03199360127974405,
+    "n_events": 32
+   },
+   "us_gulf_coast": {
+    "spearman_delta_vs_peak": -0.022048364153627306,
+    "spearman_p_peak": 0.896940349141268,
+    "spearman_delta_vs_excess_ratio": -0.08937885253674727,
+    "spearman_p_excess": 0.5988429959024537,
+    "perm_p_peak": 0.8926214757048591,
+    "p_holm": 1.0,
+    "n_events": 37
+   }
+  },
+  "tail_aware_gru": {
+   "ny_bight": {
+    "spearman_delta_vs_peak": -0.008959276018099547,
+    "spearman_p_peak": 0.9502466447356097,
+    "spearman_delta_vs_excess_ratio": -0.037194570135746605,
+    "spearman_p_excess": 0.7955373305125066,
+    "perm_p_peak": 0.9540091981603679,
+    "p_holm": 1.0,
+    "n_events": 51
+   },
+   "south_atlantic_charleston": {
+    "spearman_delta_vs_peak": -0.46135084427767364,
+    "spearman_p_peak": 0.002732434349466115,
+    "spearman_delta_vs_excess_ratio": -0.4874296435272046,
+    "spearman_p_excess": 0.0014224146914440414,
+    "perm_p_peak": 0.002999400119976005,
+    "p_holm": 0.038992201559688064,
+    "n_events": 40
+   },
+   "southeast_australia": {
+    "spearman_delta_vs_peak": 0.7413533834586465,
+    "spearman_p_peak": 0.00018373904000045953,
+    "spearman_delta_vs_excess_ratio": 0.7368421052631579,
+    "spearman_p_excess": 0.00021080775336363285,
+    "perm_p_peak": 0.0005998800239952009,
+    "p_holm": 0.010197960407918415,
+    "n_events": 20
+   },
+   "thames_north_sea": {
+    "spearman_delta_vs_peak": -0.6810850439882697,
+    "spearman_p_peak": 1.7823318502332973e-05,
+    "spearman_delta_vs_excess_ratio": -0.6854838709677419,
+    "spearman_p_excess": 1.4964439422639254e-05,
+    "perm_p_peak": 0.0001999600079984003,
+    "p_holm": 0.003999200159968006,
+    "n_events": 32
+   },
+   "us_gulf_coast": {
+    "spearman_delta_vs_peak": -0.10763394973921289,
+    "spearman_p_peak": 0.5260242655851315,
+    "spearman_delta_vs_excess_ratio": -0.24988146040777617,
+    "spearman_p_excess": 0.13580979810606186,
+    "perm_p_peak": 0.5108978204359128,
+    "p_holm": 1.0,
+    "n_events": 37
+   }
+  },
+  "tail_aware_tcn": {
+   "ny_bight": {
+    "spearman_delta_vs_peak": -0.06515837104072397,
+    "spearman_p_peak": 0.6496336478950095,
+    "spearman_delta_vs_excess_ratio": -0.07556561085972849,
+    "spearman_p_excess": 0.5981779913104219,
+    "perm_p_peak": 0.6382723455308938,
+    "p_holm": 1.0,
+    "n_events": 51
+   },
+   "south_atlantic_charleston": {
+    "spearman_delta_vs_peak": -0.3377110694183865,
+    "spearman_p_peak": 0.03307262923023239,
+    "spearman_delta_vs_excess_ratio": -0.38048780487804884,
+    "spearman_p_excess": 0.015435969947900667,
+    "perm_p_peak": 0.03439312137572485,
+    "p_holm": 0.3095380923815237,
+    "n_events": 40
+   },
+   "southeast_australia": {
+    "spearman_delta_vs_peak": 0.5969924812030075,
+    "spearman_p_peak": 0.005451989383349594,
+    "spearman_delta_vs_excess_ratio": 0.58796992481203,
+    "spearman_p_excess": 0.0064001708761953924,
+    "perm_p_peak": 0.008198360327934412,
+    "p_holm": 0.09018196360727854,
+    "n_events": 20
+   },
+   "thames_north_sea": {
+    "spearman_delta_vs_peak": -0.5377565982404692,
+    "spearman_p_peak": 0.0015022997885254647,
+    "spearman_delta_vs_excess_ratio": -0.531524926686217,
+    "spearman_p_excess": 0.0017448920006795795,
+    "perm_p_peak": 0.0023995200959808036,
+    "p_holm": 0.035992801439712056,
+    "n_events": 32
+   },
+   "us_gulf_coast": {
+    "spearman_delta_vs_peak": 0.015173067804646752,
+    "spearman_p_peak": 0.9289774717480095,
+    "spearman_delta_vs_excess_ratio": -0.07657657657657657,
+    "spearman_p_excess": 0.6523699441071515,
+    "perm_p_peak": 0.9250149970005999,
+    "p_holm": 1.0,
+    "n_events": 37
+   }
+  }
+ },
+ "seasonal_dependence": {
+  "standard_gru": {
+   "ny_bight": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": -0.6734391588209419,
+      "ci95": [
+       -1.401916105892463,
+       -0.09798908442575174
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 0.7226132527719201,
+      "ci95": [
+       -0.07672283821399807,
+       1.5279579261409895
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 0.13189693853481776,
+      "ci95": [
+       -0.4189427920715433,
+       0.7744190549852031
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -0.32662223347459846,
+      "ci95": [
+       -1.1206855907950364,
+       0.40526356307347583
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 12,
+     "JJA": 12,
+     "MAM": 12,
+     "SON": 15
+    },
+    "perm_p_across_seasons": 0.07958408318336332,
+    "p_holm": 0.3839232153569286
+   },
+   "south_atlantic_charleston": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 0.3234999784018607,
+      "ci95": [
+       -1.6752194801099591,
+       3.1489519553996184
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 1.46847821538015,
+      "ci95": [
+       0.3081799926404604,
+       2.70973542010012
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 1.8252777374179423,
+      "ci95": [
+       0.7262496439986764,
+       3.0295449143363236
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 1.4532013770338787,
+      "ci95": [
+       0.3507294579270187,
+       3.099412100918335
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 8,
+     "JJA": 12,
+     "MAM": 12,
+     "SON": 8
+    },
+    "perm_p_across_seasons": 0.6374725054989002,
+    "p_holm": 0.6374725054989002
+   },
+   "southeast_australia": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": -1.9806755964381448,
+      "ci95": [
+       -4.013300483672147,
+       -0.5012619413646151
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -1.190730417383687,
+      "ci95": [
+       -1.6939819115618582,
+       -0.6767694675567227
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": -2.8489620454021587,
+      "ci95": [
+       -3.425858236233159,
+       -2.2720658545711583
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -0.4000032066476723,
+      "ci95": [
+       -0.7994009970014624,
+       -0.030615116360239468
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 6,
+     "JJA": 4,
+     "MAM": 2,
+     "SON": 8
+    },
+    "perm_p_across_seasons": 0.1279744051189762,
+    "p_holm": 0.38392321535692864
+   },
+   "thames_north_sea": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 1.1879666171643934,
+      "ci95": [
+       -0.0492945576320672,
+       2.8745440658480574
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 7.059285512083051,
+      "ci95": [
+       3.668488161286468,
+       10.635495336019918
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 9.230202250092212,
+      "ci95": [
+       4.29823830272133,
+       14.291472595584867
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 4.115429249851666,
+      "ci95": [
+       1.3011336062977388,
+       6.929724893405593
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 8,
+     "JJA": 14,
+     "MAM": 8,
+     "SON": 2
+    },
+    "perm_p_across_seasons": 0.07678464307138572,
+    "p_holm": 0.3839232153569286
+   },
+   "us_gulf_coast": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": -0.09194029181095721,
+      "ci95": [
+       -0.45658452218482254,
+       0.26884988084630307
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -0.5714090431996252,
+      "ci95": [
+       -1.018868809404691,
+       -0.1791726357438439
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 0.02365286190266867,
+      "ci95": [
+       -0.9830340932717044,
+       0.9840590917518921
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 1.1073665163952757,
+      "ci95": [
+       0.3724642178118381,
+       1.9506649911924077
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 7,
+     "JJA": 3,
+     "MAM": 14,
+     "SON": 13
+    },
+    "perm_p_across_seasons": 0.17476504699060189,
+    "p_holm": 0.38392321535692864
+   }
+  },
+  "standard_tcn": {
+   "ny_bight": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 0.053306179009764386,
+      "ci95": [
+       -0.919382996653182,
+       1.2056702589067059
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -1.109632896839855,
+      "ci95": [
+       -2.356417692947317,
+       -0.034666431470416786
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": -1.2449511773128885,
+      "ci95": [
+       -3.0966533613935763,
+       0.3799182990354733
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -0.9585297132834992,
+      "ci95": [
+       -1.3610580432184352,
+       -0.5167664577774407
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 12,
+     "JJA": 12,
+     "MAM": 12,
+     "SON": 15
+    },
+    "perm_p_across_seasons": 0.4657068586282743,
+    "p_holm": 0.9314137172565486
+   },
+   "south_atlantic_charleston": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 1.7500812186097119,
+      "ci95": [
+       0.07965656776962887,
+       4.707206866912231
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 2.6652247741172856,
+      "ci95": [
+       0.4326707706597424,
+       5.471638952795843
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 2.2173425118871832,
+      "ci95": [
+       1.1664461380299396,
+       3.4967106921255446
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 1.7676368308887918,
+      "ci95": [
+       1.2909661889552055,
+       2.4187685386341133
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 8,
+     "JJA": 12,
+     "MAM": 12,
+     "SON": 8
+    },
+    "perm_p_across_seasons": 0.9474105178964207,
+    "p_holm": 0.9474105178964207
+   },
+   "southeast_australia": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": -4.124577368520441,
+      "ci95": [
+       -8.27158437592459,
+       -0.8919694191523492
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -2.201827518461445,
+      "ci95": [
+       -3.648714461570633,
+       -0.7549405753522571
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": -5.893433080185545,
+      "ci95": [
+       -6.867130758211653,
+       -4.919735402159438
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -1.2257630132289812,
+      "ci95": [
+       -2.0980585941488945,
+       -0.270966358868337
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 6,
+     "JJA": 4,
+     "MAM": 2,
+     "SON": 8
+    },
+    "perm_p_across_seasons": 0.1873625274945011,
+    "p_holm": 0.5620875824835033
+   },
+   "thames_north_sea": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 1.2824603497222444,
+      "ci95": [
+       0.3818235746633504,
+       2.091983580205783
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 5.876560817126743,
+      "ci95": [
+       2.8309959440939063,
+       8.875231124450124
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 5.8000191904853295,
+      "ci95": [
+       3.400378522306369,
+       8.513145476935351
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 3.0112027158209127,
+      "ci95": [
+       1.5809675380906665,
+       4.441437893551159
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 8,
+     "JJA": 14,
+     "MAM": 8,
+     "SON": 2
+    },
+    "perm_p_across_seasons": 0.13437312537492502,
+    "p_holm": 0.5374925014997001
+   },
+   "us_gulf_coast": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": -1.2416859764681278,
+      "ci95": [
+       -2.274745149750379,
+       -0.24828637594885464
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -3.4015446698958196,
+      "ci95": [
+       -7.021168488616247,
+       -0.5110480663741083
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": -1.4208604386081514,
+      "ci95": [
+       -2.5349106070785385,
+       -0.3842744507145173
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -0.19603924052016866,
+      "ci95": [
+       -0.6341544982041847,
+       0.2397875471785237
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 7,
+     "JJA": 3,
+     "MAM": 14,
+     "SON": 13
+    },
+    "perm_p_across_seasons": 0.03959208158368326,
+    "p_holm": 0.19796040791841632
+   }
+  },
+  "tail_aware_gru": {
+   "ny_bight": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": -0.6482948944358139,
+      "ci95": [
+       -1.3809897870942662,
+       -0.07773166055114537
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 0.7081918649951747,
+      "ci95": [
+       -0.08914528040478435,
+       1.522360958010614
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 0.14021736021247613,
+      "ci95": [
+       -0.4057732260628279,
+       0.7659177336140937
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -0.3297909287707403,
+      "ci95": [
+       -1.1225217696468317,
+       0.4278625194333208
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 12,
+     "JJA": 12,
+     "MAM": 12,
+     "SON": 15
+    },
+    "perm_p_across_seasons": 0.09318136372725455,
+    "p_holm": 0.3727254549090182
+   },
+   "south_atlantic_charleston": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 0.26517941481457963,
+      "ci95": [
+       -1.64617779642754,
+       3.0225527000288017
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 1.490282208753289,
+      "ci95": [
+       0.3630202873411356,
+       2.6486969940973464
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 1.7673471957893858,
+      "ci95": [
+       0.7668896680924879,
+       2.81941434833293
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 1.4307934748206939,
+      "ci95": [
+       0.35889527705383134,
+       3.0422735698378336
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 8,
+     "JJA": 12,
+     "MAM": 12,
+     "SON": 8
+    },
+    "perm_p_across_seasons": 0.612877424515097,
+    "p_holm": 0.612877424515097
+   },
+   "southeast_australia": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": -1.8975543647805024,
+      "ci95": [
+       -3.8720934794808257,
+       -0.45302018705207203
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -1.128731817116389,
+      "ci95": [
+       -1.5918565590355196,
+       -0.6656070751972586
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": -2.759034312857925,
+      "ci95": [
+       -3.3180658540588173,
+       -2.2000027716570334
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -0.3634005265793761,
+      "ci95": [
+       -0.7576483103077758,
+       -0.012980618487327589
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 6,
+     "JJA": 4,
+     "MAM": 2,
+     "SON": 8
+    },
+    "perm_p_across_seasons": 0.13637272545490903,
+    "p_holm": 0.4091181763647271
+   },
+   "thames_north_sea": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 1.1849462981221417,
+      "ci95": [
+       -0.04440331324708264,
+       2.865250924043746
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 7.054804904262147,
+      "ci95": [
+       3.782228256823913,
+       10.647883127321366
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 9.220734189995024,
+      "ci95": [
+       4.352338005925168,
+       14.297225221866956
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 4.108441113234776,
+      "ci95": [
+       1.299825934331613,
+       6.91705629213794
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 8,
+     "JJA": 14,
+     "MAM": 8,
+     "SON": 2
+    },
+    "perm_p_across_seasons": 0.07178564287142572,
+    "p_holm": 0.3589282143571286
+   },
+   "us_gulf_coast": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 0.03850378166330561,
+      "ci95": [
+       -0.2953862853830121,
+       0.42122029990737636
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -0.16297817359254,
+      "ci95": [
+       -0.3662742864375603,
+       0.2345496205873924
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 0.1288694724860987,
+      "ci95": [
+       -0.8829592610727118,
+       1.0586982112822763
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 1.218351726344976,
+      "ci95": [
+       0.4758254861885112,
+       2.0990226258270006
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 7,
+     "JJA": 3,
+     "MAM": 14,
+     "SON": 13
+    },
+    "perm_p_across_seasons": 0.21375724855028994,
+    "p_holm": 0.42751449710057987
+   }
+  },
+  "tail_aware_tcn": {
+   "ny_bight": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 0.08780665993306254,
+      "ci95": [
+       -0.877138036943604,
+       1.2270618499706556
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -1.0973640187485825,
+      "ci95": [
+       -2.3746625852321293,
+       -0.036719222665383286
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": -1.2769540146178182,
+      "ci95": [
+       -3.1623196800967275,
+       0.3560692220717438
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -0.9573928055196166,
+      "ci95": [
+       -1.350962315837786,
+       -0.5260952336229386
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 12,
+     "JJA": 12,
+     "MAM": 12,
+     "SON": 15
+    },
+    "perm_p_across_seasons": 0.4331133773245351,
+    "p_holm": 0.8662267546490702
+   },
+   "south_atlantic_charleston": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 1.7867917002799258,
+      "ci95": [
+       0.06251971306716533,
+       4.885874296775489
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 2.727649698895178,
+      "ci95": [
+       0.5077168906967247,
+       5.494103155907414
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 2.2482124788570546,
+      "ci95": [
+       1.1725117098288058,
+       3.5376179665150738
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 1.756641237687358,
+      "ci95": [
+       1.3013987660677695,
+       2.3650007472309396
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 8,
+     "JJA": 12,
+     "MAM": 12,
+     "SON": 8
+    },
+    "perm_p_across_seasons": 0.9288142371525695,
+    "p_holm": 0.9288142371525695
+   },
+   "southeast_australia": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": -3.9137337450357683,
+      "ci95": [
+       -7.790445691351285,
+       -0.8232313350352004
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -2.0924239665097684,
+      "ci95": [
+       -3.3622794416984183,
+       -0.8198911670806257
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": -5.863099257655182,
+      "ci95": [
+       -6.711316629388554,
+       -5.01488188592181
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -1.0581004484635108,
+      "ci95": [
+       -1.9215675221266633,
+       -0.14295597064200513
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 6,
+     "JJA": 4,
+     "MAM": 2,
+     "SON": 8
+    },
+    "perm_p_across_seasons": 0.15716856628674264,
+    "p_holm": 0.5110977804439112
+   },
+   "thames_north_sea": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": 1.2826437560576298,
+      "ci95": [
+       0.3971956201290483,
+       2.09286352244959
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": 5.922195664654324,
+      "ci95": [
+       2.935241727884891,
+       8.996127918033652
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": 5.880521802722454,
+      "ci95": [
+       3.5471137659830685,
+       8.691125032919402
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": 3.0360617562868795,
+      "ci95": [
+       1.575847824560579,
+       4.49627568801318
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 8,
+     "JJA": 14,
+     "MAM": 8,
+     "SON": 2
+    },
+    "perm_p_across_seasons": 0.1277744451109778,
+    "p_holm": 0.5110977804439112
+   },
+   "us_gulf_coast": {
+    "per_season": {
+     "DJF": {
+      "mean_delta_pct": -1.113317163065732,
+      "ci95": [
+       -1.9800701197023785,
+       -0.29220270578196367
+      ]
+     },
+     "JJA": {
+      "mean_delta_pct": -2.91043105214861,
+      "ci95": [
+       -6.065485575090978,
+       -0.4969058557323068
+      ]
+     },
+     "MAM": {
+      "mean_delta_pct": -1.2770364969076158,
+      "ci95": [
+       -2.2486427897875423,
+       -0.3969357300256624
+      ]
+     },
+     "SON": {
+      "mean_delta_pct": -0.15590173929746387,
+      "ci95": [
+       -0.5266184523931062,
+       0.23047965488203845
+      ]
+     }
+    },
+    "n_per_season": {
+     "DJF": 7,
+     "JJA": 3,
+     "MAM": 14,
+     "SON": 13
+    },
+    "perm_p_across_seasons": 0.036192761447710456,
+    "p_holm": 0.18096380723855227
+   }
+  }
+ }
+}

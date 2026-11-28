@@ -1,0 +1,66 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We asked when generative augmentation helps extreme coastal water-level
+forecasting. The answer assembled here is not ``yes'' or ``no'' but a
+measured map of dependence: the effect is region- and architecture-dependent,
+moderated by event severity, and poorly predicted by the generator's global
+distributional fidelity.
+
+\textbf{What is established.} Under one frozen protocol
+(2015--2020/2021/2022--2024, retrospective test) and one audited inference
+machinery: 12 of 20 pre-specified augmentation-versus-baseline comparisons
+survive Bonferroni correction, splitting exactly 6 beneficial / 6 harmful.
+All four augmentation cells improve in Southeast Australia ($-1.29$ to
+$-3.02\%$); all four harm in Thames/North Sea ($+3.44$ to $+4.31\%$); TCN
+cells improve on the US Gulf Coast and are harmed in Charleston; New York
+Bight is null-to-mixed. Regional heterogeneity is a tested finding, not a
+description (Cochran--Q $p \le 1.4\times10^{-10}$ on every arm), and the
+paired TCN-versus-GRU interaction survives correction in only 4 of 10
+comparisons --- all in beneficial regions --- so ``TCN responds more'' is
+descriptive, not a law. Effects concentrate in low-to-moderate severity
+events and attenuate at high severity in every region with a severity
+gradient, which is the opposite of what tail-motivated augmentation is asked
+to deliver.
+
+\textbf{What the generator benchmark adds.} Seven families under one
+fairness contract (fixed budget, zero search, verified checkpoints,
+season-stratified scoring) separate cleanly into reproduced dispersion
+(Flow Matching), informative failures with line-level diagnoses
+(posterior collapse, unstable autoregressive memory, terminal-step
+amplification), and outright numerical collapse. Fidelity does not translate
+into utility: the downstream result was carried by a generator whose own
+fidelity status is inconclusive, and the pilot's fidelity-rejected
+generators produced only harms. In our experiments, global distributional quality is empirically
+neither necessary nor sufficient for extreme-event forecasting value.
+
+\textbf{What the physical priors add.} The six-arm ablation is bounded and
+negative: no arm beats standard Flow Matching consistently, the only
+surviving contrasts (three Charleston GRU regulariser contrasts) indicate
+\emph{increased} error, and ERA5 conditioning alone is not reliably
+beneficial. The method tested is meteorological conditioning plus
+physics-inspired statistical regularisation --- explicitly not a
+governing-equation, PDE-constrained generator --- and claims of that kind
+require different machinery entirely.
+
+\textbf{What is preserved as negative.} The repaired VAE samples worse than
+its legacy version; the repaired Diffusion-TS diverges to NaN once it fits
+the data; the historical candidate-zoo analysis yields zero seed-robust
+findings; the pilot's surviving downstream effects are all harms of
+fidelity-rejected generators; and no seasonal moderation is detected.
+Reporting these plainly is part of the contribution: the alternative ---
+re-tuning until the number moves --- is precisely how this literature
+acquires effects that do not replicate.
+
+\textbf{What would strengthen the answer.} An untouched confirmatory test
+period beyond 2024, with 30--40 independent units per region; more generator
+seeds so seed spread enters the uncertainty budget rather than being
+averaged away; tail-targeted generator variants whose validation gains
+survive a frozen retrospective evaluation (the bounded study of
+Section~\ref{sec:results-tail-calibration}); a receptive-field ablation to
+test the architecture-interaction account; and a physics arm that encodes
+governing equations rather than statistical regularisation. The
+infrastructure for all of these --- the frozen protocol, the verified census,
+the stratified fidelity benchmark, the audited paired statistics and the
+declared testing families --- now exists in this repository, and every
+number in this paper traces to an immutable artifact.

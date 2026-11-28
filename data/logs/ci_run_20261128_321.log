@@ -1,0 +1,16 @@
+=== FINAL CI RUN — Wave 3.2.1, final HEAD ===
+date: 2026-11-28T22:37:39+08:00
+HEAD: 9d3143abbb563e604f8e1285ace3b91b884732c7
+runner: GuanchaoTong (self-hosted, CPU-only)
+
+--- pytest ---
+338 passed, 1 warning in 63.28s (0:01:03)
+
+--- ruff gate ---
+All checks passed!
+All checks passed!
+
+--- latexmk ---
+latexmk_exit=0
+40 pages
+undefined warnings: 0

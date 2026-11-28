@@ -1,0 +1,164 @@
+\section{Experimental Setup}
+\label{sec:exp}
+
+\subsection{Frozen forecast contract}
+The main task is \textbf{96 hours of hourly history $\rightarrow$ 72 hours of future forecast}.
+The target is \texttt{water\_level\_m}, which is \emph{already} the non-tidal
+residual: the database satisfies the exact identity
+\texttt{water\_level\_m} $+$ \texttt{tide\_level\_m} $=$
+\texttt{observed\_total\_water\_level\_m} to machine precision
+(MAE $=0.00000000$~m, $r=1.000000$, verified by
+\texttt{tests/test\_target\_semantics\_contract.py}). The residual must therefore
+never be de-tided a second time; an earlier pipeline that computed
+\texttt{water\_level\_m} $-$ \texttt{tide\_level\_m} injected a spurious
+oscillatory component and its checkpoints are discarded.
+The historical pilot (Issue~\#6) used 72h$\rightarrow$24h on de-tided residuals only;
+that model is classified as exploratory and \emph{must not} be compared directly
+against main-task metrics.
+
+Five regions are admitted: \texttt{ny\_bight}, \texttt{thames\_north\_sea},
+\texttt{southeast\_australia}, \texttt{us\_gulf\_coast}, \texttt{south\_atlantic\_charleston}.
+Hong Kong (\texttt{pearl\_river\_hong\_kong}) is excluded pending license/datum/signoff.
+
+\subsection{Split protocol}
+Two split protocols appear in this paper's experiments, and all current
+claims use the first.
+
+\paragraph{Operative: frozen calendar split (Section 3.4).} All five-region
+expanded evaluations, the architecture-interaction analysis, the
+mechanism probes and the six-arm physics ablation use the pre-registered
+calendar protocol: 2015--2020 for fitting, 2021 for epoch selection,
+2022--2024 touched once. Splits are event-grouped with a 168\,h embargo at
+both boundaries, scalers and tail thresholds are fitted on training rows
+only, and the 2022--2024 test period is disclosed as retrospective
+(Section 3.4); it is not an untouched confirmatory holdout.
+
+\paragraph{Historical: event-grouped 8:1:1 split.} The candidate-zoo
+experiments (the four-generator production benchmark, the Wave 1.7 audit
+aggregates and the 320-test family) used an event-grouped chronological
+8:1:1 split over a single test year. A forecast origin $o$ is safe only if
+$o \geq a + 96$ and $o \leq b - 72$, where $[a, b)$ is the partition's row
+block, so no window's support $[o-L, o+H)$ crosses a partition boundary.
+Aggregates from this protocol are tagged \emph{historical} wherever they
+appear and are never merged with the frozen-protocol results.
+
+\paragraph{Shared guarantees.} Under both protocols: train-only scalers
+(mean/SD fit on train rows only, applied without re-fit), train-only
+thresholds (q95/q99 from train rows only, used for tail metrics and
+oversampling weights), and missing masks (all models consume a boolean mask
+per hour, fixed and common across all A0--A4 methods).
+
+\subsection{Evaluation metrics}
+All metrics are organized by their statistical unit (hourly cell, threshold event,
+or independent storm event), as defined in the companion document
+\texttt{docs/evaluation/METRIC\_DEFINITIONS.md}:
+
+\begin{table}[htbp]
+\centering
+\caption{Evaluation metrics by statistical unit}
+\small
+\begin{tabular}{lll}
+\toprule
+Unit & Metric & Definition \\
+\midrule
+\multirow{5}{*}{Hourly cell}
+    & MAE / RMSE & Absolute error over finite cells \\
+    & Tail MAE / RMSE (q95) & Cells where $y \geq q95_{\text{train}}$ only \\
+    & Tail MAE / RMSE (q99) & Cells where $y \geq q99_{\text{train}}$ only \\
+    & Lead-time MAE / RMSE & Per horizon hour (1--72) \\
+    & Station-wise MAE / RMSE & Per gauge station \\
+\midrule
+\multirow{4}{*}{Threshold event}
+    & Precision & TP / (TP + FP) \\
+    & Recall & TP / (TP + FN) \\
+    & FPR & FP / (FP + TN)  \\
+    & FAR & FP / (TP + FP) \\
+\midrule
+\multirow{3}{*}{Independent storm}
+    & Peak magnitude error & $|\max(y) - \max(\hat{y})|$ per event \\
+    & Peak timing error & $|\arg\max(y) - \arg\max(\hat{y})|$ per event \\
+    & Paired bootstrap CI & 95\% CI on per-storm mean differences \\
+\bottomrule
+\end{tabular}
+\label{tab:metrics}
+\end{table}
+
+All threshold denominators are explicit (zero-denominator returns NaN, never an
+implicit zero). The FPR definition follows standard clinical-statistics usage:
+FP / (FP + TN), not FP / (TP + FP) (the latter is FAR).
+
+\subsection{Comparison groups}
+The primary analysis compares, per region and per forecast architecture, a
+real-only baseline and two conditional-generator augmentation arms, each
+under a matched downstream training budget:
+
+\begin{itemize}
+    \item \textbf{A0}: Real-only training, no augmentation (baseline).
+    \item \textbf{A3}: Standard conditional Flow Matching augmentation;
+    synthetic windows are appended to the training set at a fixed ratio.
+    \item \textbf{A4}: Tail-aware conditional Flow Matching augmentation
+    (the primary H1 arm).
+\end{itemize}
+
+Each arm is crossed with a GRU and a TCN forecaster, giving four
+augmentation-versus-baseline comparisons per region (A3--GRU, A3--TCN,
+A4--GRU, A4--TCN) and a primary family of 20 comparisons over five regions.
+Earlier internal waves additionally explored an oversampling arm (A1) and a
+noise/phase-shift perturbation arm (A2) in the historical candidate zoo;
+those arms are not part of the pre-specified primary family and appear only
+in the preserved historical analysis (Section~\ref{sec:results-augmentation}).
+Oversampling and history-noise controls return in the bounded tail-calibration
+study (Section~\ref{sec:results-tail-calibration}) as exploratory arms.
+
+\subsection{Multiple-testing families}
+\label{subsec:families}
+Every family below was declared before its test; no family is pooled with
+another, and all p-values come from the audited machinery of
+Section~\ref{sec:results-augmentation} (exact sign-flip enumeration for
+$\le$16 units, otherwise a 10{,}000-draw Monte Carlo with the resolution
+floor $(b+1)/(n_{\text{boot}}+1)$):
+
+\begin{enumerate}
+    \item \textbf{Primary}: 20 augmentation-versus-baseline comparisons,
+    Bonferroni $\alpha = 0.05/20 = 0.0025$.
+    \item \textbf{Architecture interaction}: 10 paired TCN-minus-GRU
+    contrasts (5 regions $\times$ 2 arms), Bonferroni
+    $\alpha = 0.05/10 = 0.005$.
+    \item \textbf{Physics ablation}: 20 primary mechanism contrasts (5
+    contrasts $\times$ 2 regions $\times$ 2 architectures), Bonferroni
+    $\alpha = 0.0025$; arm-versus-standard contrasts are secondary and
+    exploratory.
+    \item \textbf{Regional heterogeneity}: Cochran--Q per augmentation arm
+    (4 tests) plus Holm-corrected pairwise contrasts (10 per arm).
+    \item \textbf{Severity dependence}: 20 Spearman correlations
+    (5 regions $\times$ 4 arms), Holm-corrected.
+\end{enumerate}
+
+\subsection{Reproducibility metadata}
+Every run records exact git commit SHA, data file hashes, split manifest hash,
+random seed list, optimizer parameters, checkpoint SHA, and wall-clock time.
+Generator seeds are $\{42, 99\}$ (per-unit deltas are seed-averaged before
+testing, with per-seed spread recorded); downstream forecaster seeds are
+$\{42, 99, 7\}$, averaged per cell. An earlier five-seed list was declared
+but never realised in the augmentation grid; that discrepancy is one of the
+defects corrected in Section~\ref{sec:results-augmentation}. All generative
+checkpoints in the benchmark are verified against their declared
+architectures: tensor counts, generator-only versus auxiliary parameter
+counts, and SHA256 digests are recorded per cell, and a strict validator
+rejects any missing, extra or corrupt cell
+(Section~\ref{sec:results-generators}).
+
+\subsection{Hardware and run environment}
+GPU0 is prohibited throughout the programme. The Wave 2.7 recovery studies and
+the physics ablation ran on CPU with explicit thread caps
+(\texttt{torch.set\_num\_threads($\le 8$)} and
+\texttt{CUDA\_VISIBLE\_DEVICES=""}); heavy jobs are strictly serial (a
+concurrent-job incident triggered a systemd-oomd kill, recorded and
+corrected). The five-region expanded recompute used a single spare GPU, and the
+season-stratified benchmark refresh
+was run CPU-only under its fairness contract. One historical DDPM pilot,
+retained only for the diagnosis in Section~\ref{sec:results-pilot}, executed
+on one RTX~3090 GPU; its CPU reproduction confirmed the
+magnitude failure using the same checkpoint loaded with
+\texttt{map\_location="cpu"}. Checkpoints are preserved locally and never
+committed to Git; their SHA256 digests are recorded in the result artifacts.
